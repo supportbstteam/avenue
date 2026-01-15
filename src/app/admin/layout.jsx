@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerAdmin } from "@/lib/getServerUser";
-import LogoutButton from "@/components/LogoutButton";
+import Sidebar from "@/app/admin/include/Sidebar";
+import Header from "@/app/admin/include/Header";
 
 export default async function AdminLayout({ children }) {
   const admin = await getServerAdmin();
@@ -10,12 +11,19 @@ export default async function AdminLayout({ children }) {
   }
 
   return (
-    <div>
-      <nav className="p-4 flex justify-between bg-slate-900 text-white">
-        <h1 className="text-xl font-bold">Admin Panel</h1>
-        <LogoutButton />
-      </nav>
-      <div className="p-6">{children}</div>
+    <div className="flex min-h-screen">
+
+      <Sidebar />
+
+      <div className="flex-1 bg-gray-50 min-h-screen">
+
+        <Header />
+
+        <main className="">
+          {children}
+        </main>
+
+      </div>
     </div>
   );
 }

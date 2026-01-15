@@ -1,29 +1,25 @@
 "use client";
-import axios from "axios";
+
 import { useEffect, useState, use } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import BookForm from "@/components/BookForm";
 import { useRouter } from "next/navigation";
+import { fetchBook } from "@/store/bookSlice";
 
 export default function EditBookPage({ params }) {
+  const dispatch = useDispatch();
+  const book = useSelector((state) => state.book);
   const { id } = use(params);
-  const [book, setBook] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchBook() {
-      const res = await axios.get(`/api/books/${id}`);
-      setBook(res.data);
-    }
+    dispatch(fetchBook(id));
+  }, [dispatch, id]);
 
-    fetchBook();
-  }, [id]);
-
-  if (!book) return <p>Loading...</p>;
+  if (book.loading) return <p>Loading...</p>;
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl mb-4">Edit Book</h1>
-
       <BookForm book={book} onSubmitSuccess={() => router.push("/admin")} />
     </div>
   );

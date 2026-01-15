@@ -9,7 +9,7 @@ export function useClientUser() {
         return null;
     }
 
-    return { user: session?.user };
+    return session?.user;
 
     //   return {
     //     user: session?.user || null,
@@ -25,7 +25,7 @@ export function useClientAdmin() {
         return null;
     }
 
-    return { user: session?.user};
+    return session?.user;
 
     //   return {
     //     user: session?.user || null,

@@ -7,8 +7,6 @@ export default function AddBookPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl mb-4">Add New Book</h1>
-
       <BookForm onSubmitSuccess={() => router.push("/admin")} />
     </div>
   );
