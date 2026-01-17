@@ -6,10 +6,10 @@ export async function POST(req) {
   try {
     await connectDB();
 
-    const { name, email, password } = await req.json();
+    const { firstName, lastName, email, password } = await req.json();
 
     // Validate fields
-    if (!name || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
       return Response.json(
         { success: false, message: "All fields are required" },
         { status: 400 }
@@ -31,7 +31,8 @@ export async function POST(req) {
 
     // Create user
     await User.create({
-      name,
+      firstName,
+      lastName,
       email,
       password: hashedPassword,
       role: "user",

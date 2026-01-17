@@ -79,7 +79,7 @@ export default function AdminPage() {
                 >
                   <td className="p-3 text-gray-800 font-medium">{book.title}</td>
                   <td className="p-3 text-gray-600">{book.isbn}</td>
-                  <td className="p-3 text-gray-600">{book.contributor ?? "Unknown Author"}</td>
+                  <td className="p-3 text-gray-600">{book.author ?? "Unknown Author"}</td>
                   <td className="p-3 text-gray-800 font-semibold">£ {book.price}</td>
 
                   <td className="p-3">

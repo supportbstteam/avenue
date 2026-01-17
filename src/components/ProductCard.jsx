@@ -2,12 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function ProductCard({ product }) {
-  const { slug, title, author, image, price, originalPrice, format, preorder } = product;
+  const { _id, slug, title, author, image, price, originalPrice, format, preorder } = product;
 
   return (
     <div className="group  shrink-0">
       {/* Image */}
-      <Link href={`/product/${slug}`}>
+      <Link href={`/${_id}`}>
         <div className="relative w-full h-[340px] overflow-hidden group">
           <Image src={image} alt={title} fill className="object-contain" />
 

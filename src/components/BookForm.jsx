@@ -13,9 +13,9 @@ export default function BookForm({ book, onSubmitSuccess }) {
 
   const onSubmit = async (data) => {
     if (book?._id) {
-      await axios.put(`/api/books/${book._id}`, data);
+      await axios.put(`/api/admin/books/${book._id}`, data);
     } else {
-      await axios.post("/api/books", data);
+      await axios.post("/api/admin/books", data);
     }
     onSubmitSuccess();
   };

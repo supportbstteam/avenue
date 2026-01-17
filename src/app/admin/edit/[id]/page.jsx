@@ -4,7 +4,7 @@ import { useEffect, useState, use } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import BookForm from "@/components/BookForm";
 import { useRouter } from "next/navigation";
-import { fetchBook } from "@/store/bookSlice";
+import { fetchBookForAdmin } from "@/store/bookSlice";
 
 export default function EditBookPage({ params }) {
   const dispatch = useDispatch();
@@ -13,7 +13,7 @@ export default function EditBookPage({ params }) {
   const router = useRouter();
 
   useEffect(() => {
-    dispatch(fetchBook(id));
+    dispatch(fetchBookForAdmin(id));
   }, [dispatch, id]);
 
   if (book.loading) return <p>Loading...</p>;

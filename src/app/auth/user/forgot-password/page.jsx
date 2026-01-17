@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import axios from "axios";
+import api from "@/lib/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,7 @@ export default function ForgotPasswordPage() {
 
   async function submit(e) {
     e.preventDefault();
-    const res = await axios.post("/api/auth/user/forgot-password", { email });
+    const res = await api.post("/auth/user/forgot-password", { email });
     setMsg(res.data.message);
   }
 
