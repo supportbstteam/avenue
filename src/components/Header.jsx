@@ -1,6 +1,9 @@
-'use client';
+"use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 import {
   faLocationDot,
   faUser,
@@ -8,17 +11,22 @@ import {
   faChevronDown,
   faBars,
   faTimes,
-  faSearch
+  faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { fetchBooksForHome } from "@/store/bookSlice";
+import { setReduxSearchText } from "@/store/bookSlice";
 
-import { useState } from "react";
 
 export default function Header() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
   const [hoveredDropdown, setHoveredDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   const mainMenu = [
     { label: "Sale", href: "/sale" },
@@ -86,11 +94,19 @@ export default function Header() {
     setMobileDropdownOpen(mobileDropdownOpen === key ? null : key);
   };
 
+  const handleSearch = () => {
+    dispatch(fetchBooksForHome({ "search": searchText }));
+    dispatch(setReduxSearchText(searchText));
+    router.push("/search");
+  };
+
   return (
     <header className="w-full flex flex-col bg-white">
       {/* SALE BAR */}
       <div className="bg-[#ae0001] flex items-center justify-center text-white text-center py-1 text-xs sm:text-sm font-semibold">
-        <span className="mr-2 sm:mr-4 text-xl sm:text-3xl font-cursive">SALE</span>
+        <span className="mr-2 sm:mr-4 text-xl sm:text-3xl font-cursive">
+          SALE
+        </span>
         <Link href="#" className="underline text-[8px] sm:text-[10px]">
           SHOP NOW
         </Link>
@@ -157,12 +173,25 @@ export default function Header() {
             href="/plus"
             className="flex gap-1 font-semibold hover:underline border-r border-slate-300 pr-2 lg:pr-3"
           >
-            <img src="/img/plus-stamp.webp" className="h-4 lg:h-5" alt="Plus" /> Join{" "}
-            <img src="/img/plus-green.webp" className="h-4 lg:h-5" alt="Plus Green" />
+            <img src="/img/plus-stamp.webp" className="h-4 lg:h-5" alt="Plus" />{" "}
+            Join{" "}
+            <img
+              src="/img/plus-green.webp"
+              className="h-4 lg:h-5"
+              alt="Plus Green"
+            />
           </Link>
 
-          <Link href="/wishlist" className="hover:underline items-center gap-1 flex">
-            <img src="/img/heart.webp" className="w-4 lg:w-5 h-4 lg:h-5" alt="Wishlist" /> Wish List
+          <Link
+            href="/wishlist"
+            className="hover:underline items-center gap-1 flex"
+          >
+            <img
+              src="/img/heart.webp"
+              className="w-4 lg:w-5 h-4 lg:h-5"
+              alt="Wishlist"
+            />{" "}
+            Wish List
           </Link>
         </div>
       </div>
@@ -173,10 +202,19 @@ export default function Header() {
           className="lg:hidden text-[#336b75]"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
-          <FontAwesomeIcon icon={mobileMenuOpen ? faTimes : faBars} className="w-6 h-6" />
+          <FontAwesomeIcon
+            icon={mobileMenuOpen ? faTimes : faBars}
+            className="w-6 h-6"
+          />
         </button>
 
-        <a href="/"><img src="/img/avenuemain.png" alt="Logo" className="h-8 sm:h-10 lg:h-12 w-auto" /></a>
+        <a href="/">
+          <img
+            src="/img/avenuemain.png"
+            alt="Logo"
+            className="h-8 sm:h-10 lg:h-12 w-auto"
+          />
+        </a>
 
         <div className="flex lg:hidden gap-3 items-center">
           <button
@@ -201,10 +239,12 @@ export default function Header() {
           <div className="flex border rounded overflow-hidden bg-[#eaeff2]">
             <input
               type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search..."
               className="px-3 text-slate-900 py-2 text-sm flex-1 outline-none"
             />
-            <button className="px-3">
+            <button className="px-3" onClick={handleSearch}>
               <FontAwesomeIcon icon={faSearch} className="w-4 h-4" />
             </button>
           </div>
@@ -223,13 +263,15 @@ export default function Header() {
               item.label === "Fiction"
                 ? "fiction"
                 : item.label === "Non-Fiction"
-                ? "nonFiction"
-                : "children";
+                  ? "nonFiction"
+                  : "children";
 
             return (
               <div key={item.label}>
                 <button
-                  onClick={() => isDropdownMenu && toggleMobileDropdown(dropdownKey)}
+                  onClick={() =>
+                    isDropdownMenu && toggleMobileDropdown(dropdownKey)
+                  }
                   className="w-full text-left flex items-center justify-between py-2 px-3 rounded hover:bg-slate-100 text-[#336b75] font-medium text-sm"
                 >
                   {item.label}
@@ -246,17 +288,15 @@ export default function Header() {
                 {/* MOBILE SUBMENU */}
                 {isDropdownMenu && mobileDropdownOpen === dropdownKey && (
                   <div className="pl-4 space-y-1">
-                    {categoryDropdowns[dropdownKey]?.map(
-                      (subItem) => (
-                        <Link
-                          key={subItem.label}
-                          href={subItem.href}
-                          className="block py-2 px-3 text-gray-600 text-xs hover:bg-slate-50 rounded"
-                        >
-                          {subItem.label}
-                        </Link>
-                      )
-                    )}
+                    {categoryDropdowns[dropdownKey]?.map((subItem) => (
+                      <Link
+                        key={subItem.label}
+                        href={subItem.href}
+                        className="block py-2 px-3 text-gray-600 text-xs hover:bg-slate-50 rounded"
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
                   </div>
                 )}
               </div>
@@ -271,7 +311,9 @@ export default function Header() {
                 href={item.href}
                 className="flex items-center gap-2 py-2 px-3 rounded hover:bg-slate-100 text-gray-700 text-xs"
               >
-                {item.icon && <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />}
+                {item.icon && (
+                  <FontAwesomeIcon icon={item.icon} className="w-4 h-4" />
+                )}
                 {item.label}
               </Link>
             ))}
@@ -308,14 +350,16 @@ export default function Header() {
               item.label === "Fiction"
                 ? "fiction"
                 : item.label === "Non-Fiction"
-                ? "nonFiction"
-                : "children";
+                  ? "nonFiction"
+                  : "children";
 
             return (
               <div
                 key={item.label}
                 className="relative"
-                onMouseEnter={() => isDropdownMenu && setHoveredDropdown(dropdownKey)}
+                onMouseEnter={() =>
+                  isDropdownMenu && setHoveredDropdown(dropdownKey)
+                }
                 onMouseLeave={() => setHoveredDropdown(null)}
               >
                 <button
@@ -343,17 +387,15 @@ export default function Header() {
                         : "opacity-0 invisible scale-y-95"
                     }`}
                   >
-                    {categoryDropdowns[dropdownKey]?.map(
-                      (subItem) => (
-                        <Link
-                          key={subItem.label}
-                          href={subItem.href}
-                          className="block px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 text-gray-700 font-medium text-sm"
-                        >
-                          {subItem.label}
-                        </Link>
-                      )
-                    )}
+                    {categoryDropdowns[dropdownKey]?.map((subItem) => (
+                      <Link
+                        key={subItem.label}
+                        href={subItem.href}
+                        className="block px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 text-gray-700 font-medium text-sm"
+                      >
+                        {subItem.label}
+                      </Link>
+                    ))}
                   </div>
                 )}
               </div>
@@ -365,10 +407,12 @@ export default function Header() {
         <div className="ml-auto flex border rounded overflow-hidden bg-[#eaeff2]">
           <input
             type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
             placeholder="Search Title, Author, Keyword..."
             className="px-3 text-slate-900 py-2 text-sm w-64 outline-none"
           />
-          <button className="px-3">
+          <button className="px-3" onClick={handleSearch}>
             <img src="/img/circle.png" className="w-5" alt="Search" />
           </button>
         </div>

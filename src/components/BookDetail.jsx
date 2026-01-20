@@ -71,13 +71,13 @@ export default function BookDetail({ book }) {
           {/* PRICE BOX */}
           <div className="border p-4 space-y-3">
             <div className="flex items-center justify-center gap-4">
-              {/* <span className="line-through text-gray-400">
+              <span className="line-through text-gray-400">
                 £{book.price.toFixed(2)}
               </span>
 
               <span className="text-2xl font-bold">
                 £{book.price.toFixed(2)}
-              </span> */}
+              </span>
 
               {book.saleTag && (
                 <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">

@@ -5,6 +5,7 @@ import BookDetail from "@/components/BookDetail";
 import { useState, useEffect, use } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchBooksForHome } from "@/store/bookSlice";
+import { fetchBookForHome } from "@/store/bookSlice";
 import { notFound } from "next/navigation";
 import reverseName from "@/lib/reverseName";
 
@@ -17,6 +18,7 @@ export default function BookPage({ params }) {
 
   useEffect(() => {
     dispatch(fetchBooksForHome({ search: id }));
+    dispatch(fetchBookForHome(id));
   }, [id, dispatch]);
 
   useEffect(() => {
