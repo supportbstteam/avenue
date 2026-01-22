@@ -1,16 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/lib/api";
 
-// const initialState = {
-//     books: [],
-//     title: "",
-//     isbn: "",
-//     author: "",
-//     price: 0,
-//     loading: false,
-//     error: null,
-// };
-
 // 1️⃣ Create async thunk for API call
 export const fetchBookForAdmin = createAsyncThunk(
     "book/fetchBook",
@@ -39,8 +29,8 @@ export const fetchBooksForHome = createAsyncThunk(
     }
 );
 
-export const fetchBookForHome = createAsyncThunk(
-    "books/fetchBook",
+export const fetchSingleBook = createAsyncThunk(
+    "books/fetchSingleBook",
     async (id) => {
         const response = await api.get(`/books/${id}`);
         return { "books": response.data };
@@ -101,13 +91,13 @@ const bookSlice = createSlice({
                 state.error = action.error.message;
             })
 
-            .addCase(fetchBookForHome.pending, (state) => {
+            .addCase(fetchSingleBook.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchBookForHome.fulfilled, (state, action) => {
-                state.loading = false;
+            .addCase(fetchSingleBook.fulfilled, (state, action) => {
                 state.books = action.payload.books;
+                state.loading = false;
             })
 
             .addCase(fetchBooksForHome.pending, (state) => {
@@ -115,10 +105,9 @@ const bookSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchBooksForHome.fulfilled, (state, action) => {
-                state.loading = false;
                 if (action.payload.search) {
                     state.searchResults = action.payload.books;
-                }else if (action.payload.category === "bestsellers") {
+                } else if (action.payload.category === "bestsellers") {
                     state.bestsellers = action.payload.books;
                 } else if (action.payload.category === "popular") {
                     state.popular = action.payload.books;
@@ -143,6 +132,7 @@ const bookSlice = createSlice({
                 } else {
                     state.books = action.payload.books;
                 }
+                state.loading = false;
             })
             .addCase(fetchBooksForHome.rejected, (state, action) => {
                 state.loading = false;

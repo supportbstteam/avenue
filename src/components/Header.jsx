@@ -418,7 +418,7 @@ export default function Header() {
         </div>
 
         {/* BASKET */}
-        <div className="flex flex-col text-slate-700 items-center gap-1 cursor-pointer text-sm hover:text-[#336b75] transition">
+        <div onClick={()=> router.push("/cart")} className="flex flex-col text-slate-700 items-center gap-1 cursor-pointer text-sm hover:text-[#336b75] transition">
           <FontAwesomeIcon icon={faCartShopping} />{" "}
           <span className="font-medium">Basket</span>
         </div>

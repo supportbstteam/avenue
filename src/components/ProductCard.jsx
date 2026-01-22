@@ -1,37 +1,55 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import afterDiscountPrice from "@/lib/afterDiscountPrice";
+import { addToCart } from "@/store/cartSlice";
+import { useDispatch } from "react-redux";
 
 export default function ProductCard({ product }) {
-  const { _id, slug, title, author, image, price, originalPrice, format, preorder } = product;
+  const dispatch = useDispatch();
+
+  const { _id, author, image, format, preorder } = product;
+  const title = product.descriptiveDetail.titles[0].text;
+  const originalPrice = product.productSupply.prices[0].amount.toFixed(2);
+  const discountPercent =
+    product.productSupply.prices[0].discountPercent.toFixed(2);
+  const price = afterDiscountPrice(originalPrice, discountPercent);
+
+  const addToBasket = () => {
+    dispatch(addToCart(product));
+  };
 
   return (
     <div className="group  shrink-0">
       {/* Image */}
-      <Link href={`/${_id}`}>
-        <div className="relative w-full h-[340px] overflow-hidden group">
+      <div className="relative w-full h-[340px] overflow-hidden group">
+        <Link href={`/${_id}`}>
           <Image src={image} alt={title} fill className="object-contain" />
-
-          <div className="absolute bottom-0 left-0 w-full bg-white p-4 space-y-2 opacity-100 translate-y-0 md:opacity-0 md:translate-y-full md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300">
-            {preorder ? (
+        </Link>
+        <div className="absolute bottom-0 left-0 w-full bg-white p-4 space-y-2 opacity-100 translate-y-0 md:opacity-0 md:translate-y-full md:group-hover:opacity-100 md:group-hover:translate-y-0 transition-all duration-300">
+          {preorder ? (
+            <button
+              disabled
+              className="w-full bg-black text-white py-3 text-sm font-semibold"
+            >
+              PREORDER
+            </button>
+          ) : (
+            <>
               <button
-                disabled
-                className="w-full bg-black text-white py-3 text-sm font-semibold"
+                onClick={addToBasket}
+                className="w-full bg-teal-700 text-white py-3 text-sm font-semibold"
               >
-                PREORDER
+                ADD TO BASKET
               </button>
-            ) : (
-              <>
-                <button className="w-full bg-teal-700 text-white py-3 text-sm font-semibold">
-                  ADD TO BASKET
-                </button>
-                <button className="w-full bg-[#a48b6a] text-white py-3 text-sm font-semibold">
-                  CLICK & COLLECT
-                </button>
-              </>
-            )}
-          </div>
+              <button className="w-full bg-[#a48b6a] text-white py-3 text-sm font-semibold">
+                CLICK & COLLECT
+              </button>
+            </>
+          )}
         </div>
-      </Link>
+      </div>
 
       {/* Info */}
       <div className="mt-3 space-y-1 text-black">
@@ -46,11 +64,9 @@ export default function ProductCard({ product }) {
         {/* Price */}
         <div className="flex gap-2 text-sm">
           {originalPrice && (
-            <span className="line-through text-gray-400">
-              £{originalPrice.toFixed(2)}
-            </span>
+            <span className="line-through text-gray-400">£{originalPrice}</span>
           )}
-          <span className="font-semibold">£{price.toFixed(2)}</span>
+          <span className="font-semibold">£{price}</span>
         </div>
       </div>
 

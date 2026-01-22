@@ -62,7 +62,7 @@ export default function HomePage() {
     if (bestsellers) {
       const row = bestsellers.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -72,7 +72,7 @@ export default function HomePage() {
     if (popular) {
       const row = popular.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -82,7 +82,7 @@ export default function HomePage() {
     if (special_editions) {
       const row = special_editions.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -92,7 +92,7 @@ export default function HomePage() {
     if (coming_soon) {
       const row = coming_soon.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: true,
@@ -102,7 +102,7 @@ export default function HomePage() {
     if (fiction) {
       const row = fiction.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -112,7 +112,7 @@ export default function HomePage() {
     if (non_fiction) {
       const row = non_fiction.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -122,7 +122,7 @@ export default function HomePage() {
     if (recently_reviewed) {
       const row = recently_reviewed.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -132,7 +132,7 @@ export default function HomePage() {
     if (paperback_books) {
       const row = paperback_books.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -142,7 +142,7 @@ export default function HomePage() {
     if (children_books) {
       const row = children_books.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -152,7 +152,7 @@ export default function HomePage() {
     if (adult_books) {
       const row = adult_books.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -162,7 +162,7 @@ export default function HomePage() {
     if (gift_books) {
       const row = gift_books.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,

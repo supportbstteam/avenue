@@ -1,5 +1,5 @@
 import { connectDB } from "@/lib/db";
-import Book from "@/models/Book";
+import Book from "@/models/oldBook";
 
 export async function GET() {
   await connectDB();

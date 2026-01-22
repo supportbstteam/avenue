@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
-import Book from "@/models/Book";
+import Book from "@/models/oldBook";
 import { connectDB } from "@/lib/db";
 
 export async function GET(_, { params }) {
     await connectDB();
 
+    const books = [];
+
     const { id } = await params;
 
-    const books = await Book.findById(id);
-    console.log(books);
+    const book = await Book.findById(id);
+
+    books.push(book);
+
     return NextResponse.json(books);
 }

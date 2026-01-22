@@ -4,8 +4,7 @@ import ProductSlider from "@/components/ProductSlider";
 import BookDetail from "@/components/BookDetail";
 import { useState, useEffect, use } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchBooksForHome } from "@/store/bookSlice";
-import { fetchBookForHome } from "@/store/bookSlice";
+import { fetchSingleBook } from "@/store/bookSlice";
 import { notFound } from "next/navigation";
 import reverseName from "@/lib/reverseName";
 
@@ -13,19 +12,18 @@ export default function BookPage({ params }) {
   const { id } = use(params);
 
   const dispatch = useDispatch();
-  const { books } = useSelector((state) => state.book);
+  const { books, loading} = useSelector((state) => state.book);
   const [book, setBook] = useState([]);
 
   useEffect(() => {
-    dispatch(fetchBooksForHome({ search: id }));
-    dispatch(fetchBookForHome(id));
+    dispatch(fetchSingleBook(id));
   }, [id, dispatch]);
 
   useEffect(() => {
     if (books) {
       const updatedBook = books.map((item, index) => ({
         ...item,
-        author: reverseName(item.author),
+        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -33,13 +31,13 @@ export default function BookPage({ params }) {
       setBook(updatedBook);
     }
   }, [books]);
-    
-  useEffect(() => {
-    console.log("sp", books);
-  }, [books]);
 
   if (!book) {
     notFound();
+  }
+
+  if (loading) {
+    return <div>Loading...</div>;
   }
 
   return (
