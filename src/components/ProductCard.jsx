@@ -5,7 +5,7 @@ import Link from "next/link";
 import afterDiscountPrice from "@/lib/afterDiscountPrice";
 import { addToCart } from "@/store/cartSlice";
 import { useDispatch } from "react-redux";
-
+import toast from "react-hot-toast";
 export default function ProductCard({ product }) {
   const dispatch = useDispatch();
 
@@ -19,6 +19,7 @@ export default function ProductCard({ product }) {
   const addToBasket = () => {
     // dispatch(addToCart(product));
     dispatch(addToCart({ bookId: _id, quantity: 1 }));
+    toast.success("Product added to cart");
   };
 
   return (

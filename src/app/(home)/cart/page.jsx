@@ -1,5 +1,6 @@
 "use client";
 
+import toast from "react-hot-toast";
 import Link from "next/link";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,7 +32,8 @@ export default function CartPage() {
     book?.descriptiveDetail?.titles?.[0]?.text || "Untitled";
 
   const getAuthor = (book) =>
-    reverseName(book?.descriptiveDetail?.contributors?.[0]?.nameInverted) || "Unknown";
+    reverseName(book?.descriptiveDetail?.contributors?.[0]?.nameInverted) ||
+    "Unknown";
 
   const getOriginalPrice = (book) =>
     book?.productSupply?.prices?.[0]?.amount || 0;
@@ -71,9 +73,7 @@ export default function CartPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-serif font-bold mb-2">
-          Shopping Basket
-        </h1>
+        <h1 className="text-3xl font-serif font-bold mb-2">Shopping Basket</h1>
 
         <p className="text-gray-600 mb-8">
           You have <b>{items.length}</b> item(s) in your basket
@@ -81,9 +81,7 @@ export default function CartPage() {
 
         {items.length === 0 ? (
           <div className="bg-white p-12 text-center rounded">
-            <h2 className="text-2xl font-bold mb-4">
-              Your basket is empty
-            </h2>
+            <h2 className="text-2xl font-bold mb-4">Your basket is empty</h2>
             <Link
               href="/"
               className="bg-[#336b75] text-white px-6 py-3 rounded-lg inline-block"
@@ -120,13 +118,9 @@ export default function CartPage() {
                       <div className="sm:col-span-3 flex justify-between">
                         <div>
                           <Link href={`/${book._id}`}>
-                            <h3 className="font-semibold text-lg">
-                              {title}
-                            </h3>
+                            <h3 className="font-semibold text-lg">{title}</h3>
                           </Link>
-                          <p className="text-sm text-gray-600">
-                            {author}
-                          </p>
+                          <p className="text-sm text-gray-600">{author}</p>
 
                           {/* QUANTITY */}
                           <div className="flex items-center gap-3 mt-3">
@@ -138,7 +132,7 @@ export default function CartPage() {
                                   updateCartQuantity({
                                     bookId: book._id,
                                     quantity: item.quantity - 1,
-                                  })
+                                  }),
                                 )
                               }
                             >
@@ -156,7 +150,7 @@ export default function CartPage() {
                                   updateCartQuantity({
                                     bookId: book._id,
                                     quantity: item.quantity + 1,
-                                  })
+                                  }),
                                 )
                               }
                             >
@@ -172,9 +166,10 @@ export default function CartPage() {
                           </p>
 
                           <button
-                            onClick={() =>
-                              dispatch(removeFromCart(book._id))
-                            }
+                            onClick={() => {
+                              dispatch(removeFromCart(book._id));
+                              toast.success("Product removed from cart");
+                            }}
                             className="text-red-600 mt-2"
                           >
                             <FontAwesomeIcon icon={faTrash} />
@@ -204,9 +199,7 @@ export default function CartPage() {
 
               <div className="flex justify-between mb-4">
                 <span>Delivery</span>
-                <span>
-                  {shippingCost === 0 ? "FREE" : `£${shippingCost}`}
-                </span>
+                <span>{shippingCost === 0 ? "FREE" : `£${shippingCost}`}</span>
               </div>
 
               <hr />

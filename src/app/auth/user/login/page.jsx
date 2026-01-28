@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -52,6 +52,19 @@ export default function UserLoginPage() {
     if (res?.error) {
       setError("Invalid email or password");
       return;
+    }
+
+    try {
+      const response = await fetch("/api/cart/merge", {
+        method: "POST",
+        credentials: "include", // REQUIRED for auth cookies
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+    } catch (error) {
+      console.error("API error:", error.message);
     }
 
     router.push("/user"); // redirect to user dashboard or homepage

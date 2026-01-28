@@ -7,6 +7,7 @@ import parse from "html-react-parser";
 import afterDiscountPrice from "@/lib/afterDiscountPrice";
 import { addToCart } from "@/store/cartSlice";
 import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 // import Breadcrumb from './Breadcrumb';
 
 const formatDate = (dateStr) => {
@@ -48,6 +49,7 @@ export default function BookDetail({ book }) {
   const addToBasket = () => {
     // dispatch(addToCart(book));
     dispatch(addToCart({ bookId: book._id, quantity: 1 }));
+    toast.success("Product added to cart");
   };
 
   if (!book) return null;

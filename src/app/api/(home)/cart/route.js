@@ -78,7 +78,14 @@ export async function POST(request) {
 
     await setGuestCart(guestCart);
 
-    return NextResponse.json(guestCart);
+    const populatedItems = await Promise.all(
+        guestCart.items.map(async (item) => {
+            const book = await Book.findById(item.bookId);
+            return { book, quantity: item.quantity };
+        })
+    );
+
+    return NextResponse.json({ items: populatedItems });
 }
 
 
@@ -118,7 +125,15 @@ export async function PUT(request) {
         .filter(i => i.quantity > 0);
 
     await setGuestCart(guestCart);
-    return NextResponse.json(guestCart);
+
+    const populatedItems = await Promise.all(
+        guestCart.items.map(async (item) => {
+            const book = await Book.findById(item.bookId);
+            return { book, quantity: item.quantity };
+        })
+    );
+
+    return NextResponse.json({ items: populatedItems });
 }
 
 
@@ -152,6 +167,14 @@ export async function DELETE(request) {
     );
 
     await setGuestCart(guestCart);
-    return NextResponse.json(guestCart);
+
+    const populatedItems = await Promise.all(
+        guestCart.items.map(async (item) => {
+            const book = await Book.findById(item.bookId);
+            return { book, quantity: item.quantity };
+        })
+    );
+
+    return NextResponse.json({ items: populatedItems });
 }
 
