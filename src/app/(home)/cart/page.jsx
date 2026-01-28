@@ -1,47 +1,59 @@
-'use client'
+"use client";
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Link from "next/link";
+import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTrash,
   faMinus,
   faPlus,
   faArrowLeft,
-} from '@fortawesome/free-solid-svg-icons'
-import { useDispatch, useSelector } from 'react-redux'
-import {
-  updateQuantity,
-  removeFromCart,
-} from '@/store/cartSlice'
+} from "@fortawesome/free-solid-svg-icons";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCart, updateCartQuantity, removeFromCart } from "@/store/cartSlice";
+import { useEffect } from "react";
+// import {
+//   updateQuantity,
+//   removeFromCart,
+// } from '@/store/cartSlice'
 
 export default function CartPage() {
-  const dispatch = useDispatch()
-  const { books } = useSelector((state) => state.cart)
+  const dispatch = useDispatch();
+  const { books, items } = useSelector((state) => state.cart);
+  // console.log("items", items);
+
+  useEffect(() => {
+    dispatch(fetchCart());
+    console.log("items", items);
+  }, []);
 
   const getTitle = (book) =>
-    book?.descriptiveDetail?.titles?.[0]?.text || 'Untitled'
+    book?.descriptiveDetail?.titles?.[0]?.text || "Untitled";
 
   const getOriginalPrice = (book) =>
-    book?.productSupply?.prices?.[0]?.amount || 0
+    book?.productSupply?.prices?.[0]?.amount || 0;
 
   const getDiscountPercent = (book) =>
-    book?.productSupply?.prices?.[0]?.discountPercent || 0
+    book?.productSupply?.prices?.[0]?.discountPercent || 0;
 
   const getFinalPrice = (book) => {
-    const price = getOriginalPrice(book)
-    const discount = getDiscountPercent(book)
-    return discount ? price - (price * discount) / 100 : price
-  }
+    const price = getOriginalPrice(book);
+    const discount = getDiscountPercent(book);
+    return discount ? price - (price * discount) / 100 : price;
+  };
 
   /* ---------------- TOTALS ---------------- */
   const subtotal = books.reduce(
     (sum, book) => sum + getFinalPrice(book) * book.quantity,
-    0
-  )
+    0,
+  );
 
-  const shippingCost = subtotal > 25 ? 0 : 2.99
-  const total = subtotal + shippingCost
+  const shippingCost = subtotal > 25 ? 0 : 2.99;
+  const total = subtotal + shippingCost;
+
+  const handleCheckout = () => {
+    console.log("Checkout");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 text-black">
@@ -50,25 +62,21 @@ export default function CartPage() {
         <div className="max-w-7xl mx-auto px-4 py-4 text-sm">
           <Link href="/" className="text-[#336b75] hover:underline">
             Home
-          </Link>{' '}
+          </Link>{" "}
           / <span className="font-medium">Shopping Basket</span>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-serif font-bold mb-2">
-          Shopping Basket
-        </h1>
+        <h1 className="text-3xl font-serif font-bold mb-2">Shopping Basket</h1>
 
         <p className="text-gray-600 mb-8">
-          You have <b>{books.length}</b> item(s) in your basket
+          You have <b>{items.length}</b> item(s) in your basket
         </p>
 
-        {books.length === 0 ? (
+        {items.length === 0 ? (
           <div className="bg-white p-12 text-center rounded">
-            <h2 className="text-2xl font-bold mb-4">
-              Your basket is empty
-            </h2>
+            <h2 className="text-2xl font-bold mb-4">Your basket is empty</h2>
             <Link
               href="/"
               className="bg-[#336b75] text-white px-6 py-3 rounded-lg inline-block"
@@ -80,20 +88,19 @@ export default function CartPage() {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* CART ITEMS */}
             <div className="lg:col-span-2 bg-white rounded">
-              {books.map((book) => {
-                const title = getTitle(book)
-                const price = getFinalPrice(book)
+              {items.map((item) => {
+                const book = item.book;
+                console.log(book);
+                const title = getTitle(book);
+                const price = getFinalPrice(book);
 
                 return (
-                  <div
-                    key={book._id}
-                    className="p-6 border-b last:border-b-0"
-                  >
+                  <div key={book._id} className="p-6 border-b last:border-b-0">
                     <div className="grid sm:grid-cols-4 gap-6">
                       {/* IMAGE */}
                       <div className="relative h-32">
                         <Image
-                          src={book.image || '/img/1.jpg'}
+                          src={book.image || "/img/1.jpg"}
                           alt={title}
                           fill
                           className="object-contain"
@@ -103,12 +110,8 @@ export default function CartPage() {
                       {/* INFO */}
                       <div className="sm:col-span-3 flex justify-between">
                         <div>
-                          <h3 className="font-semibold text-lg">
-                            {title}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {book.author}
-                          </p>
+                          <h3 className="font-semibold text-lg">{title}</h3>
+                          <p className="text-sm text-gray-600">{book.author}</p>
                           <p className="text-xs text-gray-500 mb-3">
                             {book.format}
                           </p>
@@ -121,7 +124,7 @@ export default function CartPage() {
                                   updateQuantity({
                                     id: book._id,
                                     quantity: book.quantity - 1,
-                                  })
+                                  }),
                                 )
                               }
                             >
@@ -138,7 +141,7 @@ export default function CartPage() {
                                   updateQuantity({
                                     id: book._id,
                                     quantity: book.quantity + 1,
-                                  })
+                                  }),
                                 )
                               }
                             >
@@ -148,15 +151,13 @@ export default function CartPage() {
                         </div>
 
                         {/* PRICE & REMOVE */}
-                        <div className="text-right">
+                        <div className="text-right ml-8">
                           <p className="font-bold">
-                            £{(price * book.quantity).toFixed(2)}
+                            £{(price * item.quantity).toFixed(2)}
                           </p>
 
                           <button
-                            onClick={() =>
-                              dispatch(removeFromCart(book._id))
-                            }
+                            onClick={() => dispatch(removeFromCart(book._id))}
                             className="text-red-600 mt-2"
                           >
                             <FontAwesomeIcon icon={faTrash} />
@@ -165,7 +166,7 @@ export default function CartPage() {
                       </div>
                     </div>
                   </div>
-                )
+                );
               })}
 
               <Link
@@ -186,11 +187,7 @@ export default function CartPage() {
 
               <div className="flex justify-between mb-4">
                 <span>Delivery</span>
-                <span>
-                  {shippingCost === 0
-                    ? 'FREE'
-                    : `£${shippingCost}`}
-                </span>
+                <span>{shippingCost === 0 ? "FREE" : `£${shippingCost}`}</span>
               </div>
 
               <hr />
@@ -200,7 +197,10 @@ export default function CartPage() {
                 <span>£{total.toFixed(2)}</span>
               </div>
 
-              <button className="w-full mt-6 bg-[#336b75] text-white py-3 rounded">
+              <button
+                onClick={handleCheckout}
+                className="w-full mt-6 bg-[#336b75] text-white py-3 rounded"
+              >
                 Proceed to Checkout
               </button>
             </div>
@@ -208,5 +208,5 @@ export default function CartPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

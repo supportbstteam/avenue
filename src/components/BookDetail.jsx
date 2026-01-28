@@ -46,7 +46,8 @@ export default function BookDetail({ book }) {
   const [expandDescription, setExpandDescription] = useState(false);
 
   const addToBasket = () => {
-    dispatch(addToCart(book));
+    // dispatch(addToCart(book));
+    dispatch(addToCart({ bookId: book._id, quantity: 1 }));
   };
 
   if (!book) return null;
@@ -68,7 +69,7 @@ export default function BookDetail({ book }) {
             />
           </div>
         </div>
-
+        
         {/* RIGHT: DETAILS */}
         <div className="lg:col-span-1 space-y-6">
           {/* TITLE */}

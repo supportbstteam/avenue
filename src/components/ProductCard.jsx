@@ -17,7 +17,8 @@ export default function ProductCard({ product }) {
   const price = afterDiscountPrice(originalPrice, discountPercent);
 
   const addToBasket = () => {
-    dispatch(addToCart(product));
+    // dispatch(addToCart(product));
+    dispatch(addToCart({ bookId: _id, quantity: 1 }));
   };
 
   return (
@@ -43,9 +44,9 @@ export default function ProductCard({ product }) {
               >
                 ADD TO BASKET
               </button>
-              <button className="w-full bg-[#a48b6a] text-white py-3 text-sm font-semibold">
+              {/* <button className="w-full bg-[#a48b6a] text-white py-3 text-sm font-semibold">
                 CLICK & COLLECT
-              </button>
+              </button> */}
             </>
           )}
         </div>

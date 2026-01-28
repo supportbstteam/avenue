@@ -56,11 +56,13 @@ export const authOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
+
       }
       return token;
     },
 
     async session({ session, token }) {
+      session.user.id = token.sub;   //token.sub is the mongodb id of the user
       session.user.role = token.role;
       return session;
     }
