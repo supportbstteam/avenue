@@ -13,6 +13,7 @@ import {
 import reverseName from "@/lib/reverseName";
 import afterDiscountPrice from "@/lib/afterDiscountPrice";
 import { addToCart } from "@/store/cartSlice";
+import Link from "next/link";
 
 function SearchPage() {
   const dispatch = useDispatch();
@@ -76,14 +77,7 @@ function SearchPage() {
   }, [sortBy, searchResults]);
 
   const addToBasket = (product) => {
-    const book = searchResults.find((item) => item._id === product.id);
-    const modifiedBook = {
-      ...book,
-      image: product.image,
-      author: reverseName(book.descriptiveDetail.contributors[0].nameInverted),
-      format: "Paperback",
-    };
-    dispatch(addToCart(modifiedBook));
+    dispatch(addToCart({ bookId: product.id, quantity: 1 }));
   };
 
   /* ---------------- LOADING ---------------- */
@@ -297,20 +291,24 @@ function SearchPage() {
                           {/* PRODUCT IMAGE */}
                           <div className="flex-shrink-0 w-24 h-32">
                             <div className="relative bg-gray-100 rounded-lg overflow-hidden h-full w-full">
-                              <img
-                                src={product.image}
-                                alt={product.title}
-                                className="w-full h-full object-cover"
-                              />
+                              <Link href={`/${product.id}`}>
+                                <img
+                                  src={product.image}
+                                  alt={product.title}
+                                  className="w-full h-full object-cover"
+                                />
+                              </Link>
                             </div>
                           </div>
 
                           {/* PRODUCT INFO */}
                           <div className="flex-1">
                             {/* TITLE */}
-                            <h2 className="text-lg font-semibold text-[#336b75] hover:text-[#336b75] cursor-pointer transition mb-2 line-clamp-1">
-                              {product.title}
-                            </h2>
+                            <Link href={`/${product.id}`}>
+                              <h2 className="text-lg font-semibold text-[#336b75] hover:text-[#336b75] cursor-pointer transition mb-2 line-clamp-1">
+                                {product.title}
+                              </h2>
+                            </Link>
 
                             {/* AUTHOR */}
                             <p className="text-gray-700 font-medium mb-2 text-sm">
@@ -372,17 +370,21 @@ function SearchPage() {
                       className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow overflow-hidden flex flex-col"
                     >
                       <div className="relative bg-gray-100 h-64 overflow-hidden group">
-                        <img
-                          src={product.image}
-                          alt={product.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        />
+                        <Link href={`/${product.id}`}>
+                          <img
+                            src={product.image}
+                            alt={product.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          />
+                        </Link>
                       </div>
 
                       <div className="p-4 flex flex-col flex-1">
-                        <h2 className="font-semibold text-[#336b75] mb-1 line-clamp-2 text-sm hover:text-[#336b75] cursor-pointer transition">
-                          {product.title}
-                        </h2>
+                        <Link href={`/${product.id}`}>
+                          <h2 className="font-semibold text-[#336b75] mb-1 line-clamp-2 text-sm hover:text-[#336b75] cursor-pointer transition">
+                            {product.title}
+                          </h2>
+                        </Link>
                         <p className="text-sm text-gray-700 mb-3">
                           {product.author}
                         </p>

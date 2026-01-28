@@ -61,40 +61,9 @@ const cartSlice = createSlice({
         error: null,
     },
     reducers: {
-        // addToCart(state, action) {
-        //     const newBook = action.payload
-
-        //     const existingBook = state.books.find(
-        //         book => book._id === newBook._id
-        //     )
-
-        //     if (existingBook) {
-        //         existingBook.quantity += newBook.quantity || 1
-        //     } else {
-        //         state.books.push({
-        //             ...newBook,
-        //             quantity: newBook.quantity || 1,
-        //         })
-        //     }
-        // },
-        // removeFromCart(state, action) {
-        //     state.books = state.books.filter(
-        //         book => book._id !== action.payload
-        //     )
-        // },
         clearCart(state) {
             state.items = [];
         },
-        // updateQuantity(state, action) {
-        //     const { id, quantity } = action.payload
-        //     const book = state.books.find(book => book._id === id);
-        //     if (book) {
-        //         if (quantity <= 1 && book.quantity === 1) {
-        //             state.books = state.books.filter(book => book._id !== id)
-        //         }
-        //         book.quantity = quantity;
-        //     }
-        // },
     },
     extraReducers: (builder) => {
         builder
@@ -153,6 +122,5 @@ const cartSlice = createSlice({
     },
 });
 
-// export const { addToCart, removeFromCart, updateQuantity} = cartSlice.actions;
 export const { clearCart } = cartSlice.actions;
 export default cartSlice.reducer;

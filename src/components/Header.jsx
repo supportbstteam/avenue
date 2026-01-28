@@ -17,7 +17,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchBooksForHome } from "@/store/bookSlice";
 import { setReduxSearchText } from "@/store/bookSlice";
 
-
 export default function Header() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -95,7 +94,7 @@ export default function Header() {
   };
 
   const handleSearch = () => {
-    dispatch(fetchBooksForHome({ "search": searchText }));
+    dispatch(fetchBooksForHome({ search: searchText }));
     dispatch(setReduxSearchText(searchText));
     router.push("/search");
   };
@@ -236,7 +235,13 @@ export default function Header() {
       {/* MOBILE SEARCH BAR */}
       {searchOpen && (
         <div className="lg:hidden px-4 pb-3">
-          <div className="flex border rounded overflow-hidden bg-[#eaeff2]">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // stop page reload
+              handleSearch();
+            }}
+            className="flex border rounded overflow-hidden bg-[#eaeff2]"
+          >
             <input
               type="text"
               value={searchText}
@@ -244,10 +249,11 @@ export default function Header() {
               placeholder="Search..."
               className="px-3 text-slate-900 py-2 text-sm flex-1 outline-none"
             />
-            <button className="px-3" onClick={handleSearch}>
+
+            <button type="submit" className="px-3">
               <FontAwesomeIcon icon={faSearch} className="w-4 h-4" />
             </button>
-          </div>
+          </form>
         </div>
       )}
 
@@ -405,20 +411,32 @@ export default function Header() {
 
         {/* SEARCH */}
         <div className="ml-auto flex border rounded overflow-hidden bg-[#eaeff2]">
-          <input
-            type="text"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Search Title, Author, Keyword..."
-            className="px-3 text-slate-900 py-2 text-sm w-64 outline-none"
-          />
-          <button className="px-3" onClick={handleSearch}>
-            <img src="/img/circle.png" className="w-5" alt="Search" />
-          </button>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // stop page reload
+              handleSearch();
+            }}
+            className="flex border rounded overflow-hidden bg-[#eaeff2]"
+          >
+            <input
+              type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder="Search..."
+              className="px-3 text-slate-900 py-2 text-sm flex-1 outline-none"
+            />
+
+            <button type="submit" className="px-3">
+              <img src="/img/circle.png" className="w-5" alt="Search" />
+            </button>
+          </form>
         </div>
 
         {/* BASKET */}
-        <div onClick={()=> router.push("/cart")} className="flex flex-col text-slate-700 items-center gap-1 cursor-pointer text-sm hover:text-[#336b75] transition">
+        <div
+          onClick={() => router.push("/cart")}
+          className="flex flex-col text-slate-700 items-center gap-1 cursor-pointer text-sm hover:text-[#336b75] transition"
+        >
           <FontAwesomeIcon icon={faCartShopping} />{" "}
           <span className="font-medium">Basket</span>
         </div>
