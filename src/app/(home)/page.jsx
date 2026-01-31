@@ -11,6 +11,7 @@ import BlogSection from "@/components/BlogSection";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBooksForHome } from "@/store/bookSlice";
 import reverseName from "@/lib/reverseName";
+import { fetchUserDetails } from "@/store/userSlice";
 
 export default function HomePage() {
   const {
@@ -30,6 +31,8 @@ export default function HomePage() {
     gift_books,
   } = useSelector((state) => state.book);
 
+  const { user } = useSelector((state) => state.user);
+
   const dispatch = useDispatch();
 
   const [row1, setRow1] = useState([]);
@@ -45,24 +48,47 @@ export default function HomePage() {
   const [row11, setRow11] = useState([]);
 
   useEffect(() => {
-    dispatch(fetchBooksForHome({ category: "bestsellers", limit: 10, page: 1}));
-    dispatch(fetchBooksForHome({ category: "popular", limit: 10, page: 2}));
-    dispatch(fetchBooksForHome({ category: "special_editions", limit: 10, page: 3}));
-    dispatch(fetchBooksForHome({ category: "coming_soon", limit: 10, page: 4}));
-    dispatch(fetchBooksForHome({ category: "fiction", limit: 10, page: 5}));
-    dispatch(fetchBooksForHome({ category: "non_fiction", limit: 10, page: 6}));
-    dispatch(fetchBooksForHome({ category: "recently_reviewed", limit: 10, page: 7}));
-    dispatch(fetchBooksForHome({ category: "paperback_books", limit: 10, page: 8}));
-    dispatch(fetchBooksForHome({ category: "children_books", limit: 10, page: 9}));
-    dispatch(fetchBooksForHome({ category: "adult_books", limit: 10, page: 10}));
-    dispatch(fetchBooksForHome({ category: "gift_books", limit: 10, page: 11}));
+    dispatch(
+      fetchBooksForHome({ category: "bestsellers", limit: 10, page: 1 })
+    );
+    dispatch(fetchBooksForHome({ category: "popular", limit: 10, page: 2 }));
+    dispatch(
+      fetchBooksForHome({ category: "special_editions", limit: 10, page: 3 })
+    );
+    dispatch(
+      fetchBooksForHome({ category: "coming_soon", limit: 10, page: 4 })
+    );
+    dispatch(fetchBooksForHome({ category: "fiction", limit: 10, page: 5 }));
+    dispatch(
+      fetchBooksForHome({ category: "non_fiction", limit: 10, page: 6 })
+    );
+    dispatch(
+      fetchBooksForHome({ category: "recently_reviewed", limit: 10, page: 7 })
+    );
+    dispatch(
+      fetchBooksForHome({ category: "paperback_books", limit: 10, page: 8 })
+    );
+    dispatch(
+      fetchBooksForHome({ category: "children_books", limit: 10, page: 9 })
+    );
+    dispatch(
+      fetchBooksForHome({ category: "adult_books", limit: 10, page: 10 })
+    );
+    dispatch(
+      fetchBooksForHome({ category: "gift_books", limit: 10, page: 11 })
+    );
+    dispatch(fetchUserDetails());
   }, []);
+
+  console.log("User Data on Home Page:", user);
 
   useEffect(() => {
     if (bestsellers) {
       const row = bestsellers.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -72,7 +98,9 @@ export default function HomePage() {
     if (popular) {
       const row = popular.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -82,7 +110,9 @@ export default function HomePage() {
     if (special_editions) {
       const row = special_editions.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -92,7 +122,9 @@ export default function HomePage() {
     if (coming_soon) {
       const row = coming_soon.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: true,
@@ -102,7 +134,9 @@ export default function HomePage() {
     if (fiction) {
       const row = fiction.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -112,7 +146,9 @@ export default function HomePage() {
     if (non_fiction) {
       const row = non_fiction.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -122,7 +158,9 @@ export default function HomePage() {
     if (recently_reviewed) {
       const row = recently_reviewed.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -132,7 +170,9 @@ export default function HomePage() {
     if (paperback_books) {
       const row = paperback_books.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -142,7 +182,9 @@ export default function HomePage() {
     if (children_books) {
       const row = children_books.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -152,7 +194,9 @@ export default function HomePage() {
     if (adult_books) {
       const row = adult_books.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,
@@ -162,7 +206,9 @@ export default function HomePage() {
     if (gift_books) {
       const row = gift_books.map((item, index) => ({
         ...item,
-        author: reverseName(item.descriptiveDetail.contributors[0].nameInverted),
+        author: reverseName(
+          item.descriptiveDetail.contributors[0].nameInverted
+        ),
         image: `/img/${index + 1}.jpg`,
         format: "Paperback",
         preorder: false,

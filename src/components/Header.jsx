@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import {
@@ -16,6 +16,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchBooksForHome } from "@/store/bookSlice";
 import { setReduxSearchText } from "@/store/bookSlice";
+import { fetchCart } from "@/store/cartSlice";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -26,6 +27,15 @@ export default function Header() {
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+
+
+  // useEffect(()=>{
+  //   const fetchCart = async()=>{
+  //     await dispatch(fetchCart());
+  //   }
+
+  //   fetchCart();
+  // })
 
   const mainMenu = [
     { label: "Sale", href: "/sale" },
@@ -96,6 +106,7 @@ export default function Header() {
   const handleSearch = () => {
     dispatch(fetchBooksForHome({ search: searchText }));
     dispatch(setReduxSearchText(searchText));
+    
     router.push("/search");
   };
 

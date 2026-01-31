@@ -18,13 +18,18 @@ import {
 } from "@/store/cartSlice";
 import { useEffect } from "react";
 import reverseName from "@/lib/reverseName";
+import { useRouter } from "next/navigation";
+import { fetchUserDetails } from "@/store/userSlice";
+
 
 export default function CartPage() {
   const dispatch = useDispatch();
   const { items = [] } = useSelector((state) => state.cart);
-
+  const { user, isLogin } = useSelector((state) => state.user);
+  const router = useRouter();
   useEffect(() => {
     dispatch(fetchCart());
+    dispatch(fetchUserDetails());
   }, [dispatch]);
 
   /* ---------------- HELPERS ---------------- */
@@ -57,6 +62,13 @@ export default function CartPage() {
   const total = subtotal + shippingCost;
 
   const handleCheckout = () => {
+    if(!isLogin){
+      router.push("/auth/user/login");
+    }
+    else{
+      router.push("/checkout");
+    }
+
     console.log("Checkout");
   };
 
