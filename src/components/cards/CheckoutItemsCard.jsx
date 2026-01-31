@@ -28,7 +28,7 @@ const CheckoutItemCard = ({ item }) => {
       <div className="flex-1">
         <h3 className="font-semibold text-lg leading-snug">{title}</h3>
         <p className="text-sm text-gray-500">
-          Publisher: {item.book?.publisher?.name}
+          Publisher: {item.book?.publishingDetail?.publisher?.name}
         </p>
 
         <div className="mt-2 flex items-center justify-between">
