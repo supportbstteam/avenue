@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import {
   faLocationDot,
@@ -21,13 +21,13 @@ import { fetchCart } from "@/store/cartSlice";
 export default function Header() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { items = [], loading } = useSelector((state) => state.cart);
 
   const [hoveredDropdown, setHoveredDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
-
 
   // useEffect(()=>{
   //   const fetchCart = async()=>{
@@ -106,7 +106,7 @@ export default function Header() {
   const handleSearch = () => {
     dispatch(fetchBooksForHome({ search: searchText }));
     dispatch(setReduxSearchText(searchText));
-    
+
     router.push("/search");
   };
 
@@ -280,8 +280,8 @@ export default function Header() {
               item.label === "Fiction"
                 ? "fiction"
                 : item.label === "Non-Fiction"
-                  ? "nonFiction"
-                  : "children";
+                ? "nonFiction"
+                : "children";
 
             return (
               <div key={item.label}>
@@ -367,8 +367,8 @@ export default function Header() {
               item.label === "Fiction"
                 ? "fiction"
                 : item.label === "Non-Fiction"
-                  ? "nonFiction"
-                  : "children";
+                ? "nonFiction"
+                : "children";
 
             return (
               <div
@@ -446,9 +446,18 @@ export default function Header() {
         {/* BASKET */}
         <div
           onClick={() => router.push("/cart")}
-          className="flex flex-col text-slate-700 items-center gap-1 cursor-pointer text-sm hover:text-[#336b75] transition"
+          className="relative flex flex-col items-center gap-1 cursor-pointer text-sm text-slate-700 hover:text-[#336b75] transition"
         >
-          <FontAwesomeIcon icon={faCartShopping} />{" "}
+          {/* Cart Icon */}
+          <FontAwesomeIcon icon={faCartShopping} className="text-lg" />
+
+          {/* Quantity Badge */}
+          {!loading && items.length > 0 && (
+            <span className="absolute -top-2 -right-0 min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[11px] font-semibold text-white bg-[#336b75] rounded-full">
+              {items.reduce((total, item) => total + item.quantity, 0)}
+            </span>
+          )}
+
           <span className="font-medium">Basket</span>
         </div>
       </div>
