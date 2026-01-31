@@ -6,7 +6,8 @@ const CheckoutItemCard = ({ item }) => {
     item.book?.descriptiveDetail?.titles?.[0]?.titleText || "Untitled Book";
 
   const price = item.book?.productSupply?.prices?.[0]?.amount || 0;
-  const currency = item.book?.productSupply?.prices?.[0]?.currency || "GBP";
+//   const currency = item.book?.productSupply?.prices?.[0]?.currency || "£";
+  const currency =  "£";
 
   return (
     <div className="bg-white rounded-xl shadow p-4 flex gap-4">
