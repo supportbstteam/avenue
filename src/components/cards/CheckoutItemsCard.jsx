@@ -2,8 +2,10 @@ import Image from "next/image";
 import React from "react";
 
 const CheckoutItemCard = ({ item }) => {
+
+    console.log("Checkout item:", item);
   const title =
-    item.book?.descriptiveDetail?.titles?.[0]?.titleText || "Untitled Book";
+    item.book?.descriptiveDetail?.titles?.[0]?.text || "Untitled Book";
 
   const price = item.book?.productSupply?.prices?.[0]?.amount || 0;
 //   const currency = item.book?.productSupply?.prices?.[0]?.currency || "£";

@@ -17,6 +17,8 @@ const Page = () => {
 
   const { items = [], loading } = useSelector((state) => state.cart);
 
+  // console.log("Checkout items:", items[0]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {!loading && items.length > 0 && (
