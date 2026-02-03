@@ -80,7 +80,7 @@ export default function HomePage() {
     dispatch(fetchUserDetails());
   }, []);
 
-  console.log("User Data on Home Page:", user);
+  // console.log("User Data on Home Page:", user);
 
   useEffect(() => {
     if (bestsellers) {

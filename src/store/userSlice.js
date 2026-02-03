@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/lib/api";
+import { signOut } from "next-auth/react";
 
 /* ---------------- ASYNC THUNKS ---------------- */
 
@@ -17,6 +18,21 @@ export const fetchUserDetails = createAsyncThunk(
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch user details"
       );
+    }
+  }
+);
+
+/**
+ * Logout user (NextAuth + Redux reset)
+ */
+export const logoutUser = createAsyncThunk(
+  "user/logoutUser",
+  async ({ callbackUrl }, { rejectWithValue }) => {
+    try {
+      await signOut({ callbackUrl });
+      return true;
+    } catch (error) {
+      return rejectWithValue("Logout failed");
     }
   }
 );
@@ -45,7 +61,7 @@ const initialState = {
   user: null,
   loading: false,
   error: null,
-  isLogin:false
+  isLogin: false,
 };
 
 /* ---------------- SLICE ---------------- */
@@ -65,6 +81,7 @@ const userSlice = createSlice({
       state.name = "Guest";
       state.loading = false;
       state.error = null;
+      state.isLogin = false;
     },
   },
   extraReducers: (builder) => {
@@ -99,16 +116,27 @@ const userSlice = createSlice({
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      /* -------- LOGOUT USER -------- */
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.name = "Guest";
+        state.loading = false;
+        state.error = null;
+        state.isLogin = false;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
 /* ---------------- EXPORTS ---------------- */
 
-export const {
-  setName,
-  clearUserError,
-  resetUser,
-} = userSlice.actions;
+export const { setName, clearUserError, resetUser } = userSlice.actions;
 
 export default userSlice.reducer;

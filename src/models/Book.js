@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const TextContentSchema = new mongoose.Schema(
   {
@@ -8,7 +8,7 @@ const TextContentSchema = new mongoose.Schema(
     text: String,
   },
   { _id: false }
-)
+);
 
 const TitleSchema = new mongoose.Schema(
   {
@@ -17,7 +17,7 @@ const TitleSchema = new mongoose.Schema(
     text: String,
   },
   { _id: false }
-)
+);
 
 const ContributorSchema = new mongoose.Schema(
   {
@@ -26,7 +26,7 @@ const ContributorSchema = new mongoose.Schema(
     nameInverted: String,
   },
   { _id: false }
-)
+);
 
 const LanguageSchema = new mongoose.Schema(
   {
@@ -34,7 +34,7 @@ const LanguageSchema = new mongoose.Schema(
     code: String,
   },
   { _id: false }
-)
+);
 
 const ExtentSchema = new mongoose.Schema(
   {
@@ -43,7 +43,7 @@ const ExtentSchema = new mongoose.Schema(
     unit: String,
   },
   { _id: false }
-)
+);
 
 const SubjectSchema = new mongoose.Schema(
   {
@@ -52,7 +52,7 @@ const SubjectSchema = new mongoose.Schema(
     headingText: String,
   },
   { _id: false }
-)
+);
 
 const ProductIdentifierSchema = new mongoose.Schema(
   {
@@ -60,7 +60,7 @@ const ProductIdentifierSchema = new mongoose.Schema(
     value: String,
   },
   { _id: false }
-)
+);
 
 const PriceSchema = new mongoose.Schema(
   {
@@ -71,7 +71,7 @@ const PriceSchema = new mongoose.Schema(
     currency: String,
   },
   { _id: false }
-)
+);
 
 const SalesRightsSchema = new mongoose.Schema(
   {
@@ -79,7 +79,7 @@ const SalesRightsSchema = new mongoose.Schema(
     countriesIncluded: [String],
   },
   { _id: false }
-)
+);
 
 const BookSchema = new mongoose.Schema(
   {
@@ -112,6 +112,15 @@ const BookSchema = new mongoose.Schema(
       extents: [ExtentSchema],
       subjects: [SubjectSchema],
     },
+
+    // 🔑 Category references
+    categories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        index: true,
+      },
+    ],
 
     productIdentifiers: [ProductIdentifierSchema],
 
@@ -148,6 +157,6 @@ const BookSchema = new mongoose.Schema(
   {
     timestamps: true,
   }
-)
-  
+);
+
 export default mongoose.models.Book || mongoose.model("Book", BookSchema);

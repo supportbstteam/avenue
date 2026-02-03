@@ -19,8 +19,6 @@ import {
 import { useEffect } from "react";
 import reverseName from "@/lib/reverseName";
 import { useRouter } from "next/navigation";
-import { fetchUserDetails } from "@/store/userSlice";
-
 
 export default function CartPage() {
   const dispatch = useDispatch();
@@ -29,7 +27,6 @@ export default function CartPage() {
   const router = useRouter();
   useEffect(() => {
     dispatch(fetchCart());
-    dispatch(fetchUserDetails());
   }, [dispatch]);
 
   /* ---------------- HELPERS ---------------- */
@@ -62,14 +59,12 @@ export default function CartPage() {
   const total = subtotal + shippingCost;
 
   const handleCheckout = () => {
-    if(!isLogin){
+    if (!isLogin) {
       router.push("/auth/user/login");
-    }
-    else{
+    } else {
       router.push("/checkout");
     }
-
-    console.log("Checkout");
+    // console.log("Checkout");
   };
 
   return (
@@ -144,7 +139,7 @@ export default function CartPage() {
                                   updateCartQuantity({
                                     bookId: book._id,
                                     quantity: item.quantity - 1,
-                                  }),
+                                  })
                                 )
                               }
                             >
@@ -162,7 +157,7 @@ export default function CartPage() {
                                   updateCartQuantity({
                                     bookId: book._id,
                                     quantity: item.quantity + 1,
-                                  }),
+                                  })
                                 )
                               }
                             >
@@ -182,7 +177,7 @@ export default function CartPage() {
                               dispatch(removeFromCart(book._id));
                               toast.success("Product removed from cart");
                             }}
-                            className="text-red-600 mt-2"
+                            className="text-red-600 mt-2 cursor-pointer "
                           >
                             <FontAwesomeIcon icon={faTrash} />
                           </button>
@@ -223,7 +218,7 @@ export default function CartPage() {
 
               <button
                 onClick={handleCheckout}
-                className="w-full mt-6 bg-[#336b75] text-white py-3 rounded"
+                className="w-full cursor-pointer mt-6 bg-[#336b75] text-white py-3 rounded"
               >
                 Proceed to Checkout
               </button>

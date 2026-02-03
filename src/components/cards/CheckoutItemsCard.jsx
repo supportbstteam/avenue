@@ -2,14 +2,39 @@ import Image from "next/image";
 import React from "react";
 
 const CheckoutItemCard = ({ item }) => {
+  const getTitle = (book) =>
+    book?.descriptiveDetail?.titles?.[0]?.text || "Untitled";
 
-    console.log("Checkout item:", item);
-  const title =
-    item.book?.descriptiveDetail?.titles?.[0]?.text || "Untitled Book";
+  const getOriginalPrice = (book) =>
+    book?.productSupply?.prices?.[0]?.amount || 0;
 
-  const price = item.book?.productSupply?.prices?.[0]?.amount || 0;
-//   const currency = item.book?.productSupply?.prices?.[0]?.currency || "£";
-  const currency =  "£";
+  const getDiscountPercent = (book) =>
+    book?.productSupply?.prices?.[0]?.discountPercent || 0;
+
+  const getFinalPrice = (book) => {
+    const price = getOriginalPrice(book);
+    const discount = getDiscountPercent(book);
+    return discount ? price - (price * discount) / 100 : price;
+  };
+
+  const getAuthor = (book) =>
+    reverseName(book?.descriptiveDetail?.contributors?.[0]?.nameInverted) ||
+    "Unknown";
+
+  const book = item.book;
+  if (!book) return null;
+
+  const title = getTitle(book);
+  const price = getFinalPrice(book);
+  // const author = getAuthor(book);
+
+  console.log("Checkout item:", item);
+  // const title =
+  //   item.book?.descriptiveDetail?.titles?.[0]?.text || "Untitled Book";
+
+  // const price = item.book?.productSupply?.prices?.[0]?.amount || 0;
+  //   const currency = item.book?.productSupply?.prices?.[0]?.currency || "£";
+  const currency = "£";
 
   return (
     <div className="bg-white rounded-xl shadow p-4 flex gap-4">
@@ -32,9 +57,7 @@ const CheckoutItemCard = ({ item }) => {
         </p>
 
         <div className="mt-2 flex items-center justify-between">
-          <span className="text-sm text-gray-600">
-            Qty: {item.quantity}
-          </span>
+          <span className="text-sm text-gray-600">Qty: {item.quantity}</span>
 
           <span className="font-semibold">
             {currency} {(price * item.quantity).toFixed(2)}

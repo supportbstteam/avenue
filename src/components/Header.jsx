@@ -17,12 +17,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchBooksForHome } from "@/store/bookSlice";
 import { setReduxSearchText } from "@/store/bookSlice";
 import { fetchCart } from "@/store/cartSlice";
+import HeaderUser from "./cards/HeaderUser";
 
 export default function Header() {
   const dispatch = useDispatch();
   const router = useRouter();
   const { items = [], loading } = useSelector((state) => state.cart);
-
+  const { user, loading: userLoading } = useSelector((state) => state?.user);
   const [hoveredDropdown, setHoveredDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
@@ -41,6 +42,7 @@ export default function Header() {
     { label: "Sale", href: "/sale" },
     { label: "Bestsellers", href: "/bestsellers" },
     { label: "Highlights", href: "/highlights" },
+    { label: "Category", href: "/category" },
     { label: "Fiction", href: "/fiction" },
     { label: "Non-Fiction", href: "/non-fiction" },
     { label: "Children's", href: "/children" },
@@ -92,6 +94,12 @@ export default function Header() {
       { label: "Business", href: "/non-fiction/business" },
     ],
     children: [
+      { label: "Picture Books", href: "/children/picture-books" },
+      { label: "Young Readers", href: "/children/young-readers" },
+      { label: "Teen", href: "/children/teen" },
+      { label: "Educational", href: "/children/educational" },
+    ],
+    category: [
       { label: "Picture Books", href: "/children/picture-books" },
       { label: "Young Readers", href: "/children/young-readers" },
       { label: "Teen", href: "/children/teen" },
@@ -157,26 +165,30 @@ export default function Header() {
             </button>
 
             {/* ACCOUNT DROPDOWN MENU */}
-            <div
-              className={`absolute top-full right-0 mt-0 w-48 bg-white border border-slate-200 rounded shadow-lg transition-all duration-200 origin-top ${
-                hoveredDropdown === "account"
-                  ? "opacity-100 visible scale-y-100"
-                  : "opacity-0 invisible scale-y-95"
-              }`}
-            >
-              <Link
-                href="/auth/user/login"
-                className="block px-4 py-3 hover:bg-slate-50 border-b border-slate-100 text-gray-700 font-medium text-sm"
+            {user && !userLoading ? (
+              <HeaderUser hoveredDropdown={hoveredDropdown} />
+            ) : (
+              <div
+                className={`absolute top-full right-0 mt-0 w-48 bg-white border border-slate-200 rounded shadow-lg transition-all duration-200 origin-top ${
+                  hoveredDropdown === "account"
+                    ? "opacity-100 visible scale-y-100"
+                    : "opacity-0 invisible scale-y-95"
+                }`}
               >
-                Sign In
-              </Link>
-              <Link
-                href="/auth/user/register"
-                className="block px-4 py-3 hover:bg-slate-50 text-gray-700 font-medium text-sm"
-              >
-                Register
-              </Link>
-            </div>
+                <Link
+                  href="/auth/user/login"
+                  className="block px-4 py-3 hover:bg-slate-50 border-b border-slate-100 text-gray-700 font-medium text-sm"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/user/register"
+                  className="block px-4 py-3 hover:bg-slate-50 text-gray-700 font-medium text-sm"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
           </div>
 
           <Link
@@ -275,12 +287,15 @@ export default function Header() {
             const isDropdownMenu =
               item.label === "Fiction" ||
               item.label === "Non-Fiction" ||
+              item.label === "Category" ||
               item.label === "Children's";
             const dropdownKey =
               item.label === "Fiction"
                 ? "fiction"
                 : item.label === "Non-Fiction"
                 ? "nonFiction"
+                : item.label === "Category"
+                ? "category"
                 : "children";
 
             return (
@@ -362,12 +377,15 @@ export default function Header() {
             const isDropdownMenu =
               item.label === "Fiction" ||
               item.label === "Non-Fiction" ||
+              item.label === "Category" ||
               item.label === "Children's";
             const dropdownKey =
               item.label === "Fiction"
                 ? "fiction"
                 : item.label === "Non-Fiction"
                 ? "nonFiction"
+                : item.label === "Category"
+                ? "category"
                 : "children";
 
             return (

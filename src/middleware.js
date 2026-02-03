@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 const allowedOrigins = [
   "http://localhost:3000",
   "http://192.168.1.10:3000",
-  "https://yourdomain.com",
+  "https://avenue-beta.vercel.app",
 ];
 
 export function middleware(req) {

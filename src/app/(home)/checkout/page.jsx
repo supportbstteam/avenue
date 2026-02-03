@@ -19,6 +19,27 @@ const Page = () => {
 
   // console.log("Checkout items:", items[0]);
 
+  const getOriginalPrice = (book) =>
+    book?.productSupply?.prices?.[0]?.amount || 0;
+
+  const getDiscountPercent = (book) =>
+    book?.productSupply?.prices?.[0]?.discountPercent || 0;
+
+  const getFinalPrice = (book) => {
+    const price = getOriginalPrice(book);
+    const discount = getDiscountPercent(book);
+    return discount ? price - (price * discount) / 100 : price;
+  };
+
+  /* ---------------- TOTALS ---------------- */
+  const subtotal = items.reduce((sum, item) => {
+    if (!item.book) return sum;
+    return sum + getFinalPrice(item.book) * item.quantity;
+  }, 0);
+
+  const shippingCost = subtotal > 25 ? 0 : 2.99;
+  const total = subtotal + shippingCost;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {!loading && items.length > 0 && (
@@ -32,30 +53,52 @@ const Page = () => {
               {items.length === 0 ? (
                 <p className="text-gray-500">Your cart is empty.</p>
               ) : (
-                items.map((item) => (
-                  <CheckoutItemCard key={item._id} item={item} />
-                ))
+                items.map((item) => {
+                  console.log("Rendering checkout item:", item);
+                  return(
+                  <CheckoutItemCard  item={item} key={item?.book?._id} />
+                )})
               )}
             </div>
 
             {/* RIGHT: Payment */}
-            <div className="w-full lg:w-[380px] bg-white rounded-xl shadow p-6 h-fit">
-              <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
+              <div>
+              <div className="bg-white rounded-lg shadow py-10 px-5" >
+                <div className="flex justify-between mb-2">
+                  <span>Subtotal</span>
+                  <span>£{subtotal.toFixed(2)}</span>
+                </div>
 
-              {/* PayPal */}
-              <button className="w-full border rounded-lg py-3 mb-3 font-medium hover:bg-gray-50 transition">
-                Pay with PayPal
-              </button>
+                <div className="flex justify-between mb-4">
+                  <span>Delivery</span>
+                  <span>{shippingCost === 0 ? "FREE" : `£${shippingCost}`}</span>
+                </div>
 
-              {/* Stripe */}
-              <button className="w-full bg-black text-white rounded-lg py-3 font-medium hover:bg-black/90 transition">
-                Pay with Stripe
-              </button>
+                <hr />
 
-              <div className="mt-6 border-t pt-4 text-sm text-gray-500">
-                Secure checkout powered by PayPal & Stripe
+                <div className="flex justify-between font-bold text-lg mt-4">
+                  <span>Total</span>
+                  <span>£{total.toFixed(2)}</span>
+                </div>
               </div>
-            </div>
+              <div className="w-full lg:w-[380px] mt-5 bg-white rounded-xl shadow p-6 h-fit">
+                <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
+
+                {/* PayPal */}
+                <button className="w-full cursor-pointer border rounded-lg py-3 mb-3 font-medium hover:bg-gray-50 transition">
+                  Pay with PayPal
+                </button>
+
+                {/* Stripe */}
+                <button className="w-full bg-black cursor-pointer text-white rounded-lg py-3 font-medium hover:bg-black/90 transition">
+                  Pay with Stripe
+                </button>
+
+                <div className="mt-6 border-t pt-4 text-sm text-gray-500">
+                  Secure checkout powered by PayPal & Stripe
+                </div>
+              </div>
+              </div>
           </div>
         </div>
       )}
