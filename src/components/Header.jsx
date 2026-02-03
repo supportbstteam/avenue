@@ -131,8 +131,8 @@ export default function Header() {
       </div>
 
       {/* UTILITY BAR - HIDDEN ON MOBILE */}
-      <div className="hidden lg:flex justify-between items-center px-4 lg:px-6 py-2 text-sm">
-        <div className="flex font-light gap-3 lg:gap-5 text-black uppercase text-xs lg:text-sm">
+      <div className="hidden lg:flex justify-end items-center px-4 lg:px-6 py-2 text-sm">
+        {/* <div className="flex font-light gap-3 lg:gap-5 text-black uppercase text-xs lg:text-sm">
           {utilityMenu.map((item) => (
             <Link
               key={item.label}
@@ -145,7 +145,7 @@ export default function Header() {
               <span>{item.label}</span>
             </Link>
           ))}
-        </div>
+        </div> */}
 
         <div className="flex gap-3 lg:gap-4 text-gray-700 text-xs lg:text-sm">
           {/* ACCOUNT DROPDOWN */}
@@ -191,7 +191,7 @@ export default function Header() {
             )}
           </div>
 
-          <Link
+          {/* <Link
             href="/plus"
             className="flex gap-1 font-semibold hover:underline border-r border-slate-300 pr-2 lg:pr-3"
           >
@@ -214,7 +214,7 @@ export default function Header() {
               alt="Wishlist"
             />{" "}
             Wish List
-          </Link>
+          </Link> */}
         </div>
       </div>
 
