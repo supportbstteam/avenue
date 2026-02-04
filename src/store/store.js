@@ -4,6 +4,7 @@ import bookReducer from "@/store/bookSlice";
 import adminReducer from "@/store/adminSlice";
 import cartReducer from "@/store/cartSlice";
 import userCategorySlice from "@/store/userCategorySlice";
+import categoryReducer from "@/store/categorySlice";
 export const store = configureStore({
   reducer: {
     user: userReducer,
@@ -11,5 +12,6 @@ export const store = configureStore({
     admin: adminReducer,
     cart: cartReducer,
     userCategory: userCategorySlice,
+    category: categoryReducer,
   },
 });

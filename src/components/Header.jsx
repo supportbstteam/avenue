@@ -30,7 +30,11 @@ export default function Header() {
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
-
+  
+  // useEffect(()=>{
+  //   const fetchCart = async()=>{
+  //     await dispatch(fetchCart());
+  //   }
 
 
   const mainMenu = [

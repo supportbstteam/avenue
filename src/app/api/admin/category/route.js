@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { connectDB } from "@/lib/db";
 import Book from "@/models/Book";
 import { Category } from "@/models/Category";
+import Admin from "@/models/Admin";
 
 export async function POST() {
   try {
@@ -31,12 +32,11 @@ export async function POST() {
     /**
      * ==================================================
      * STEP 2: BUILD CATEGORY MAP
-     * key = code
-     * value = { code, level, schemes[] }
+     * code → { code, level, schemes[] }
      * ==================================================
      */
-    const categoryMap = new Map();        // code → category
-    const bookCategoryLinks = new Map();  // bookId → Set(code)
+    const categoryMap = new Map();
+    const bookCategoryLinks = new Map(); // bookId → Set(code)
 
     for (const book of books) {
       const subjects = book.descriptiveDetail?.subjects || [];
@@ -47,9 +47,8 @@ export async function POST() {
         const scheme = String(subject.scheme || "").trim();
         const headingText = String(subject.headingText || "").trim();
 
-        if (!code) continue;
+        if (!code || !scheme) continue;
 
-        // Create base category
         if (!categoryMap.has(code)) {
           categoryMap.set(code, {
             code,
@@ -58,19 +57,18 @@ export async function POST() {
           });
         }
 
-        // Merge scheme (no duplicates)
-        if (scheme) {
-          const cat = categoryMap.get(code);
-          const exists = cat.schemes.some(
-            (s) => s.scheme === scheme
-          );
+        const cat = categoryMap.get(code);
 
-          if (!exists) {
-            cat.schemes.push({ scheme, headingText });
-          }
+        // ✅ add scheme only once
+        if (!cat.schemes.some((s) => s.scheme === scheme)) {
+          cat.schemes.push({
+            scheme,
+            headingText,
+            status: true, // ✅ DEFAULT SCHEME STATUS
+          });
         }
 
-        // Track book → category code
+        // link book → category code
         if (!bookCategoryLinks.has(bookId)) {
           bookCategoryLinks.set(bookId, new Set());
         }
@@ -82,7 +80,7 @@ export async function POST() {
 
     /**
      * ==================================================
-     * STEP 3: UPSERT BASE CATEGORIES (NO SCHEMES)
+     * STEP 3: UPSERT BASE CATEGORIES (NO SCHEMES YET)
      * ==================================================
      */
     const baseCategoryOps = [...categoryMap.values()].map((cat) => ({
@@ -92,7 +90,7 @@ export async function POST() {
           $setOnInsert: {
             code: cat.code,
             level: cat.level,
-            schemes: [], // 🔑 must exist before pushing
+            schemes: [], // 🔑 required before pushing
           },
         },
         upsert: true,
@@ -106,7 +104,7 @@ export async function POST() {
 
     /**
      * ==================================================
-     * STEP 4: MERGE SCHEMES (SAFE ARRAY UPDATES)
+     * STEP 4: MERGE SCHEMES (SAFE + SCHEMA-CORRECT)
      * ==================================================
      */
     const schemeOps = [];
@@ -120,7 +118,9 @@ export async function POST() {
               "schemes.scheme": { $ne: schemeObj.scheme },
             },
             update: {
-              $push: { schemes: schemeObj },
+              $push: {
+                schemes: schemeObj, // ✅ includes status
+              },
             },
           },
         });
@@ -178,16 +178,11 @@ export async function POST() {
       console.log("✅ BOOK CATEGORY LINKED:", res);
     }
 
-    /**
-     * ==================================================
-     * DONE
-     * ==================================================
-     */
     console.log("🎉 CATEGORY SYNC FINISHED");
 
     return NextResponse.json(
       {
-        message: "Categories synced and linked successfully",
+        message: "Categories synced successfully",
         totalCategories: categories.length,
         booksUpdated: bookOps.length,
       },
@@ -197,6 +192,125 @@ export async function POST() {
     console.error("🔥 CATEGORY SYNC ERROR:", error);
     return NextResponse.json(
       { error: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+
+/**
+ * GET /api/admin/category
+ * Query params:
+ * - page (default 1)
+ * - limit (default 50, max 50)
+ * - code (search by code)
+ * - scheme (search inside schemes.scheme)
+ * - status (true / false)
+ */
+export async function GET(req) {
+  try {
+    await connectDB();
+
+    const { searchParams } = new URL(req.url);
+
+    const page = Math.max(Number(searchParams.get("page")) || 1, 1);
+    const limit = Math.min(Number(searchParams.get("limit")) || 50, 50);
+
+    const code = searchParams.get("code");
+    const scheme = searchParams.get("scheme");
+    const statusParam = searchParams.get("status"); // true / false
+
+    const skip = (page - 1) * limit;
+
+    /**
+     * ==================================================
+     * BASE MATCH (CATEGORY LEVEL)
+     * ==================================================
+     */
+    const baseMatch = {};
+
+    if (code) {
+      baseMatch.code = { $regex: code, $options: "i" };
+    }
+
+    /**
+     * ==================================================
+     * SCHEME MATCH (AFTER UNWIND)
+     * ==================================================
+     */
+    const schemeMatch = {};
+
+    if (scheme) {
+      schemeMatch["schemes.scheme"] = scheme;
+    }
+
+    if (statusParam !== null) {
+      schemeMatch["schemes.status"] = statusParam === "true";
+    }
+
+    /**
+     * ==================================================
+     * AGGREGATION PIPELINE
+     * ==================================================
+     */
+    const pipeline = [
+      { $match: baseMatch },
+
+      // 🔥 one row per scheme
+      { $unwind: "$schemes" },
+
+      // 🔍 scheme-level filters
+      ...(Object.keys(schemeMatch).length
+        ? [{ $match: schemeMatch }]
+        : []),
+
+      { $sort: { updatedAt: -1 } },
+
+      {
+        $facet: {
+          data: [
+            { $skip: skip },
+            { $limit: limit },
+            {
+              $project: {
+                _id: 1,
+                code: 1,
+                level: 1,
+
+                // ✅ scheme-level fields
+                scheme: "$schemes.scheme",
+                headingText: "$schemes.headingText",
+                status: "$schemes.status",
+
+                createdAt: 1,
+                updatedAt: 1,
+              },
+            },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ];
+
+    const result = await Category.aggregate(pipeline);
+
+    const data = result[0]?.data || [];
+    const total = result[0]?.totalCount?.[0]?.count || 0;
+
+    return NextResponse.json(
+      {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        data,
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error("❌ Error fetching admin categories:", err);
+    return NextResponse.json(
+      { error: "Failed to fetch categories" },
       { status: 500 }
     );
   }
