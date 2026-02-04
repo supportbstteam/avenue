@@ -10,7 +10,7 @@ export default function HomeLayout({ children }) {
   return (
     <div>
       <Header />
-      <div className="p-6">{children}</div>
+      <div className="">{children}</div>
       <Footer />
       <Toaster
         position="top-right"

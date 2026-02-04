@@ -18,6 +18,7 @@ import { fetchBooksForHome } from "@/store/bookSlice";
 import { setReduxSearchText } from "@/store/bookSlice";
 import { fetchCart } from "@/store/cartSlice";
 import HeaderUser from "./cards/HeaderUser";
+import { fetchCategories } from "@/store/categorySlice";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -30,13 +31,7 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
 
-  // useEffect(()=>{
-  //   const fetchCart = async()=>{
-  //     await dispatch(fetchCart());
-  //   }
 
-  //   fetchCart();
-  // })
 
   const mainMenu = [
     { label: "Sale", href: "/sale" },
@@ -107,6 +102,166 @@ export default function Header() {
     ],
   };
 
+
+  const megaMenus = {
+    fiction: {
+      columns: [
+        {
+          title: "Genres",
+          items: [
+            { label: "Mystery", href: "/fiction/mystery" },
+            { label: "Thriller", href: "/fiction/thriller" },
+            { label: "Romance", href: "/fiction/romance" },
+            { label: "Adventure", href: "/fiction/adventure" },
+            { label: "Fantasy", href: "/fiction/fantasy" },
+            { label: "Horror", href: "/fiction/horror" },
+            { label: "Drama", href: "/fiction/drama" },
+          ],
+        },
+        {
+          title: "Popular Authors",
+          items: [
+            { label: "Dan Brown", href: "/author/dan-brown" },
+            { label: "J.K. Rowling", href: "/author/jk-rowling" },
+            { label: "George Orwell", href: "/author/george-orwell" },
+            { label: "Agatha Christie", href: "/author/agatha-christie" },
+            { label: "Stephen King", href: "/author/stephen-king" }
+          ],
+        },
+        {
+          title: "Featured",
+          items: [
+            { label: "Bestsellers", href: "/fiction/bestsellers" },
+            { label: "New Arrivals", href: "/fiction/new" },
+            { label: "Award Winners", href: "/fiction/awards" },
+            { label: "Editor’s Picks", href: "/fiction/editors-picks" },
+          ],
+        },
+        {
+          title: "Collections",
+          items: [
+            { label: "Classic Literature", href: "/fiction/classics" },
+            { label: "Young Adult", href: "/fiction/ya" },
+            { label: "Short Stories", href: "/fiction/short-stories" },
+            { label: "Box Sets", href: "/fiction/boxsets" },
+          ],
+        },
+        {
+          title: "More",
+          items: [
+            { label: "Audiobooks", href: "/fiction/audiobooks" },
+            { label: "Graphic Novels", href: "/fiction/graphic-novels" }
+          ]
+        }
+      ],
+    },
+
+    nonFiction: {
+      columns: [
+        {
+          title: "Categories",
+          items: [
+            { label: "Biography", href: "/non-fiction/biography" },
+            { label: "Self-Help", href: "/non-fiction/self-help" },
+            { label: "Business", href: "/non-fiction/business" },
+            { label: "Philosophy", href: "/non-fiction/philosophy" },
+          ],
+        },
+        {
+          title: "Top Picks",
+          items: [
+            { label: "Trending", href: "/non-fiction/trending" },
+            { label: "Editor's Choice", href: "/non-fiction/editors-choice" },
+            { label: "Most Recommended", href: "/non-fiction/top" }
+          ],
+        },
+        {
+          title: "Collections",
+          items: [
+            { label: "Bestsellers", href: "/non-fiction/bestsellers" },
+            { label: "New Arrivals", href: "/non-fiction/new" },
+            { label: "Award Winners", href: "/non-fiction/awards" },
+          ],
+        },
+        {
+          title: "Research",
+          items: [
+            { label: "Science Journals", href: "/non-fiction/science-journals" },
+            { label: "Case Studies", href: "/non-fiction/case-studies" },
+          ]
+        }
+      ],
+    },
+
+    category: {
+      columns: [
+        {
+          title: "Top Categories",
+          items: [
+            { label: "History", href: "/category/history" },
+            { label: "Science", href: "/category/science" },
+            { label: "Art", href: "/category/art" },
+            { label: "Philosophy", href: "/category/philosophy" },
+          ],
+        },
+        {
+          title: "Special Editions",
+          items: [
+            { label: "Premium Books", href: "/category/premium" },
+            { label: "Exclusive Collection", href: "/category/exclusive" },
+            { label: "First Editions", href: "/category/first-editions" },
+          ],
+        },
+        {
+          title: "More",
+          items: [
+            { label: "New Arrivals", href: "/category/new" },
+            { label: "Top Rated", href: "/category/top-rated" },
+            { label: "Editor's Pick", href: "/category/editors-pick" },
+          ],
+        },
+      ],
+    },
+
+    children: {
+      columns: [
+        {
+          title: "Age Groups",
+          items: [
+            { label: "0–3 Years", href: "/children/0-3" },
+            { label: "4–8 Years", href: "/children/4-8" },
+            { label: "9–12 Years", href: "/children/9-12" },
+            { label: "13+ Teens", href: "/children/teen" },
+          ],
+        },
+        {
+          title: "Popular Picks",
+          items: [
+            { label: "Bedtime Stories", href: "/children/bedtime" },
+            { label: "Activity Books", href: "/children/activity" },
+            { label: "Learning Books", href: "/children/learning" },
+          ],
+        },
+        {
+          title: "More",
+          items: [
+            { label: "Best Sellers", href: "/children/bestsellers" },
+            { label: "New Arrivals", href: "/children/new" },
+            { label: "Picture Books", href: "/children/picture-books" }
+          ],
+        },
+        {
+          title: "Fun",
+          items: [
+            { label: "Coloring Books", href: "/children/coloring" },
+            { label: "Puzzle Books", href: "/children/puzzles" }
+          ]
+        }
+      ],
+    },
+  };
+
+
   const toggleMobileDropdown = (key) => {
     setMobileDropdownOpen(mobileDropdownOpen === key ? null : key);
   };
@@ -158,9 +313,8 @@ export default function Header() {
               <FontAwesomeIcon icon={faUser} className="w-3 h-3" /> Account
               <FontAwesomeIcon
                 icon={faChevronDown}
-                className={`w-3 h-3 transition ${
-                  hoveredDropdown === "account" ? "rotate-180" : ""
-                }`}
+                className={`w-3 h-3 transition ${hoveredDropdown === "account" ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -169,11 +323,10 @@ export default function Header() {
               <HeaderUser hoveredDropdown={hoveredDropdown} />
             ) : (
               <div
-                className={`absolute top-full right-0 mt-0 w-48 bg-white border border-slate-200 rounded shadow-lg transition-all duration-200 origin-top ${
-                  hoveredDropdown === "account"
-                    ? "opacity-100 visible scale-y-100"
-                    : "opacity-0 invisible scale-y-95"
-                }`}
+                className={`absolute top-full right-0 mt-0 w-48 bg-white border border-slate-200 rounded shadow-lg transition-all duration-200 origin-top ${hoveredDropdown === "account"
+                  ? "opacity-100 visible scale-y-100"
+                  : "opacity-0 invisible scale-y-95"
+                  }`}
               >
                 <Link
                   href="/auth/user/login"
@@ -282,7 +435,7 @@ export default function Header() {
 
       {/* MOBILE MENU */}
       {mobileMenuOpen && (
-        <nav className="lg:hidden border-t border-slate-200 px-4 py-4 space-y-2">
+        <nav className="lg:hidden border-t text-[#000] border-slate-200 px-4 py-4 space-y-2">
           {mainMenu.map((item) => {
             const isDropdownMenu =
               item.label === "Fiction" ||
@@ -293,10 +446,10 @@ export default function Header() {
               item.label === "Fiction"
                 ? "fiction"
                 : item.label === "Non-Fiction"
-                ? "nonFiction"
-                : item.label === "Category"
-                ? "category"
-                : "children";
+                  ? "nonFiction"
+                  : item.label === "Category"
+                    ? "category"
+                    : "children";
 
             return (
               <div key={item.label}>
@@ -310,9 +463,8 @@ export default function Header() {
                   {isDropdownMenu && (
                     <FontAwesomeIcon
                       icon={faChevronDown}
-                      className={`w-3 h-3 transition ${
-                        mobileDropdownOpen === dropdownKey ? "rotate-180" : ""
-                      }`}
+                      className={`w-3 h-3 transition ${mobileDropdownOpen === dropdownKey ? "rotate-180" : ""
+                        }`}
                     />
                   )}
                 </button>
@@ -372,71 +524,114 @@ export default function Header() {
       {/* DESKTOP NAV + SEARCH */}
       <div className="hidden lg:flex items-center gap-6 px-6 py-3 border-y border-slate-200">
         {/* MENU */}
-        <nav className="flex gap-5 text-[14px] uppercase font-medium text-[#336b75]">
-          {mainMenu.map((item) => {
+
+        <nav className="flex gap-6 text-[14px] uppercase font-medium text-[#000]">
+          {mainMenu.map((item, index) => {
             const isDropdownMenu =
               item.label === "Fiction" ||
               item.label === "Non-Fiction" ||
               item.label === "Category" ||
               item.label === "Children's";
+
             const dropdownKey =
               item.label === "Fiction"
                 ? "fiction"
                 : item.label === "Non-Fiction"
-                ? "nonFiction"
-                : item.label === "Category"
-                ? "category"
-                : "children";
+                  ? "nonFiction"
+                  : item.label === "Category"
+                    ? "category"
+                    : "children";
 
             return (
               <div
                 key={item.label}
                 className="relative"
-                onMouseEnter={() =>
-                  isDropdownMenu && setHoveredDropdown(dropdownKey)
-                }
+                onMouseEnter={() => isDropdownMenu && setHoveredDropdown(dropdownKey)}
                 onMouseLeave={() => setHoveredDropdown(null)}
               >
-                <button
-                  className={`hover:underline whitespace-nowrap border-r pr-2 border-[#336b75] last:border-r-0 flex items-center gap-1 transition ${
-                    hoveredDropdown === dropdownKey ? "text-[#0066cc]" : ""
-                  }`}
-                >
-                  {item.label}
+                {/* MAIN MENU BUTTON */}
+                <Link
+                  className={`relative flex items-center gap-1 whitespace-nowrap transition 
+            after:content-['|'] after:text-[#336b75] after:ml-4 after:mr-1
+            ${index === mainMenu.length - 1 ? "after:content-['']" : ""}
+            ${hoveredDropdown === dropdownKey ? "text-[#0066cc]" : "hover:text-[#0066cc]"}
+          `}
+                  href={item.href} >
+                  {item.label.toUpperCase()}
+
                   {isDropdownMenu && (
                     <FontAwesomeIcon
                       icon={faChevronDown}
-                      className={`w-3 h-3 transition ${
-                        hoveredDropdown === dropdownKey ? "rotate-180" : ""
-                      }`}
+                      className={`w-3 h-3 transition duration-200 ${hoveredDropdown === dropdownKey ? "rotate-180" : ""
+                        }`}
                     />
                   )}
-                </button>
+                </Link>
 
-                {/* CATEGORY DROPDOWN MENU */}
-                {isDropdownMenu && (
+                {/* ★ WATERSTONES STYLE FULL-WIDTH MEGA MENU */}
+                {isDropdownMenu && megaMenus[dropdownKey] && (
+
+
+
+
                   <div
-                    className={`absolute top-full left-0 mt-0 w-56 bg-white border border-slate-200 rounded shadow-lg transition-all duration-200 origin-top ${
-                      hoveredDropdown === dropdownKey
+                    className={`
+    absolute left-0 top-full
+    bg-white shadow-[0_8px_20px_rgba(0,0,0,0.08)]
+    border-t border-slate-200
+    py-8 px-10 z-50
+    transition-all duration-200 origin-top
+
+    min-w-max      /* Menu jitna bada hoga utna hi dropdown hoga */
+    mt-4
+    
+    
+  ${hoveredDropdown === dropdownKey
                         ? "opacity-100 visible scale-y-100"
                         : "opacity-0 invisible scale-y-95"
-                    }`}
+                      }
+
+  `}
                   >
-                    {categoryDropdowns[dropdownKey]?.map((subItem) => (
-                      <Link
-                        key={subItem.label}
-                        href={subItem.href}
-                        className="block px-4 py-3 hover:bg-slate-50 border-b border-slate-100 last:border-b-0 text-gray-700 font-medium text-sm"
-                      >
-                        {subItem.label}
-                      </Link>
-                    ))}
+
+                    <div className="grid grid-cols-6 gap-10">
+                      {megaMenus[dropdownKey].columns.map((col, i) => (
+                        <div key={i}>
+                          <h3 className="text-gray-900 font-semibold mb-4 text-sm tracking-wide">
+                            {col.title}
+                          </h3>
+
+                          <ul className="space-y-2">
+                            {col.items.map((sub, idx) => (
+                              <li key={idx}>
+                                <Link
+                                  href={sub.href}
+                                  className="text-gray-600 hover:text-[#0066cc] text-[13px] block"
+                                >
+                                  {sub.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+
+
+
+
+
+
+
                 )}
               </div>
             );
           })}
         </nav>
+
+
+
 
         {/* SEARCH */}
         <div className="ml-auto flex border rounded overflow-hidden bg-[#eaeff2]">

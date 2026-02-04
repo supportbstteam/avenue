@@ -69,12 +69,17 @@ export async function GET(req) {
       });
     }
 
+
+
+
     /**
      * ==================================================
      * CASE 2: CATEGORY CLICKED (code or id)
      * ==================================================
      */
-    let category;
+    let category
+
+
 
     if (mongoose.Types.ObjectId.isValid(categoryParam)) {
       category = await Category.findById(categoryParam).lean();
@@ -93,7 +98,6 @@ export async function GET(req) {
 
     const selectedCategory = normalizeCategory(category);
     const safeCode = escapeRegex(category.code);
-
     /**
      * --------------------------------------------------
      * IMMEDIATE SUBCATEGORIES
@@ -107,6 +111,8 @@ export async function GET(req) {
       .lean();
 
     const subCategories = rawSubCategories.map(normalizeCategory);
+
+    console.log(subCategories);
 
     /**
      * --------------------------------------------------

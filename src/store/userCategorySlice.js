@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+
 /**
- * ----------------------------------------
- * Async Thunk
- * ----------------------------------------
+ * ------------------------------------------------------
+ * ASYNC THUNK — Fetch root or category-specific data
+ * ------------------------------------------------------
  */
 export const fetchUserCategories = createAsyncThunk(
   "categories/fetch",
@@ -13,103 +14,125 @@ export const fetchUserCategories = createAsyncThunk(
       const res = await axios.get("/api/category", {
         params: category ? { category } : {},
       });
+    
+      console.log(res.data);
 
       return res.data;
     } catch (err) {
-      return rejectWithValue("Failed to fetch categories");
+      return rejectWithValue(
+        err?.response?.data?.message || "Failed to fetch categories"
+      );
     }
   }
 );
 
 /**
- * ----------------------------------------
- * Initial State
- * ----------------------------------------
+ * ------------------------------------------------------
+ * INITIAL STATE
+ * ------------------------------------------------------
  */
 const initialState = {
-  categories: [],           // flat list (root + loaded subcategories)
-  books: [],                // books for selected category
-  selectedCategory: null,   // currently selected category code
+  categories: [],         // root + lazy-loaded subcategories
+  books: [],              // books of selected category
+  selectedCategory: null, // selected category code
 
   // loading states
-  initialLoading: true,     // only for first page load
-  categoryLoading: false,   // for category clicks / expansion
+  initialLoading: true,
+  categoryLoading: false,
 
   error: null,
 };
 
 /**
- * ----------------------------------------
- * Slice
- * ----------------------------------------
+ * ------------------------------------------------------
+ * SLICE
+ * ------------------------------------------------------
  */
 const userCategorySlice = createSlice({
   name: "categories",
   initialState,
-  reducers: {
-    // future sync reducers go here
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
 
       /**
-       * ----------------------------------------
+       * ------------------------------------------------------
        * PENDING
-       * ----------------------------------------
+       * ------------------------------------------------------
        */
       .addCase(fetchUserCategories.pending, (state) => {
-        if (state.categories.length === 0) {
-          state.initialLoading = true;
-        } else {
-          state.categoryLoading = true;
-        }
         state.error = null;
+        state.categoryLoading = state.categories.length > 0;
+        state.initialLoading = state.categories.length === 0;
       })
 
       /**
-       * ----------------------------------------
+       * ------------------------------------------------------
        * FULFILLED
-       * ----------------------------------------
+       * ------------------------------------------------------
        */
       .addCase(fetchUserCategories.fulfilled, (state, action) => {
         state.initialLoading = false;
         state.categoryLoading = false;
 
-        const payload = action.payload;
+        const payload = action.payload || {};
+        const responseType = payload.type;
 
-        // ROOT LOAD
-        if (payload?.type === "ROOT") {
-          state.categories = payload.categories || [];
-          state.books = payload.books || [];
+        if (!responseType) {
+          console.warn("⚠ Missing 'type' in API response");
+          return;
+        }
+
+        /**
+         * -------------------
+         * ROOT RESPONSE
+         * -------------------
+         */
+        if (responseType === "ROOT") {
+          state.categories = Array.isArray(payload.categories)
+            ? payload.categories
+            : [];
+
+          state.books = Array.isArray(payload.books)
+            ? payload.books
+            : [];
+
           state.selectedCategory = null;
           return;
         }
 
-        // CATEGORY CLICK
-        if (payload?.type === "CATEGORY") {
-          const selectedCode = payload.selectedCategory?.code;
+        /**
+         * -------------------
+         * CATEGORY RESPONSE
+         * -------------------
+         */
+        if (responseType === "CATEGORY") {
+          const selectedCode = payload?.selectedCategory?.code ?? null;
+          state.selectedCategory = selectedCode;
 
-          state.selectedCategory = selectedCode || null;
-
-          // merge subcategories without duplicates
+          // Merge subcategories without duplicates
           const existingCodes = new Set(
             state.categories.map((c) => c.code)
           );
 
-          (payload.subCategories || []).forEach((sub) => {
-            if (!existingCodes.has(sub.code)) {
-              state.categories.push(sub);
-            }
-          });
+          if (Array.isArray(payload.subCategories)) {
+            payload.subCategories.forEach((sub) => {
+              if (!existingCodes.has(sub.code)) {
+                state.categories.push(sub);
+              }
+            });
+          }
 
-          state.books = payload.books || [];
+          state.books = Array.isArray(payload.books)
+            ? payload.books
+            : [];
         }
       })
 
       /**
-       * ----------------------------------------
+       * ------------------------------------------------------
        * REJECTED
-       * ----------------------------------------
+       * ------------------------------------------------------
        */
       .addCase(fetchUserCategories.rejected, (state, action) => {
         state.initialLoading = false;
