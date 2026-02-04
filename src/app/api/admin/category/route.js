@@ -11,7 +11,7 @@ export async function POST() {
     await connectDB();
     console.log("✅ DB CONNECTED");
 
-    // STEP 0: Fetch books
+    // STEP 0: Fetch books with subjects
     const books = await Book.find({
       "descriptiveDetail.subjects.0": { $exists: true },
     }).lean();
@@ -19,7 +19,6 @@ export async function POST() {
     console.log("📚 TOTAL BOOKS FOUND:", books.length);
 
     if (!books.length) {
-      console.log("⚠️ NO BOOKS WITH SUBJECTS");
       return NextResponse.json(
         { message: "No books with subjects found", books: 0 },
         { status: 200 }
@@ -30,14 +29,6 @@ export async function POST() {
     const bookCategoryLinks = new Map();
 
     // STEP 1: Extract subjects
-    for (const book of books.slice(0, 3)) {
-      console.log("📘 BOOK ID:", book._id.toString());
-      console.log(
-        "🧩 SUBJECTS:",
-        book.descriptiveDetail?.subjects
-      );
-    }
-
     for (const book of books) {
       const subjects = book.descriptiveDetail?.subjects || [];
 
@@ -51,6 +42,7 @@ export async function POST() {
             scheme,
             code,
             headingText: subject.headingText,
+            level: code.length, // ✅ IMPORTANT FIX
           });
         }
 
@@ -62,27 +54,30 @@ export async function POST() {
       }
     }
 
-    console.log("🏷️ UNIQUE CATEGORY KEYS:", [...categoryMap.keys()].slice(0, 10));
-    console.log("📊 TOTAL UNIQUE CATEGORIES:", categoryMap.size);
-    console.log("📊 BOOK → CATEGORY MAP SIZE:", bookCategoryLinks.size);
+    console.log("🏷️ UNIQUE CATEGORIES:", categoryMap.size);
 
-    // STEP 2: Upsert categories
+    // STEP 2: Upsert categories (LEVEL INCLUDED)
     const categoryOps = [...categoryMap.values()].map((cat) => ({
       updateOne: {
         filter: { scheme: cat.scheme, code: cat.code },
-        update: { $setOnInsert: cat },
+        update: {
+          $setOnInsert: {
+            scheme: cat.scheme,
+            code: cat.code,
+            headingText: cat.headingText,
+            level: cat.level, // ✅ only here
+          },
+        },
         upsert: true,
       },
     }));
-
-    console.log("⬆️ CATEGORY UPSERT OPS:", categoryOps.length);
 
     if (categoryOps.length) {
       const catResult = await Category.bulkWrite(categoryOps);
       console.log("✅ CATEGORY UPSERT RESULT:", catResult);
     }
 
-    // STEP 3: Fetch categories
+    // STEP 3: Fetch category IDs
     const categories = await Category.find({
       $or: [...categoryMap.values()].map((c) => ({
         scheme: c.scheme,
@@ -90,11 +85,7 @@ export async function POST() {
       })),
     }).lean();
 
-    console.log("📦 CATEGORIES FETCHED FROM DB:", categories.length);
-    console.log(
-      "📦 SAMPLE CATEGORY:",
-      categories[0]
-    );
+    console.log("📦 CATEGORIES FETCHED:", categories.length);
 
     const categoryIdMap = new Map(
       categories.map((c) => [
@@ -103,12 +94,7 @@ export async function POST() {
       ])
     );
 
-    console.log(
-      "🗺️ CATEGORY ID MAP SAMPLE:",
-      [...categoryIdMap.entries()].slice(0, 5)
-    );
-
-    // STEP 4: Prepare book updates
+    // STEP 4: Link categories to books
     const bookOps = [];
 
     for (const [bookId, keys] of bookCategoryLinks.entries()) {
@@ -116,22 +102,7 @@ export async function POST() {
         .map((k) => categoryIdMap.get(k))
         .filter(Boolean);
 
-      if (!categoryIds.length) {
-        console.log(
-          "❌ NO CATEGORY IDS FOR BOOK:",
-          bookId,
-          "KEYS:",
-          [...keys]
-        );
-        continue;
-      }
-
-      console.log(
-        "✅ BOOK",
-        bookId,
-        "CATEGORY IDS:",
-        categoryIds
-      );
+      if (!categoryIds.length) continue;
 
       bookOps.push({
         updateOne: {
@@ -148,8 +119,8 @@ export async function POST() {
     console.log("🛠️ BOOK UPDATE OPS:", bookOps.length);
 
     if (bookOps.length) {
-      const result = await Book.bulkWrite(bookOps);
-      console.log("✅ BOOK BULK WRITE RESULT:", result);
+      const bookResult = await Book.bulkWrite(bookOps);
+      console.log("✅ BOOK BULK WRITE RESULT:", bookResult);
     }
 
     console.log("🎉 CATEGORY SYNC FINISHED");
@@ -165,9 +136,6 @@ export async function POST() {
   } catch (error) {
     console.error("🔥 CATEGORY SYNC ERROR:", error);
 
-    return NextResponse.json(
-      { error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

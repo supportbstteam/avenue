@@ -108,6 +108,7 @@ const bookSlice = createSlice({
                 if (action.payload.search) {
                     state.searchResults = action.payload.books;
                 } else if (action.payload.category === "bestsellers") {
+                    console.log("Bestsellers fetched:", action.payload.books);
                     state.bestsellers = action.payload.books;
                 } else if (action.payload.category === "popular") {
                     state.popular = action.payload.books;

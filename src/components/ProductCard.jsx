@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
 export default function ProductCard({ product }) {
   const dispatch = useDispatch();
-
+  // console.log("Rendering ProductCard for product:", product);
   const { _id, author, image, format, preorder } = product;
   const title = product.descriptiveDetail.titles[0].text;
   const originalPrice = product.productSupply.prices[0].amount.toFixed(2);
