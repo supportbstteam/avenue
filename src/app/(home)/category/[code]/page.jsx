@@ -2,22 +2,43 @@
 
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "next/navigation";
 import { fetchUserCategories } from "@/store/userCategorySlice";
 import ProductCard from "@/components/ProductCard";
 import CategorySidebar from "@/components/CategorySidebar";
 
-const Category = () => {
+const SubCategory = () => {
   const dispatch = useDispatch();
+  const { code } = useParams(); // ✅ CORRECT
 
-  const { books, initialLoading, categoryLoading, error } = useSelector(
-    (state) => state.userCategory
-  );
+  const {
+    categories,
+    books,
+    initialLoading,
+    categoryLoading,
+    error,
+    selectedCategory,
+  } = useSelector((state) => state.userCategory);
 
+
+  // console.log("Selected Category:", code);
+
+  // Load ROOT categories once
   useEffect(() => {
-    dispatch(fetchUserCategories({}));
-  }, [dispatch]);
+    if (categories.length === 0) {
+      dispatch(fetchUserCategories({code}));
+    }
+  }, [categories.length, dispatch]);
 
-  if (initialLoading) {
+  // Load category books when code changes
+  useEffect(() => {
+    if (code && selectedCategory !== code) {
+      console.log("Fetching category for code:", code);
+      dispatch(fetchUserCategories({ category: code }));
+    }
+  }, [code, selectedCategory, dispatch]);
+
+  if (initialLoading && categories.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-500">
         Loading categories...
@@ -35,19 +56,21 @@ const Category = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* LEFT SIDEBAR */}
       <CategorySidebar />
 
-      {/* RIGHT CONTENT */}
       <main className="flex-1 p-6">
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-          Featured Books
+          Books
           {categoryLoading && (
             <span className="text-sm text-gray-400 animate-pulse">
               updating…
             </span>
           )}
         </h2>
+
+        {!categoryLoading && books.length === 0 && (
+          <p className="text-gray-500">No books found</p>
+        )}
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {books.map((book, index) => (
@@ -65,4 +88,4 @@ const Category = () => {
   );
 };
 
-export default Category;
+export default SubCategory;

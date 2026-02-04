@@ -1,17 +1,20 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import { connectDB } from "@/lib/db";
 import Book from "@/models/Book";
 import { Category } from "@/models/Category";
-import mongoose from "mongoose";
 
 export async function POST() {
   try {
     console.log("🚀 CATEGORY SYNC STARTED");
-
     await connectDB();
     console.log("✅ DB CONNECTED");
 
-    // STEP 0: Fetch books with subjects
+    /**
+     * ==================================================
+     * STEP 1: FETCH BOOKS WITH SUBJECTS
+     * ==================================================
+     */
     const books = await Book.find({
       "descriptiveDetail.subjects.0": { $exists: true },
     }).lean();
@@ -20,86 +23,138 @@ export async function POST() {
 
     if (!books.length) {
       return NextResponse.json(
-        { message: "No books with subjects found", books: 0 },
+        { message: "No books with subjects found" },
         { status: 200 }
       );
     }
 
-    const categoryMap = new Map();
-    const bookCategoryLinks = new Map();
+    /**
+     * ==================================================
+     * STEP 2: BUILD CATEGORY MAP
+     * key = code
+     * value = { code, level, schemes[] }
+     * ==================================================
+     */
+    const categoryMap = new Map();        // code → category
+    const bookCategoryLinks = new Map();  // bookId → Set(code)
 
-    // STEP 1: Extract subjects
     for (const book of books) {
       const subjects = book.descriptiveDetail?.subjects || [];
+      const bookId = book._id.toString();
 
       for (const subject of subjects) {
-        const scheme = String(subject.scheme).trim();
-        const code = String(subject.code).trim();
-        const key = `${scheme}|${code}`;
+        const code = String(subject.code || "").trim();
+        const scheme = String(subject.scheme || "").trim();
+        const headingText = String(subject.headingText || "").trim();
 
-        if (!categoryMap.has(key)) {
-          categoryMap.set(key, {
-            scheme,
+        if (!code) continue;
+
+        // Create base category
+        if (!categoryMap.has(code)) {
+          categoryMap.set(code, {
             code,
-            headingText: subject.headingText,
-            level: code.length, // ✅ IMPORTANT FIX
+            level: code.length,
+            schemes: [],
           });
         }
 
-        if (!bookCategoryLinks.has(book._id.toString())) {
-          bookCategoryLinks.set(book._id.toString(), new Set());
+        // Merge scheme (no duplicates)
+        if (scheme) {
+          const cat = categoryMap.get(code);
+          const exists = cat.schemes.some(
+            (s) => s.scheme === scheme
+          );
+
+          if (!exists) {
+            cat.schemes.push({ scheme, headingText });
+          }
         }
 
-        bookCategoryLinks.get(book._id.toString()).add(key);
+        // Track book → category code
+        if (!bookCategoryLinks.has(bookId)) {
+          bookCategoryLinks.set(bookId, new Set());
+        }
+        bookCategoryLinks.get(bookId).add(code);
       }
     }
 
-    console.log("🏷️ UNIQUE CATEGORIES:", categoryMap.size);
+    console.log("🏷️ UNIQUE CATEGORY CODES:", categoryMap.size);
 
-    // STEP 2: Upsert categories (LEVEL INCLUDED)
-    const categoryOps = [...categoryMap.values()].map((cat) => ({
+    /**
+     * ==================================================
+     * STEP 3: UPSERT BASE CATEGORIES (NO SCHEMES)
+     * ==================================================
+     */
+    const baseCategoryOps = [...categoryMap.values()].map((cat) => ({
       updateOne: {
-        filter: { scheme: cat.scheme, code: cat.code },
+        filter: { code: cat.code },
         update: {
           $setOnInsert: {
-            scheme: cat.scheme,
             code: cat.code,
-            headingText: cat.headingText,
-            level: cat.level, // ✅ only here
+            level: cat.level,
+            schemes: [], // 🔑 must exist before pushing
           },
         },
         upsert: true,
       },
     }));
 
-    if (categoryOps.length) {
-      const catResult = await Category.bulkWrite(categoryOps);
-      console.log("✅ CATEGORY UPSERT RESULT:", catResult);
+    if (baseCategoryOps.length) {
+      const res = await Category.bulkWrite(baseCategoryOps);
+      console.log("✅ BASE CATEGORY UPSERT:", res);
     }
 
-    // STEP 3: Fetch category IDs
+    /**
+     * ==================================================
+     * STEP 4: MERGE SCHEMES (SAFE ARRAY UPDATES)
+     * ==================================================
+     */
+    const schemeOps = [];
+
+    for (const cat of categoryMap.values()) {
+      for (const schemeObj of cat.schemes) {
+        schemeOps.push({
+          updateOne: {
+            filter: {
+              code: cat.code,
+              "schemes.scheme": { $ne: schemeObj.scheme },
+            },
+            update: {
+              $push: { schemes: schemeObj },
+            },
+          },
+        });
+      }
+    }
+
+    if (schemeOps.length) {
+      const res = await Category.bulkWrite(schemeOps);
+      console.log("✅ SCHEMES MERGED:", res);
+    }
+
+    /**
+     * ==================================================
+     * STEP 5: FETCH CATEGORY IDS
+     * ==================================================
+     */
     const categories = await Category.find({
-      $or: [...categoryMap.values()].map((c) => ({
-        scheme: c.scheme,
-        code: c.code,
-      })),
+      code: { $in: [...categoryMap.keys()] },
     }).lean();
 
-    console.log("📦 CATEGORIES FETCHED:", categories.length);
-
-    const categoryIdMap = new Map(
-      categories.map((c) => [
-        `${String(c.scheme).trim()}|${String(c.code).trim()}`,
-        c._id,
-      ])
+    const categoryIdByCode = new Map(
+      categories.map((c) => [c.code, c._id])
     );
 
-    // STEP 4: Link categories to books
+    /**
+     * ==================================================
+     * STEP 6: LINK CATEGORIES TO BOOKS
+     * ==================================================
+     */
     const bookOps = [];
 
-    for (const [bookId, keys] of bookCategoryLinks.entries()) {
-      const categoryIds = [...keys]
-        .map((k) => categoryIdMap.get(k))
+    for (const [bookId, codes] of bookCategoryLinks.entries()) {
+      const categoryIds = [...codes]
+        .map((code) => categoryIdByCode.get(code))
         .filter(Boolean);
 
       if (!categoryIds.length) continue;
@@ -119,23 +174,30 @@ export async function POST() {
     console.log("🛠️ BOOK UPDATE OPS:", bookOps.length);
 
     if (bookOps.length) {
-      const bookResult = await Book.bulkWrite(bookOps);
-      console.log("✅ BOOK BULK WRITE RESULT:", bookResult);
+      const res = await Book.bulkWrite(bookOps);
+      console.log("✅ BOOK CATEGORY LINKED:", res);
     }
 
+    /**
+     * ==================================================
+     * DONE
+     * ==================================================
+     */
     console.log("🎉 CATEGORY SYNC FINISHED");
 
     return NextResponse.json(
       {
-        message: "Categories synced and linked to books",
-        booksUpdated: bookOps.length,
+        message: "Categories synced and linked successfully",
         totalCategories: categories.length,
+        booksUpdated: bookOps.length,
       },
       { status: 200 }
     );
   } catch (error) {
     console.error("🔥 CATEGORY SYNC ERROR:", error);
-
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message },
+      { status: 500 }
+    );
   }
 }

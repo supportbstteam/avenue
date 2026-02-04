@@ -2,37 +2,36 @@ import mongoose from "mongoose";
 
 const CategorySchema = new mongoose.Schema(
   {
-    scheme: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
     code: {
       type: String,
       required: true,
       trim: true,
+      unique: true,
+      index: true,
     },
 
-    headingText: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-
-    // derived from code.length
     level: {
       type: Number,
       index: true,
     },
+
+    schemes: [
+      {
+        scheme: {
+          type: String,
+          trim: true,
+        },
+        headingText: {
+          type: String,
+          trim: true,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
 
-// Prevent duplicates
-CategorySchema.index({ scheme: 1, code: 1 }, { unique: true });
-
-// Hooks are kept for NON-bulk operations only
+// Auto level on save
 CategorySchema.pre("save", function (next) {
   if (this.code) {
     this.level = this.code.length;
@@ -40,6 +39,20 @@ CategorySchema.pre("save", function (next) {
   next();
 });
 
+// Auto level on updates
+CategorySchema.pre("findOneAndUpdate", function (next) {
+  const update = this.getUpdate();
+  if (update?.$set?.code) {
+    update.$set.level = update.$set.code.length;
+  }
+  next();
+});
+
+// Prevent duplicate schemes per category
+CategorySchema.index(
+  { code: 1, "schemes.scheme": 1 },
+  { unique: true, sparse: true }
+);
+
 export const Category =
-  mongoose.models.Category ||
-  mongoose.model("Category", CategorySchema);
+  mongoose.models.Category || mongoose.model("Category", CategorySchema);
