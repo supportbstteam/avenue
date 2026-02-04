@@ -2,32 +2,27 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
 
-const CategorySidebar = () => {
+const CategorySidebars = ({ categories, selectedCategory }) => {
   const router = useRouter();
 
-  const { categories, selectedCategory } = useSelector(
-    (state) => state.userCategory
-  );
-
   // only level-1 categories
-  // const rootCategories = categories.filter(
-  //   (c) => c.level === 1
-  // );
+//   const rootCategories = categories.filter(
+//     (c) => c.level === 2
+//   );
 
   const handleClick = (cat) => {
     router.push(`/category/${cat.code}`);
   };
 
-  console.log("Category :", categories.length );
+  console.log("Category :", categories || [], "Selected Category:", selectedCategory );
 
   return (
     <aside className="w-72 bg-white border-r border-gray-200 p-4 overflow-y-auto">
       <h3 className="text-lg font-semibold mb-4">Categories</h3>
 
       <ul className="space-y-1">
-        {categories.length > 0 && categories.map((cat) => {
+        {categories.map((cat) => {
           const isActive = selectedCategory === cat.code;
 
           return (
@@ -50,4 +45,4 @@ const CategorySidebar = () => {
   );
 };
 
-export default CategorySidebar;
+export default CategorySidebars;

@@ -9,7 +9,7 @@ import CategorySidebar from "@/components/CategorySidebar";
 
 const SubCategory = () => {
   const dispatch = useDispatch();
-  const { code } = useParams(); // ✅ CORRECT
+  const { code } = useParams(); // category code from URL
 
   const {
     categories,
@@ -20,24 +20,33 @@ const SubCategory = () => {
     selectedCategory,
   } = useSelector((state) => state.userCategory);
 
-
-  // console.log("Selected Category:", code);
-
-  // Load ROOT categories once
+  /**
+   * ------------------------------------------------------
+   * Load ROOT categories once
+   * ------------------------------------------------------
+   */
   useEffect(() => {
     if (categories.length === 0) {
-      dispatch(fetchUserCategories({code}));
+      dispatch(fetchUserCategories()); // no category param = root
     }
   }, [categories.length, dispatch]);
 
-  // Load category books when code changes
+  /**
+   * ------------------------------------------------------
+   * Load books when category code changes
+   * ------------------------------------------------------
+   */
   useEffect(() => {
     if (code && selectedCategory !== code) {
-      console.log("Fetching category for code:", code);
       dispatch(fetchUserCategories({ category: code }));
     }
   }, [code, selectedCategory, dispatch]);
 
+  /**
+   * ------------------------------------------------------
+   * Loading / Error states
+   * ------------------------------------------------------
+   */
   if (initialLoading && categories.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-gray-500">

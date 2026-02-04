@@ -127,7 +127,8 @@ export async function GET(req) {
 
     const books = await Book.find({
       categories: { $in: descendantIds },
-    }).lean();
+    }).limit(20).lean();
+
 
     return Response.json({
       type: "CATEGORY",

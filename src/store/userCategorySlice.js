@@ -1,11 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-
 /**
- * ------------------------------------------------------
- * ASYNC THUNK — Fetch root or category-specific data
- * ------------------------------------------------------
+ * ----------------------------------------
+ * Async Thunk
+ * ----------------------------------------
  */
 export const fetchUserCategories = createAsyncThunk(
   "categories/fetch",
@@ -14,125 +13,115 @@ export const fetchUserCategories = createAsyncThunk(
       const res = await axios.get("/api/category", {
         params: category ? { category } : {},
       });
-    
-      console.log(res.data);
+  
 
       return res.data;
     } catch (err) {
-      return rejectWithValue(
-        err?.response?.data?.message || "Failed to fetch categories"
-      );
+      return rejectWithValue("Failed to fetch categories");
     }
   }
 );
 
 /**
- * ------------------------------------------------------
- * INITIAL STATE
- * ------------------------------------------------------
+ * ----------------------------------------
+ * Initial State
+ * ----------------------------------------
  */
 const initialState = {
-  categories: [],         // root + lazy-loaded subcategories
-  books: [],              // books of selected category
-  selectedCategory: null, // selected category code
+  categories: [],           // flat list (root + loaded subcategories)
+  books: [],                // books for selected category
+  selectedCategory: null,   // currently selected category code
 
   // loading states
-  initialLoading: true,
-  categoryLoading: false,
+  initialLoading: true,     // only for first page load
+  categoryLoading: false,   // for category clicks / expansion
 
   error: null,
 };
 
 /**
- * ------------------------------------------------------
- * SLICE
- * ------------------------------------------------------
+ * ----------------------------------------
+ * Slice
+ * ----------------------------------------
  */
 const userCategorySlice = createSlice({
   name: "categories",
   initialState,
-  reducers: {},
+  reducers: {
+    // future sync reducers go here
+  },
   extraReducers: (builder) => {
     builder
 
       /**
-       * ------------------------------------------------------
+       * ----------------------------------------
        * PENDING
-       * ------------------------------------------------------
+       * ----------------------------------------
        */
       .addCase(fetchUserCategories.pending, (state) => {
+        if (state.categories.length === 0) {
+          state.initialLoading = true;
+        } else {
+          state.categoryLoading = true;
+        }
         state.error = null;
-        state.categoryLoading = state.categories.length > 0;
-        state.initialLoading = state.categories.length === 0;
       })
 
       /**
-       * ------------------------------------------------------
+       * ----------------------------------------
        * FULFILLED
-       * ------------------------------------------------------
+       * ----------------------------------------
        */
-      .addCase(fetchUserCategories.fulfilled, (state, action) => {
-        state.initialLoading = false;
-        state.categoryLoading = false;
+    .addCase(fetchUserCategories.fulfilled, (state, action) => {
+  state.initialLoading = false;
+  state.categoryLoading = false;
 
-        const payload = action.payload || {};
-        const responseType = payload.type;
+  const payload = action.payload || {};
 
-        if (!responseType) {
-          console.warn("⚠ Missing 'type' in API response");
-          return;
-        }
+  const responseType = payload.type; // ROOT / CATEGORY
 
-        /**
-         * -------------------
-         * ROOT RESPONSE
-         * -------------------
-         */
-        if (responseType === "ROOT") {
-          state.categories = Array.isArray(payload.categories)
-            ? payload.categories
-            : [];
+  if (!responseType) {
+    console.warn("⚠ Missing 'type' in API response");
+    return;
+  }
 
-          state.books = Array.isArray(payload.books)
-            ? payload.books
-            : [];
+  // ===== ROOT =====
+  if (responseType === "ROOT") {
+    state.categories = Array.isArray(payload.categories)
+      ? payload.categories
+      : [];
 
-          state.selectedCategory = null;
-          return;
-        }
+    state.books = Array.isArray(payload.books)
+      ? payload.books
+      : [];
 
-        /**
-         * -------------------
-         * CATEGORY RESPONSE
-         * -------------------
-         */
-        if (responseType === "CATEGORY") {
-          const selectedCode = payload?.selectedCategory?.code ?? null;
-          state.selectedCategory = selectedCode;
+    state.selectedCategory = null;
+    return;
+  }
 
-          // Merge subcategories without duplicates
-          const existingCodes = new Set(
-            state.categories.map((c) => c.code)
-          );
+  // ===== CATEGORY =====
+   if (responseType === "CATEGORY") {
+     const selectedCode = payload?.selectedCategory?.code || null;
+     state.selectedCategory = selectedCode;
 
-          if (Array.isArray(payload.subCategories)) {
-            payload.subCategories.forEach((sub) => {
-              if (!existingCodes.has(sub.code)) {
-                state.categories.push(sub);
-              }
-            });
-          }
+     // Replace old categories with only current subCategories
+     state.categories = Array.isArray(payload.subCategories)
+       ? payload.subCategories
+       : [];
 
-          state.books = Array.isArray(payload.books)
-            ? payload.books
-            : [];
-        }
-      })
+     // Replace books too
+     state.books = Array.isArray(payload.books)
+       ? payload.books
+       : [];
+   }
+
+  })
+
 
       /**
-       * ------------------------------------------------------
+       * ----------------------------------------
        * REJECTED
-       * ------------------------------------------------------
+       * ----------------------------------------
        */
       .addCase(fetchUserCategories.rejected, (state, action) => {
         state.initialLoading = false;

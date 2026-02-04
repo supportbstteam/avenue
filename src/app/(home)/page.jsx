@@ -419,19 +419,31 @@ export default function HomePage() {
   const banners = [
     {
       id: 1,
-      imageUrl: "/img/waterstons-banner-3.webp",
+      imageUrl: "/banner/1.png",
       alt: "Winter Sale - Up to 50% off",
       href: "/",
     },
     {
       id: 2,
-      imageUrl: "/img/waterrstones-banner2.webp",
+      imageUrl: "/banner/2.png",
       alt: "New Releases Available Now",
       href: "/",
     },
     {
       id: 3,
-      imageUrl: "/img/waterstonesbanner-1.webp",
+      imageUrl: "/banner/3.jpg",
+      alt: "Join Waterstones Plus for exclusive perks",
+      href: "/",
+    },
+    {
+      id: 4,
+      imageUrl: "/banner/4.jpg",
+      alt: "Join Waterstones Plus for exclusive perks",
+      href: "/",
+    },
+    {
+      id: 5,
+      imageUrl: "/banner/5.jpg",
       alt: "Join Waterstones Plus for exclusive perks",
       href: "/",
     },
