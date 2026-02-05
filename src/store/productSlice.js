@@ -1,0 +1,138 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+
+/**
+ * ======================================
+ * FETCH BOOKS (ADMIN)
+ * ======================================
+ */
+export const fetchAdminProductBooks = createAsyncThunk(
+  "adminBooks/fetch",
+  async ({ page = 1, limit = 50, search = "" } = {}, { rejectWithValue }) => {
+    try {
+      const res = await axios.get("/api/admin/products", {
+        params: { page, limit, search },
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue("Failed to fetch books");
+    }
+  }
+);
+
+/**
+ * ======================================
+ * UPDATE BOOK (ADMIN)
+ * ======================================
+ */
+export const updateAdminBookProduct = createAsyncThunk(
+  "adminBooks/update",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const res = await axios.put("/api/admin/products", {
+        id,
+        data,
+      });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue("Failed to update book");
+    }
+  }
+);
+
+/**
+ * ======================================
+ * DELETE BOOK (ADMIN)
+ * ======================================
+ */
+export const deleteAdminBookProduct = createAsyncThunk(
+  "adminBooks/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      await axios.delete("/api/admin/products", {
+        data: { id },
+      });
+      return id;
+    } catch (err) {
+      return rejectWithValue("Failed to delete book");
+    }
+  }
+);
+
+/**
+ * ======================================
+ * SLICE
+ * ======================================
+ */
+const adminBookSlice = createSlice({
+  name: "adminBooks",
+  initialState: {
+    list: [],
+
+    page: 1,
+    limit: 50,
+    total: 0,
+    totalPages: 0,
+
+    loading: false,
+    error: null,
+  },
+
+  reducers: {},
+
+  extraReducers: (builder) => {
+    builder
+
+      /**
+       * ======================
+       * FETCH
+       * ======================
+       */
+      .addCase(fetchAdminProductBooks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(fetchAdminProductBooks.fulfilled, (state, action) => {
+        state.loading = false;
+
+        state.list = action.payload.data || [];
+        state.page = action.payload.page;
+        state.limit = action.payload.limit;
+        state.total = action.payload.total;
+        state.totalPages = action.payload.totalPages;
+      })
+
+      .addCase(fetchAdminProductBooks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      /**
+       * ======================
+       * UPDATE
+       * ======================
+       */
+      .addCase(updateAdminBookProduct.fulfilled, (state, action) => {
+        const updated = action.payload;
+
+        state.list = state.list.map((book) =>
+          book._id === updated._id ? updated : book
+        );
+      })
+
+      /**
+       * ======================
+       * DELETE
+       * ======================
+       */
+      .addCase(deleteAdminBookProduct.fulfilled, (state, action) => {
+        const id = action.payload;
+
+        state.list = state.list.filter((book) => book._id !== id);
+        state.total -= 1;
+      });
+  },
+});
+
+export default adminBookSlice.reducer;

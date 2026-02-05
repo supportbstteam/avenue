@@ -2,9 +2,9 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 /**
- * ----------------------------------------
- * FETCH (ADMIN)
- * ----------------------------------------
+ * =====================================================
+ * FETCH CATEGORIES (ADMIN TABLE)
+ * =====================================================
  */
 export const fetchCategories = createAsyncThunk(
   "category/fetchAll",
@@ -21,9 +21,9 @@ export const fetchCategories = createAsyncThunk(
 );
 
 /**
- * ----------------------------------------
- * FETCH CATEGORY BY ID (ADMIN)
- * ----------------------------------------
+ * =====================================================
+ * FETCH CATEGORY BY ID + SCHEME (DETAIL PAGE)
+ * =====================================================
  */
 export const fetchCategoryById = createAsyncThunk(
   "category/fetchById",
@@ -32,7 +32,7 @@ export const fetchCategoryById = createAsyncThunk(
       const res = await axios.get(`/api/admin/category/${id}`, {
         params: scheme ? { scheme } : {},
       });
-      return res.data;
+      return res.data; // { category }
     } catch (err) {
       return rejectWithValue("Failed to fetch category details");
     }
@@ -40,15 +40,19 @@ export const fetchCategoryById = createAsyncThunk(
 );
 
 /**
- * ----------------------------------------
- * UPDATE CATEGORY (headingText / scheme / status)
- * ----------------------------------------
+ * =====================================================
+ * UPDATE CATEGORY (headingText)
+ * =====================================================
  */
 export const updateCategory = createAsyncThunk(
   "category/update",
-  async ({ id, payload }, { rejectWithValue }) => {
+  async ({ id, scheme, headingText, status }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`/api/admin/category/${id}`, payload);
+      const res = await axios.put(`/api/admin/category/${id}`, {
+        scheme,
+        headingText,
+        status
+      });
       return res.data;
     } catch (err) {
       return rejectWithValue("Failed to update category");
@@ -57,19 +61,18 @@ export const updateCategory = createAsyncThunk(
 );
 
 /**
- * ----------------------------------------
- * TOGGLE STATUS (FAST)
- * ----------------------------------------
+ * =====================================================
+ * TOGGLE SCHEME STATUS (FAST / OPTIMISTIC)
+ * =====================================================
  */
 export const updateCategoryStatus = createAsyncThunk(
   "category/updateStatus",
   async ({ id, scheme, status }, { rejectWithValue }) => {
     try {
-      const res = await axios.patch(`/api/admin/category/${id}/status`, {
+      await axios.patch(`/api/admin/category/${id}/status`, {
         scheme,
         status,
       });
-
       return { id, scheme, status };
     } catch (err) {
       return rejectWithValue("Failed to update status");
@@ -78,16 +81,18 @@ export const updateCategoryStatus = createAsyncThunk(
 );
 
 /**
- * ----------------------------------------
- * DELETE CATEGORY (CASCADE)
- * ----------------------------------------
+ * =====================================================
+ * DELETE SCHEME / CATEGORY (CASCADE)
+ * =====================================================
  */
 export const deleteCategory = createAsyncThunk(
   "category/delete",
-  async (id, { rejectWithValue }) => {
+  async ({ id, scheme }, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/admin/category/${id}`);
-      return id;
+      const res = await axios.delete(`/api/admin/category/${id}`, {
+        data: { scheme },
+      });
+      return { id, scheme, ...res.data }; // { deleted: "scheme" | "category" }
     } catch (err) {
       return rejectWithValue("Failed to delete category");
     }
@@ -95,19 +100,21 @@ export const deleteCategory = createAsyncThunk(
 );
 
 /**
- * ----------------------------------------
+ * =====================================================
  * SLICE
- * ----------------------------------------
+ * =====================================================
  */
 const categorySlice = createSlice({
   name: "category",
   initialState: {
     list: [],
 
-    selectedCategory: [], // 🔑 rows from /category/:id
+    // details page
+    selectedCategory: null,
     selectedLoading: false,
     selectedError: null,
 
+    // pagination
     page: 1,
     limit: 50,
     total: 0,
@@ -116,13 +123,15 @@ const categorySlice = createSlice({
     loading: false,
     error: null,
   },
+
   reducers: {},
+
   extraReducers: (builder) => {
     builder
 
       /**
        * ========================
-       * FETCH
+       * FETCH LIST
        * ========================
        */
       .addCase(fetchCategories.pending, (state) => {
@@ -147,58 +156,6 @@ const categorySlice = createSlice({
 
       /**
        * ========================
-       * UPDATE CATEGORY
-       * ========================
-       */
-      .addCase(updateCategory.fulfilled, (state, action) => {
-        const updated = action.payload;
-
-        state.list = state.list.map((item) =>
-          item._id === updated._id ? { ...item, ...updated } : item
-        );
-      })
-
-      /**
-       * ========================
-       * TOGGLE STATUS (OPTIMISTIC)
-       * ========================
-       */
-      .addCase(updateCategoryStatus.pending, (state, action) => {
-        const { id, scheme, status } = action.meta.arg;
-
-        const row = state.list.find((c) => c._id === id && c.scheme === scheme);
-
-        if (row) {
-          row.status = status; // ✅ optimistic UI
-        }
-      })
-
-      .addCase(updateCategoryStatus.rejected, (state, action) => {
-        state.error = action.payload;
-      })
-
-      .addCase(updateCategoryStatus.fulfilled, (state, action) => {
-        const updated = action.payload; // { _id, status }
-
-        const item = state.list.find((c) => c._id === updated._id);
-        if (item) {
-          item.status = updated.status; // ✅ confirm backend truth
-          delete item._previousStatus;
-        }
-      })
-
-      /**
-       * ========================
-       * DELETE CATEGORY
-       * ========================
-       */
-      .addCase(deleteCategory.fulfilled, (state, action) => {
-        const id = action.payload;
-        state.list = state.list.filter((c) => c._id !== id);
-        state.total -= 1;
-      })
-      /**
-       * ========================
        * FETCH CATEGORY BY ID
        * ========================
        */
@@ -209,12 +166,91 @@ const categorySlice = createSlice({
 
       .addCase(fetchCategoryById.fulfilled, (state, action) => {
         state.selectedLoading = false;
-        state.selectedCategory = action.payload.data || [];
+        state.selectedCategory = action.payload?.category || null;
       })
 
       .addCase(fetchCategoryById.rejected, (state, action) => {
         state.selectedLoading = false;
         state.selectedError = action.payload;
+      })
+
+      /**
+       * ========================
+       * UPDATE HEADING TEXT
+       * ========================
+       */
+      .addCase(updateCategory.fulfilled, (state, action) => {
+        const updated = action.payload;
+
+        // update table
+        state.list = state.list.map((row) =>
+          row._id === updated._id && row.scheme === updated.scheme
+            ? { ...row, ...updated }
+            : row
+        );
+
+        // update details page
+        if (
+          state.selectedCategory &&
+          state.selectedCategory._id === updated._id &&
+          state.selectedCategory.scheme === updated.scheme
+        ) {
+          state.selectedCategory = {
+            ...state.selectedCategory,
+            ...updated,
+          };
+        }
+      })
+
+      /**
+       * ========================
+       * TOGGLE STATUS (OPTIMISTIC)
+       * ========================
+       */
+      .addCase(updateCategoryStatus.pending, (state, action) => {
+        const { id, scheme, status } = action.meta.arg;
+
+        const row = state.list.find((r) => r._id === id && r.scheme === scheme);
+        if (row) row.status = status;
+
+        if (
+          state.selectedCategory &&
+          state.selectedCategory._id === id &&
+          state.selectedCategory.scheme === scheme
+        ) {
+          state.selectedCategory.status = status;
+        }
+      })
+
+      .addCase(updateCategoryStatus.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+
+      /**
+       * ========================
+       * DELETE (SCHEME / CATEGORY)
+       * ========================
+       */
+      .addCase(deleteCategory.fulfilled, (state, action) => {
+        const { id, scheme, deleted } = action.payload;
+
+        if (deleted === "scheme") {
+          state.list = state.list.filter(
+            (row) => !(row._id === id && row.scheme === scheme)
+          );
+        }
+
+        if (deleted === "category") {
+          state.list = state.list.filter((row) => row._id !== id);
+        }
+
+        if (
+          state.selectedCategory &&
+          state.selectedCategory._id === id &&
+          state.selectedCategory.scheme === scheme
+        ) {
+          state.selectedCategory = null;
+        }
       });
   },
 });

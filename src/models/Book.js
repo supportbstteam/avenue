@@ -146,6 +146,28 @@ const BookSchema = new mongoose.Schema(
       salesRights: [SalesRightsSchema],
     },
 
+    // ✅ STATUS
+    status: {
+      type: Boolean,
+      default: true,
+      index: true,
+    },
+
+    // ✅ BOOK TYPE
+    type: {
+      type: String,
+      enum: ["ebook", "book"],
+      index: true,
+    },
+
+    // ✅ EBOOK SUB-CATEGORIES
+    ebookCategories: {
+      type: [String],
+      enum: ["EPUB", "PDF", "KINDLE"],
+      default: [],
+      index: true,
+    },
+
     meta: {
       source: String,
       importedAt: {
@@ -159,4 +181,18 @@ const BookSchema = new mongoose.Schema(
   }
 );
 
+/* ✅ ADD THE PRE-SAVE HOOK RIGHT HERE */
+BookSchema.pre("save", function (next) {
+  const EBOOK_FORMS = ["DG", "EB", "ED", "EA"];
+
+  if (this.descriptiveDetail?.productForm) {
+    this.type = EBOOK_FORMS.includes(this.descriptiveDetail.productForm)
+      ? "ebook"
+      : "book";
+  }
+
+  next();
+});
+
+/* ⛔ DO NOT put hooks after this */
 export default mongoose.models.Book || mongoose.model("Book", BookSchema);

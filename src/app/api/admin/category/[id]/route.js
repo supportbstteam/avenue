@@ -12,12 +12,11 @@ import mongoose from "mongoose";
  *   headingText?: string
  * }
  */
-export async function PUT(req, context) {
+export async function PUT(req, { params }) {
   try {
     await connectDB();
-
-    const id = context.params.id;
-    const { scheme, headingText } = await req.json();
+    const { id } = await params;
+    const { scheme, headingText, status } = await req.json();
 
     if (!scheme || !headingText) {
       return NextResponse.json(

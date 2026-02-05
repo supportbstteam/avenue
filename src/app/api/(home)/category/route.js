@@ -4,30 +4,29 @@ import { Category } from "@/models/Category";
 import mongoose from "mongoose";
 
 /**
- * Escape regex special characters
+ * Escape regex safely
  */
-function escapeRegex(str) {
+function escapeRegex(str = "") {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 /**
  * Normalize category for frontend
- * Keeps response shape EXACTLY the same
+ * ✅ respects scheme-level status
+ * ✅ NEVER returns undefined displayName
  */
 function normalizeCategory(category) {
-  const schemes = category.schemes || [];
+  const activeSchemes =
+    category.schemes?.filter((s) => s.status !== false) || [];
 
-  // deterministic label selection
+  if (!activeSchemes.length) return null; // 🔥 IMPORTANT
+
   const displayName =
-    schemes.length > 0
-      ? schemes
-          .slice()
-          .sort((a, b) =>
-            (a.headingText || "").localeCompare(
-              b.headingText || ""
-            )
-          )[0].headingText
-      : category.code;
+    activeSchemes
+      .slice()
+      .sort((a, b) =>
+        (a.headingText || "").localeCompare(b.headingText || "")
+      )[0]?.headingText || category.code;
 
   return {
     _id: category._id,
@@ -46,15 +45,20 @@ export async function GET(req) {
 
     /**
      * ==================================================
-     * CASE 1: ROOT
+     * ROOT
      * ==================================================
      */
     if (!categoryParam) {
-      const rawCategories = await Category.find({ level: 1 })
+      const rawCategories = await Category.find({
+        level: 1,
+        "schemes.status": true, // ✅ only active
+      })
         .sort({ code: 1 })
         .lean();
 
-      const categories = rawCategories.map(normalizeCategory);
+      const categories = rawCategories
+        .map(normalizeCategory)
+        .filter(Boolean); // 🔥 IMPORTANT
 
       const books = await Book.find({
         categories: { $exists: true, $ne: [] },
@@ -69,23 +73,22 @@ export async function GET(req) {
       });
     }
 
-
-
-
     /**
      * ==================================================
-     * CASE 2: CATEGORY CLICKED (code or id)
+     * CATEGORY CLICKED (code or id)
      * ==================================================
      */
-    let category
-
-
+    let category;
 
     if (mongoose.Types.ObjectId.isValid(categoryParam)) {
-      category = await Category.findById(categoryParam).lean();
+      category = await Category.findOne({
+        _id: categoryParam,
+        "schemes.status": true,
+      }).lean();
     } else {
       category = await Category.findOne({
         code: categoryParam.trim(),
+        "schemes.status": true,
       }).lean();
     }
 
@@ -97,7 +100,15 @@ export async function GET(req) {
     }
 
     const selectedCategory = normalizeCategory(category);
+    if (!selectedCategory) {
+      return Response.json(
+        { message: "Category has no active schemes" },
+        { status: 404 }
+      );
+    }
+
     const safeCode = escapeRegex(category.code);
+
     /**
      * --------------------------------------------------
      * IMMEDIATE SUBCATEGORIES
@@ -106,21 +117,23 @@ export async function GET(req) {
     const rawSubCategories = await Category.find({
       code: { $regex: `^${safeCode}` },
       level: category.level + 1,
+      "schemes.status": true,
     })
       .sort({ code: 1 })
       .lean();
 
-    const subCategories = rawSubCategories.map(normalizeCategory);
-
-    console.log(subCategories);
+    const subCategories = rawSubCategories
+      .map(normalizeCategory)
+      .filter(Boolean);
 
     /**
      * --------------------------------------------------
-     * DESCENDANTS (for books)
+     * DESCENDANTS (FOR BOOKS)
      * --------------------------------------------------
      */
     const descendantCategories = await Category.find({
       code: { $regex: `^${safeCode}` },
+      "schemes.status": true,
     }).lean();
 
     const descendantIds = descendantCategories.map((c) => c._id);

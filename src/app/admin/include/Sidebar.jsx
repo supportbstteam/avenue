@@ -17,6 +17,7 @@ export default function Sidebar() {
 
   const menuItems = [
     { name: "Dashboard", path: "/admin", icon: <Home size={20} /> },
+    { name: "Products", path: "/admin/products", icon: <FolderTree size={20} /> },
     { name: "Category", path: "/admin/category", icon: <FolderTree size={20} /> },
     { name: "Profile", path: "/admin/profile", icon: <User size={20} /> },
   ];

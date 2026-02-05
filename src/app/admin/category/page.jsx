@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 export const getCategoryColumns = ({ onToggleStatus }) => [
   { accessorKey: "code", header: "Code" },
-  { accessorKey: "level", header: "Level" },
+  // { accessorKey: "level", header: "Level" },
   { accessorKey: "scheme", header: "Scheme" },
   { accessorKey: "headingText", header: "Heading" },
 
