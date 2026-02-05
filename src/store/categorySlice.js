@@ -8,11 +8,20 @@ import axios from "axios";
  */
 export const fetchCategories = createAsyncThunk(
   "category/fetchAll",
-  async ({ page = 1, limit = 50 } = {}, { rejectWithValue }) => {
+  async (
+    { page = 1, limit = 50, code = "", scheme = "" } = {},
+    { rejectWithValue }
+  ) => {
     try {
       const res = await axios.get("/api/admin/category", {
-        params: { page, limit },
+        params: {
+          page,
+          limit,
+          code,
+          scheme,
+        },
       });
+
       return res.data;
     } catch (err) {
       return rejectWithValue("Failed to fetch categories");
@@ -51,7 +60,7 @@ export const updateCategory = createAsyncThunk(
       const res = await axios.put(`/api/admin/category/${id}`, {
         scheme,
         headingText,
-        status
+        status,
       });
       return res.data;
     } catch (err) {

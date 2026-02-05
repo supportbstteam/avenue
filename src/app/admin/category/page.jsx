@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AdminTable from "@/components/admin/AdminTable";
 import { fetchCategories, updateCategoryStatus } from "@/store/categorySlice";
@@ -42,6 +42,8 @@ const LIMIT = 50;
 const AdminCategoriesPage = () => {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [searchCode, setSearchCode] = useState("");
+  const [searchScheme, setSearchScheme] = useState("");
 
   const { list, page, totalPages, loading, error } = useSelector(
     (state) => state.category
@@ -62,13 +64,27 @@ const AdminCategoriesPage = () => {
 
   const handleNext = () => {
     if (page < totalPages) {
-      dispatch(fetchCategories({ page: page + 1, limit: LIMIT }));
+      dispatch(
+        fetchCategories({
+          page: page + 1,
+          limit: LIMIT,
+          code: searchCode,
+          scheme: searchScheme,
+        })
+      );
     }
   };
 
   const handlePrev = () => {
     if (page > 1) {
-      dispatch(fetchCategories({ page: page - 1, limit: LIMIT }));
+      dispatch(
+        fetchCategories({
+          page: page - 1,
+          limit: LIMIT,
+          code: searchCode,
+          scheme: searchScheme,
+        })
+      );
     }
   };
 
@@ -80,9 +96,47 @@ const AdminCategoriesPage = () => {
     return <div className="p-6 text-red-500">{error}</div>;
   }
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    dispatch(
+      fetchCategories({
+        page: 1,
+        limit: LIMIT,
+        code: searchCode,
+        scheme: searchScheme,
+      })
+    );
+  };
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-semibold mb-4">Categories (Admin)</h1>
+
+      <form onSubmit={handleSearch} className="flex items-center gap-3 mb-4">
+        <input
+          type="text"
+          placeholder="Search code..."
+          value={searchCode}
+          onChange={(e) => setSearchCode(e.target.value)}
+          className="border px-3 py-2 rounded w-56"
+        />
+
+        <input
+          type="text"
+          placeholder="Search scheme..."
+          value={searchScheme}
+          onChange={(e) => setSearchScheme(e.target.value)}
+          className="border px-3 py-2 rounded w-56"
+        />
+
+        <button
+          type="submit"
+          className="px-4 py-2 border rounded hover:bg-gray-100"
+        >
+          Search
+        </button>
+      </form>
 
       <AdminTable
         columns={columns}

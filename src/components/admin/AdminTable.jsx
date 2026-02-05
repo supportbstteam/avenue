@@ -6,14 +6,20 @@ import {
   getSortedRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { FaEdit, FaTrash } from "react-icons/fa";
+
+import { FaEdit, FaTrash, FaEye } from "react-icons/fa";
 
 const AdminTable = ({
   columns,
   data,
+
   onEdit,
   onDelete,
-  onToggleStatus,
+  onView,
+
+  showEdit = true,
+  showDelete = true,
+  showView = false,
 }) => {
   /**
    * --------------------------------------------------
@@ -30,21 +36,38 @@ const AdminTable = ({
 
         return (
           <div className="flex gap-3 items-center">
-            <button
-              onClick={() => onEdit?.(record)}
-              className="text-blue-600 cursor-pointer hover:text-blue-800"
-              title="Edit"
-            >
-              <FaEdit size={20} />
-            </button>
+            {/* VIEW */}
+            {showView && (
+              <button
+                onClick={() => onView?.(record)}
+                className="text-gray-600 hover:text-gray-800 cursor-pointer"
+                title="View"
+              >
+                <FaEye size={19} />
+              </button>
+            )}
 
-            <button
-              onClick={() => onDelete?.(record)}
-              className="text-red-600 cursor-pointer hover:text-red-800"
-              title="Delete"
-            >
-              <FaTrash size={20} />
-            </button>
+            {/* EDIT */}
+            {showEdit && (
+              <button
+                onClick={() => onEdit?.(record)}
+                className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                title="Edit"
+              >
+                <FaEdit size={19} />
+              </button>
+            )}
+
+            {/* DELETE */}
+            {showDelete && (
+              <button
+                onClick={() => onDelete?.(record)}
+                className="text-red-600 hover:text-red-800 cursor-pointer"
+                title="Delete"
+              >
+                <FaTrash size={19} />
+              </button>
+            )}
           </div>
         );
       },
@@ -52,18 +75,17 @@ const AdminTable = ({
   ];
 
   const table = useReactTable({
-    data,                    // 🔑 backend-controlled (50 rows)
+    data,
     columns: enhancedColumns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-
-    // 🔥 IMPORTANT
-    manualPagination: true,  // backend pagination
+    manualPagination: true,
   });
 
   return (
     <div className="w-full overflow-x-auto bg-white rounded border">
       <table className="w-full border-collapse text-sm">
+        {/* HEADER */}
         <thead className="bg-[#ae0001] border-b">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -87,18 +109,13 @@ const AdminTable = ({
           ))}
         </thead>
 
+        {/* BODY */}
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className="border-b hover:bg-gray-50 transition"
-            >
+            <tr key={row.id} className="border-b hover:bg-gray-50 transition">
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-4 py-3">
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
             </tr>

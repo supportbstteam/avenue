@@ -20,6 +20,46 @@ export const fetchAdminProductBooks = createAsyncThunk(
   }
 );
 
+export const updateAdminBookStatus = createAsyncThunk(
+  "adminBooks/updateStatus",
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const res = await axios.patch("/api/admin/products/status", {
+        id,
+        status,
+      });
+
+      console.log("-=-=- response in the updateAdminStatus -=-=-", res);
+
+      return {
+        id,
+        status,
+      };
+    } catch (err) {
+      return rejectWithValue("Failed to update status");
+    }
+  }
+);
+
+/**
+ * ======================================
+ * FETCH BOOK DETAILS
+ * ======================================
+ */
+export const fetchAdminBookDetails = createAsyncThunk(
+  "adminBooks/details",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`/api/admin/products/${id}`);
+
+      // console.log("-=-=-- fetchAdminBookDetails response data -=-=-=--=-", res?.data?.data);
+      return res?.data?.data; // <- matches controller response
+    } catch (err) {
+      return rejectWithValue("Failed to fetch book details");
+    }
+  }
+);
+
 /**
  * ======================================
  * UPDATE BOOK (ADMIN)
@@ -68,7 +108,7 @@ const adminBookSlice = createSlice({
   name: "adminBooks",
   initialState: {
     list: [],
-
+    selectedBook: {}, // ⭐ ADD THIS
     page: 1,
     limit: 50,
     total: 0,
@@ -120,6 +160,25 @@ const adminBookSlice = createSlice({
           book._id === updated._id ? updated : book
         );
       })
+      /**
+       * ======================
+       * FETCH DETAILS
+       * ======================
+       */
+      .addCase(fetchAdminBookDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(fetchAdminBookDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedBook = action.payload;
+      })
+
+      .addCase(fetchAdminBookDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
       /**
        * ======================
@@ -131,6 +190,26 @@ const adminBookSlice = createSlice({
 
         state.list = state.list.filter((book) => book._id !== id);
         state.total -= 1;
+      })
+      .addCase(updateAdminBookStatus.pending, (state) => {
+        state.updating = true;
+      })
+
+      .addCase(updateAdminBookStatus.fulfilled, (state, action) => {
+        state.updating = false;
+
+        const { id, status } = action.payload;
+
+        const book = state.list.find((b) => b._id === id);
+
+        if (book) {
+          book.status = status;
+        }
+      })
+
+      .addCase(updateAdminBookStatus.rejected, (state, action) => {
+        state.updating = false;
+        state.error = action.payload;
       });
   },
 });
