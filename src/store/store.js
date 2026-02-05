@@ -10,6 +10,7 @@ import adminUserSlice from "@/store/adminUserSlice";
 import orderReducer from "@/store/orderSlice";
 import addressReducer from "@/store/addressSlice";
 import adminOrderReducer from "@/store/adminOrderSlice";
+import dashboardReducer from "@/store/adminDashboardSlice";
 export const store = configureStore({
   reducer: {
     user: userReducer,
@@ -23,5 +24,6 @@ export const store = configureStore({
     orders: orderReducer,
     address: addressReducer,
     adminOrders: adminOrderReducer,
+    dashboard: dashboardReducer,
   },
 });
