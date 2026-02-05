@@ -25,7 +25,7 @@ const StatusBadge = ({ status }) => {
         map[status] || "bg-gray-100"
       }`}
     >
-      {status}
+      {status.toUpperCase()}
     </span>
   );
 };
@@ -74,7 +74,7 @@ const AdminOrderDetails = () => {
 
         <button
           onClick={() => router.back()}
-          className="border px-4 py-2 rounded hover:bg-gray-100"
+          className="border cursor-pointer px-4 py-2 rounded hover:bg-gray-100"
         >
           Back
         </button>
@@ -187,7 +187,7 @@ const AdminOrderDetails = () => {
               </div>
 
               <div>
-                Status: <strong>{order.payment.status}</strong>
+                Status: <strong>{order.payment.status.toUpperCase()}</strong>
               </div>
 
               {order.payment.transactionId && (
