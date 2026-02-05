@@ -71,12 +71,12 @@ const Page = () => {
             Continue Shopping
           </button>
 
-          <button
+          {/* <button
             onClick={() => router.push("/account/orders")}
             className="border cursor-pointer border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-50 transition font-medium"
           >
             View Orders
-          </button>
+          </button> */}
         </div>
       </div>
 

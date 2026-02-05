@@ -1,51 +1,88 @@
-import { fetchUserDetails, logoutUser, resetUser } from "@/store/userSlice";
+import { logoutUser, resetUser } from "@/store/userSlice";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button } from "../ui/button";
 import LogoutButton from "../LogoutButton";
-import { LucideUser } from "lucide-react";
+
+import { LucideUser, LucidePackage, LucideLogOut } from "lucide-react";
 
 const HeaderUser = ({ hoveredDropdown }) => {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-
-  //   useEffect(() => {
-  //     const fetchUser = async () => {
-  //       await dispatch(fetchUserDetails());
-  //     };
-  //     fetchUser();
-  //   });
 
   const handleLogOut = async () => {
     await dispatch(logoutUser());
     await dispatch(resetUser());
   };
 
-  //   console.log("HeaderUser hoveredDropdown:", user);
+  const fullName =
+    user?.firstName && user?.lastName
+      ? `${user.firstName} ${user.lastName}`
+      : "My Account";
 
   return (
     <div
-      className={`absolute top-full right-0 mt-0 w-48 bg-white border border-slate-200 p-2 rounded shadow-lg transition-all duration-200 origin-top ${
-        hoveredDropdown === "account"
-          ? "opacity-100 visible scale-y-100"
-          : "opacity-0 invisible scale-y-95"
-      }`}
+      className={`
+  absolute top-full right-0 mt-2
+  w-64
+  bg-white border border-slate-200
+  rounded-xl shadow-2xl
+  z-[9999]
+  transition-all duration-200 origin-top
+  ${
+    hoveredDropdown === "account"
+      ? "opacity-100 visible scale-y-100"
+      : "opacity-0 invisible scale-y-95"
+  }
+`}
     >
-      <Link
-        href="/auth/user/login"
-        className="block flex items-center px-4 py-3 hover:bg-slate-50 border-b border-slate-100 text-gray-700 font-medium text-lg"
-      >
+      {/* ================= HEADER ================= */}
+      <div className="px-4 py-4 border-b bg-gray-50 rounded-t-xl">
+        <div className="flex items-center gap-3">
+          {/* Avatar */}
+          <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center font-semibold">
+            {user?.firstName?.[0] || "U"}
+          </div>
 
-        <LucideUser size={30} />
-        <div className="ml-1" > 
-          {user?.firstName + " " + user?.lastName}
-          <p className="text-xs text-gray-500 underline">
-            Click to edit profile
-          </p>
+          {/* Info */}
+          <div>
+            <div className="font-semibold text-gray-800">{fullName}</div>
+            <div className="text-xs text-gray-500">{user?.email}</div>
+          </div>
         </div>
-      </Link>
-      <LogoutButton className="w-full " />
+      </div>
+
+      {/* ================= MENU ================= */}
+      <div className="py-2 text-sm">
+        {/* Profile */}
+        {/* <Link
+          href="/account/profile"
+          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition"
+        >
+          <LucideUser size={18} />
+          Profile Settings
+        </Link> */}
+
+        {/* Orders */}
+        <Link
+          href="/account/orders"
+          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 transition"
+        >
+          <LucidePackage size={18} />
+          My Orders
+        </Link>
+      </div>
+
+      {/* ================= LOGOUT ================= */}
+      <div className="border-t p-2">
+        <button
+          onClick={handleLogOut}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left hover:bg-red-50 text-red-600 transition"
+        >
+          <LucideLogOut size={18} />
+          Logout
+        </button>
+      </div>
     </div>
   );
 };
