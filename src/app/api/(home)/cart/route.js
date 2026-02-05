@@ -1,180 +1,224 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import { getGuestCart, setGuestCart, clearGuestCart } from "@/lib/guestCart";
+import { getGuestCart, setGuestCart } from "@/lib/guestCart";
 import Cart from "@/models/Cart";
 import Book from "@/models/Book";
 import { getServerUser } from "@/lib/getServerUser";
 
 /**
- * GET /api/cart
- * Fetch logged-in user's cart
+ * ===============================
+ * POPULATE HELPER
+ * ===============================
+ */
+const populateGuest = async (guestCart) => {
+  const books = await Book.find({
+    _id: { $in: guestCart.items.map((i) => i.bookId) },
+  }).lean();
+
+  const map = {};
+  books.forEach((b) => (map[b._id] = b));
+
+  return {
+    items: guestCart.items.map((i) => ({
+      book: map[i.bookId],
+      quantity: i.quantity,
+      ebookFormat: i.ebookFormat || null,
+    })),
+  };
+};
+
+/**
+ * =====================================
+ * GET CART
+ * =====================================
  */
 export async function GET() {
-    await connectDB();
+  await connectDB();
 
-    const user = await getServerUser();
+  const user = await getServerUser();
 
-    // 🔹 LOGGED IN USER
-    if (user) {
-        const cart = await Cart.findOne({ user: user.id })
-            .populate("items.book");
+  if (user) {
+    const cart = await Cart.findOne({ user: user.id })
+      .populate("items.book")
+      .lean();
 
-        return NextResponse.json(cart || { items: [] });
-    }
+    return NextResponse.json(cart || { items: [] });
+  }
 
-    // 🔹 GUEST
-    const guestCart = await getGuestCart();
-
-    const populatedItems = await Promise.all(
-        guestCart.items.map(async (item) => {
-            const book = await Book.findById(item.bookId);
-            return { book, quantity: item.quantity };
-        })
-    );
-
-    return NextResponse.json({ items: populatedItems });
+  const guestCart = await getGuestCart();
+  return NextResponse.json(await populateGuest(guestCart));
 }
-
 
 /**
- * POST /api/cart
- * Add item to cart
+ * =====================================
+ * ADD ITEM
+ * =====================================
  */
-export async function POST(request) {
-    await connectDB();
+export async function POST(req) {
+  await connectDB();
 
-    const { bookId, quantity = 1 } = await request.json();
-    const user = await getServerUser();
+  const { bookId, quantity = 1, ebookFormat = null } = await req.json();
 
-    // 🔹 LOGGED IN
-    if (user) {
-        let cart = await Cart.findOne({ user: user.id });
+  const user = await getServerUser();
 
-        if (!cart) {
-            cart = new Cart({
-                user: user.id,
-                items: [{ book: bookId, quantity }],
-            });
-        } else {
-            const item = cart.items.find(
-                (i) => i.book.toString() === bookId
-            );
+  // ================= VALIDATION =================
+  if (!bookId)
+    return NextResponse.json({ error: "Missing bookId" }, { status: 400 });
 
-            item ? (item.quantity += quantity) :
-                cart.items.push({ book: bookId, quantity });
-        }
+  if (quantity <= 0)
+    return NextResponse.json({ error: "Invalid quantity" }, { status: 400 });
 
-        await cart.save();
-        await cart.populate("items.book");
-        return NextResponse.json(cart);
+  const book = await Book.findById(bookId).lean();
+
+  if (!book)
+    return NextResponse.json({ error: "Book not found" }, { status: 404 });
+
+  const priceSnapshot = book.productSupply?.prices?.[0]?.amount || 0;
+
+  const currency = book.productSupply?.prices?.[0]?.currency || "GBP";
+
+  // =====================================================
+  // LOGGED IN USER CART
+  // =====================================================
+  if (user) {
+    let cart = await Cart.findOne({ user: user.id });
+
+    if (!cart) {
+      cart = new Cart({
+        user: user.id,
+        items: [],
+      });
     }
 
-    // 🔹 GUEST
-    const guestCart = await getGuestCart();
-    const item = guestCart.items.find(i => i.bookId === bookId);
-
-    item ? (item.quantity += quantity) :
-        guestCart.items.push({ bookId, quantity });
-
-    await setGuestCart(guestCart);
-
-    const populatedItems = await Promise.all(
-        guestCart.items.map(async (item) => {
-            const book = await Book.findById(item.bookId);
-            return { book, quantity: item.quantity };
-        })
+    const existing = cart.items.find(
+      (i) =>
+        i.book.toString() === bookId && (i.ebookFormat || null) === ebookFormat
     );
 
-    return NextResponse.json({ items: populatedItems });
-}
+    if (existing) {
+      existing.quantity += quantity;
+    } else {
+      cart.items.push({
+        book: bookId,
+        quantity,
+        ebookFormat,
+        priceSnapshot,
+        currency,
+      });
+    }
 
+    await cart.save();
+    await cart.populate("items.book");
+
+    return NextResponse.json({
+      items: cart.items,
+    });
+  }
+
+  // =====================================================
+  // GUEST CART
+  // =====================================================
+  const guestCart = await getGuestCart();
+
+  const existing = guestCart.items.find(
+    (i) => i.bookId === bookId && (i.ebookFormat || null) === ebookFormat
+  );
+
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    guestCart.items.push({
+      bookId,
+      quantity,
+      ebookFormat,
+    });
+  }
+
+  await setGuestCart(guestCart);
+
+  const populated = await populateGuest(guestCart);
+
+  return NextResponse.json({
+    items: populated.items,
+  });
+}
 
 /**
- * PUT /api/cart
- * Update item quantity
+ * =====================================
+ * UPDATE QUANTITY
+ * =====================================
  */
-export async function PUT(request) {
-    await connectDB();
+export async function PUT(req) {
+  await connectDB();
 
-    const { bookId, quantity } = await request.json();
-    const user = await getServerUser();
+  const { bookId, quantity, ebookFormat = null } = await req.json();
+  const user = await getServerUser();
 
-    if (user) {
-        const cart = await Cart.findOne({ user: user.id });
-        if (!cart) return NextResponse.json({ items: [] });
+  if (user) {
+    const cart = await Cart.findOne({ user: user.id });
+    if (!cart) return NextResponse.json({ items: [] });
 
-        const item = cart.items.find(
-            i => i.book.toString() === bookId
-        );
-
-        if (!item) return NextResponse.json(cart);
-
-        quantity <= 0
-            ? cart.items = cart.items.filter(i => i.book.toString() !== bookId)
-            : item.quantity = quantity;
-
-        await cart.save();
-        await cart.populate("items.book");
-        return NextResponse.json(cart);
-    }
-
-    // 🔹 GUEST
-    const guestCart = await getGuestCart();
-    guestCart.items = guestCart.items
-        .map(i => i.bookId === bookId ? { ...i, quantity } : i)
-        .filter(i => i.quantity > 0);
-
-    await setGuestCart(guestCart);
-
-    const populatedItems = await Promise.all(
-        guestCart.items.map(async (item) => {
-            const book = await Book.findById(item.bookId);
-            return { book, quantity: item.quantity };
-        })
+    const item = cart.items.find(
+      (i) => i.book.toString() === bookId && i.ebookFormat === ebookFormat
     );
 
-    return NextResponse.json({ items: populatedItems });
-}
+    if (!item) return NextResponse.json(cart);
 
+    if (quantity <= 0)
+      cart.items = cart.items.filter((i) => i.book.toString() !== bookId);
+    else item.quantity = quantity;
+
+    await cart.save();
+    await cart.populate("items.book");
+
+    return NextResponse.json(cart);
+  }
+
+  // 🔹 GUEST
+  const guestCart = await getGuestCart();
+
+  guestCart.items = guestCart.items
+    .map((i) =>
+      i.bookId === bookId && i.ebookFormat === ebookFormat
+        ? { ...i, quantity }
+        : i
+    )
+    .filter((i) => i.quantity > 0);
+
+  await setGuestCart(guestCart);
+  return NextResponse.json(await populateGuest(guestCart));
+}
 
 /**
- * DELETE /api/cart
- * Remove item from cart
+ * =====================================
+ * DELETE ITEM
+ * =====================================
  */
-export async function DELETE(request) {
-    await connectDB();
+export async function DELETE(req) {
+  await connectDB();
 
-    const { bookId } = await request.json();
-    const user = await getServerUser();
+  const { bookId, ebookFormat = null } = await req.json();
+  const user = await getServerUser();
 
-    if (user) {
-        const cart = await Cart.findOne({ user: user.id });
-        if (!cart) return NextResponse.json({ items: [] });
+  if (user) {
+    const cart = await Cart.findOne({ user: user.id });
+    if (!cart) return NextResponse.json({ items: [] });
 
-        cart.items = cart.items.filter(
-            i => i.book.toString() !== bookId
-        );
-
-        await cart.save();
-        await cart.populate("items.book");
-        return NextResponse.json(cart);
-    }
-
-    // 🔹 GUEST
-    const guestCart = await getGuestCart();
-    guestCart.items = guestCart.items.filter(
-        i => i.bookId !== bookId
+    cart.items = cart.items.filter(
+      (i) => i.book.toString() !== bookId || i.ebookFormat !== ebookFormat
     );
 
-    await setGuestCart(guestCart);
+    await cart.save();
+    await cart.populate("items.book");
 
-    const populatedItems = await Promise.all(
-        guestCart.items.map(async (item) => {
-            const book = await Book.findById(item.bookId);
-            return { book, quantity: item.quantity };
-        })
-    );
+    return NextResponse.json(cart);
+  }
 
-    return NextResponse.json({ items: populatedItems });
+  const guestCart = await getGuestCart();
+  guestCart.items = guestCart.items.filter(
+    (i) => i.bookId !== bookId || i.ebookFormat !== ebookFormat
+  );
+
+  await setGuestCart(guestCart);
+  return NextResponse.json(await populateGuest(guestCart));
 }
-

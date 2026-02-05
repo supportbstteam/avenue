@@ -4,21 +4,38 @@ import Image from "next/image";
 import Link from "next/link";
 import afterDiscountPrice from "@/lib/afterDiscountPrice";
 import { addToCart } from "@/store/cartSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 
 export default function ProductCard({ product }) {
   const dispatch = useDispatch();
+  const { syncing } = useSelector((s) => s.cart);
 
-  const { _id, author, image, format, preorder } = product;
+  const { _id, image, preorder } = product;
 
+  // ---------------- TITLE ----------------
   const title =
     product?.descriptiveDetail?.titles?.[0]?.text ||
     "Untitled";
 
+  // ---------------- AUTHOR ----------------
+  const author =
+    product?.descriptiveDetail?.contributors?.find(
+      (c) => c.role === "A01"
+    )?.nameInverted;
+
+  // ---------------- FORMAT ----------------
+  const ebookFormat =
+    product?.ebookCategories?.[0] || null;
+
+  const format =
+    ebookFormat ||
+    product?.type ||
+    product?.descriptiveDetail?.productForm;
+
+  // ---------------- PRICE ----------------
   const priceObj = product?.productSupply?.prices?.[0];
 
-  // SAFE numeric values
   const originalPrice = priceObj?.amount
     ? Number(priceObj.amount)
     : null;
@@ -32,14 +49,31 @@ export default function ProductCard({ product }) {
       ? afterDiscountPrice(originalPrice, discountPercent)
       : null;
 
-  const addToBasket = () => {
-    dispatch(addToCart({ bookId: _id, quantity: 1 }));
-    toast.success("Product added to cart");
+  // ---------------- ADD TO CART ----------------
+  const addToBasket = async () => {
+    try {
+      await dispatch(
+        addToCart({
+          bookId: _id,
+          quantity: 1,
+          ebookFormat,
+        })
+      ).unwrap();
+
+      toast.success("Added to cart");
+    } catch {
+      toast.error("Failed to add item");
+    }
   };
+
+  // =================================================
+  // UI
+  // =================================================
 
   return (
     <div className="group shrink-0">
-      {/* Image */}
+
+      {/* IMAGE */}
       <div className="relative w-full h-[340px] overflow-hidden group">
         <Link href={`/${_id}`}>
           <Image
@@ -50,11 +84,14 @@ export default function ProductCard({ product }) {
           />
         </Link>
 
-        <div className="absolute bottom-0 left-0 w-full bg-white p-4 space-y-2
-          opacity-100 translate-y-0
-          md:opacity-0 md:translate-y-full
-          md:group-hover:opacity-100 md:group-hover:translate-y-0
-          transition-all duration-300"
+        <div
+          className="
+            absolute bottom-0 left-0 w-full bg-white p-4 space-y-2
+            opacity-100 translate-y-0
+            md:opacity-0 md:translate-y-full
+            md:group-hover:opacity-100 md:group-hover:translate-y-0
+            transition-all duration-300
+          "
         >
           {preorder ? (
             <button
@@ -66,16 +103,22 @@ export default function ProductCard({ product }) {
           ) : (
             <button
               onClick={addToBasket}
-              className="w-full bg-teal-700 text-white py-3 text-sm font-semibold"
+              disabled={syncing}
+              className="
+                w-full bg-teal-700 text-white py-3 text-sm font-semibold
+                hover:bg-teal-800 transition
+                disabled:bg-gray-300
+              "
             >
-              ADD TO BASKET
+              {syncing ? "ADDING..." : "ADD TO BASKET"}
             </button>
           )}
         </div>
       </div>
 
-      {/* Info */}
+      {/* INFO */}
       <div className="mt-3 space-y-1 text-black">
+
         <h3 className="text-sm font-semibold leading-tight">
           {title}
         </h3>
@@ -87,12 +130,12 @@ export default function ProductCard({ product }) {
         )}
 
         {format && (
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-600 capitalize">
             {format}
           </p>
         )}
 
-        {/* Price */}
+        {/* PRICE */}
         {finalPrice !== null ? (
           <div className="flex gap-2 text-sm">
             {discountPercent > 0 && (

@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, Home, FolderTree, User } from "lucide-react"; 
+import { Menu, Home, FolderTree, User } from "lucide-react";
+import { MdGroups2 } from "react-icons/md";
+import { IoLibraryOutline } from "react-icons/io5";
+import { BiGroup } from "react-icons/bi";
+import { TbCategory } from "react-icons/tb";
 // You can replace these with FontAwesome if preferred
 
 export default function Sidebar() {
@@ -17,9 +21,17 @@ export default function Sidebar() {
 
   const menuItems = [
     { name: "Dashboard", path: "/admin", icon: <Home size={20} /> },
-    { name: "Products", path: "/admin/products", icon: <FolderTree size={20} /> },
-    { name: "Users", path: "/admin/users", icon: <FolderTree size={20} /> },
-    { name: "Category", path: "/admin/category", icon: <FolderTree size={20} /> },
+    {
+      name: "Category",
+      path: "/admin/category",
+      icon: <TbCategory size={20} />,
+    },
+    {
+      name: "Products",
+      path: "/admin/products",
+      icon: <IoLibraryOutline size={20} />,
+    },
+    { name: "Users", path: "/admin/users", icon: <BiGroup size={20} /> },
     { name: "Profile", path: "/admin/profile", icon: <User size={20} /> },
   ];
 
