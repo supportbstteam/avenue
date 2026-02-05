@@ -19,6 +19,7 @@ import {
 import { useEffect } from "react";
 import reverseName from "@/lib/reverseName";
 import { useRouter } from "next/navigation";
+import { fetchUserDetails } from "@/store/userSlice";
 
 export default function CartPage() {
   const dispatch = useDispatch();
@@ -27,6 +28,7 @@ export default function CartPage() {
   const router = useRouter();
   useEffect(() => {
     dispatch(fetchCart());
+    dispatch(fetchUserDetails());
   }, [dispatch]);
 
   /* ---------------- HELPERS ---------------- */

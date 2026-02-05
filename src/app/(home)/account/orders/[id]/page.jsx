@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOrderDetails, clearSelectedOrder } from "@/store/orderSlice";
+import { fetchUserDetails } from "@/store/userSlice";
 
 // ---------------- Status Colors ----------------
 const statusStyles = {
@@ -36,6 +37,10 @@ const OrderDetails = () => {
   const dispatch = useDispatch();
 
   const { selectedOrder, loading } = useSelector((s) => s.orders);
+
+  useEffect(() => {
+    dispatch(fetchUserDetails());
+  }, [dispatch]);
 
   // Fetch order
   useEffect(() => {
