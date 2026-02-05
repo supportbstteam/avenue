@@ -28,7 +28,9 @@ export const fetchUserOrders = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const res = await axios.get(`/api/orders/user/${userId}`);
-      return res.data.orders;
+
+      // console.log("-=--=- res ordersssssss -=-=-=-",res);
+      return res.data.data;
     } catch (err) {
       return rejectWithValue("Failed to fetch orders");
     }
@@ -48,25 +50,6 @@ export const fetchOrderDetails = createAsyncThunk(
       return res.data.order;
     } catch (err) {
       return rejectWithValue("Failed to fetch order");
-    }
-  }
-);
-
-/**
- * =========================================
- * ADMIN FETCH ALL ORDERS
- * =========================================
- */
-export const fetchAdminOrders = createAsyncThunk(
-  "orders/fetchAdmin",
-  async ({ page = 1, limit = 50 } = {}, { rejectWithValue }) => {
-    try {
-      const res = await axios.get("/api/admin/orders", {
-        params: { page, limit },
-      });
-      return res.data;
-    } catch {
-      return rejectWithValue("Failed to fetch admin orders");
     }
   }
 );
@@ -129,16 +112,11 @@ const orderSlice = createSlice({
        */
       .addCase(fetchOrderDetails.fulfilled, (state, action) => {
         state.selectedOrder = action.payload;
-      })
-
-      /**
-       * ADMIN ORDERS
-       */
-      .addCase(fetchAdminOrders.fulfilled, (state, action) => {
-        state.list = action.payload.data;
-        state.page = action.payload.page;
-        state.totalPages = action.payload.totalPages;
       });
+
+    /**
+     * ADMIN ORDERS
+     */
   },
 });
 

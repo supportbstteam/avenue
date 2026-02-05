@@ -12,15 +12,10 @@ export async function POST(req) {
     await connectDB();
 
     const { userId, cart, shippingAddress } = await req.json();
-
     const sessionUser = await getServerUser();
 
-    /**
-     * =====================================
-     * USER SNAPSHOT
-     * =====================================
-     */
-    const user = await User.findById(userId);
+    // ================= USER SNAPSHOT =================
+    const user = await User.findById(userId).lean();
 
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -32,48 +27,48 @@ export async function POST(req) {
       email: user.email,
     };
 
-    /**
-     * =====================================
-     * ITEMS SNAPSHOT
-     * =====================================
-     */
+    // ================= ITEMS SNAPSHOT =================
     let subtotal = 0;
 
-    const items = await Promise.all(
-      cart.map(async (c) => {
-        const book = await Book.findById(c.bookId);
+    const items = [];
 
-        if (!book) return null;
+    for (const c of cart) {
+      const book = await Book.findById(c.bookId).lean();
+      if (!book) continue;
 
-        const price = book.productSupply?.prices?.[0]?.amount || 0;
+      const priceObj = book.productSupply?.prices?.[0] || {};
 
-        subtotal += price * c.quantity;
+      const price = Number(priceObj.amount) || 0;
+      const currency = priceObj.currency || "GBP";
 
-        return {
-          book: book._id,
-          title: book.descriptiveDetail?.titles?.[0]?.text,
-          type: book.type,
-          price,
-          currency: book.productSupply?.prices?.[0]?.currency,
-          quantity: c.quantity,
-          ebookFormat: c.ebookFormat,
-        };
-      })
-    );
+      const title = book.descriptiveDetail?.titles?.[0]?.text || "Untitled";
 
-    const filteredItems = items.filter(Boolean);
+      const type = book.type || "book";
 
+      subtotal += price * c.quantity;
+
+      items.push({
+        book: book._id,
+        title,
+        type,
+        price,
+        currency,
+        quantity: c.quantity,
+        ebookFormat: c.ebookFormat || null,
+      });
+    }
+
+    if (!items.length)
+      return NextResponse.json({ error: "No valid items" }, { status: 400 });
+
+    // ================= TOTALS =================
     const shippingCost = subtotal > 500 ? 0 : 50;
     const total = subtotal + shippingCost;
 
-    /**
-     * =====================================
-     * CREATE ORDER
-     * =====================================
-     */
+    // ================= CREATE ORDER =================
     const order = await Order.create({
       user: userSnapshot,
-      items: filteredItems,
+      items,
       shippingAddress,
 
       payment: {
@@ -86,22 +81,13 @@ export async function POST(req) {
       total,
     });
 
-    /**
-     * =====================================
-     * CLEAR CART (CRITICAL)
-     * =====================================
-     */
-
-    // Logged-in user cart
+    // ================= CLEAR CART =================
     if (sessionUser) {
       await Cart.findOneAndUpdate(
         { user: sessionUser.id },
         { $set: { items: [] } }
       );
-    }
-
-    // Guest cart
-    else {
+    } else {
       await clearGuestCart();
     }
 

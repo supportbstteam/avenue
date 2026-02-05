@@ -66,14 +66,14 @@ const Page = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => router.push("/")}
-            className="bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition font-medium"
+            className="bg-teal-600 cursor-pointer text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition font-medium"
           >
             Continue Shopping
           </button>
 
           <button
             onClick={() => router.push("/account/orders")}
-            className="border border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-50 transition font-medium"
+            className="border cursor-pointer border-gray-300 px-6 py-3 rounded-lg hover:bg-gray-50 transition font-medium"
           >
             View Orders
           </button>

@@ -128,7 +128,7 @@ export default function AdminProfilePage() {
       <div className="flex gap-4 justify-end mt-10">
         {!editMode ? (
           <Button
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow px-4 py-2"
+            className="flex items-center gap-2 bg-[#ae0001] hover:bg-[#811b1b] text-white shadow px-4 py-2"
             onClick={() => setEditMode(true)}
           >
             <Pencil size={18} />
@@ -153,7 +153,7 @@ export default function AdminProfilePage() {
             </Button>
 
             <Button
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white shadow px-4 py-2"
+              className="flex items-center gap-2 bg-teal-700 hover:bg-teal-800 text-white shadow px-4 py-2"
               onClick={handleSave}
               disabled={loading}
             >

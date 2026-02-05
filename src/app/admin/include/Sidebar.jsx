@@ -8,6 +8,7 @@ import { MdGroups2 } from "react-icons/md";
 import { IoLibraryOutline } from "react-icons/io5";
 import { BiGroup } from "react-icons/bi";
 import { TbCategory } from "react-icons/tb";
+import { TbShoppingCartCopy } from "react-icons/tb";
 // You can replace these with FontAwesome if preferred
 
 export default function Sidebar() {
@@ -16,7 +17,7 @@ export default function Sidebar() {
 
   const isActive = (path) =>
     pathname === path
-      ? "bg-blue-600 text-white shadow-sm"
+      ? "bg-teal-700 text-white shadow-sm"
       : "text-gray-700 hover:bg-gray-200";
 
   const menuItems = [
@@ -32,6 +33,11 @@ export default function Sidebar() {
       icon: <IoLibraryOutline size={20} />,
     },
     { name: "Users", path: "/admin/users", icon: <BiGroup size={20} /> },
+    {
+      name: "Orders",
+      path: "/admin/orders",
+      icon: <TbShoppingCartCopy size={20} />,
+    },
     { name: "Profile", path: "/admin/profile", icon: <User size={20} /> },
   ];
 
