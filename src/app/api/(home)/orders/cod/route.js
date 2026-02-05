@@ -16,7 +16,6 @@ export async function POST(req) {
 
     // ================= USER SNAPSHOT =================
     const user = await User.findById(userId).lean();
-
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
 
@@ -29,7 +28,6 @@ export async function POST(req) {
 
     // ================= ITEMS SNAPSHOT =================
     let subtotal = 0;
-
     const items = [];
 
     for (const c of cart) {
@@ -38,7 +36,14 @@ export async function POST(req) {
 
       const priceObj = book.productSupply?.prices?.[0] || {};
 
-      const price = Number(priceObj.amount) || 0;
+      const amount = Number(priceObj.amount) || 0;
+      const discount = Number(priceObj.discountPercent) || 0;
+
+      // ✅ APPLY DISCOUNT
+      const finalPrice =
+        discount > 0 ? amount - (amount * discount) / 100 : amount;
+
+      const price = Number(finalPrice.toFixed(2));
       const currency = priceObj.currency || "GBP";
 
       const title = book.descriptiveDetail?.titles?.[0]?.text || "Untitled";
@@ -51,7 +56,7 @@ export async function POST(req) {
         book: book._id,
         title,
         type,
-        price,
+        price, // 🔥 discounted snapshot price
         currency,
         quantity: c.quantity,
         ebookFormat: c.ebookFormat || null,
@@ -62,8 +67,11 @@ export async function POST(req) {
       return NextResponse.json({ error: "No valid items" }, { status: 400 });
 
     // ================= TOTALS =================
-    const shippingCost = subtotal > 500 ? 0 : 50;
-    const total = subtotal + shippingCost;
+
+    subtotal = Number(subtotal.toFixed(2));
+
+    const shippingCost = subtotal < 25 ? 2.99 : 0;
+    const total = Number((subtotal + shippingCost).toFixed(2));
 
     // ================= CREATE ORDER =================
     const order = await Order.create({
