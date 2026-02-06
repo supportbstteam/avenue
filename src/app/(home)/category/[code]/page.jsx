@@ -25,11 +25,11 @@ const SubCategory = () => {
    * Load ROOT categories once
    * ------------------------------------------------------
    */
-  useEffect(() => {
-    if (categories.length === 0) {
-      dispatch(fetchUserCategories()); // no category param = root
-    }
-  }, [categories.length, dispatch]);
+  // useEffect(() => {
+  //   if (categories.length === 0) {
+  //     dispatch(fetchUserCategories()); // no category param = root
+  //   }
+  // }, [categories.length, dispatch]);
 
   /**
    * ------------------------------------------------------

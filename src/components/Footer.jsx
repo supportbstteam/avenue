@@ -72,7 +72,7 @@ export default function Footer() {
     <footer className="bg-[#363636] text-gray-200">
 
       {/* MAIN FOOTER */}
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-16">
 
         {/* LINK COLUMNS */}
         {footerLinks.map((section) => (
