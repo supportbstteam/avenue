@@ -34,18 +34,23 @@ export const authOptions = {
 
         /* ---------- ADMIN LOGIN ---------- */
         if (admin === "true") {
-          const adminUser = await Admin.findOne({ username: email });
+          const identifier = email.toLowerCase().trim();
+
+          const adminUser = await Admin.findOne({
+            $or: [{ email: identifier }, { username: identifier }],
+          });
+
           if (!adminUser) return null;
 
-          const passMatch = await bcrypt.compare(
-            password,
-            adminUser.password
-          );
+          const passMatch = await bcrypt.compare(password, adminUser.password);
+
           if (!passMatch) return null;
 
           return {
             id: adminUser._id.toString(),
-            email: adminUser.username,
+            email: adminUser.email,
+            username: adminUser.username,
+            name: adminUser.name,
             role: "admin",
           };
         }
@@ -70,15 +75,19 @@ export const authOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;      // ✅ explicit
+        token.id = user.id;
         token.role = user.role;
+        token.username = user.username;
+        token.email = user.email;
       }
       return token;
     },
 
     async session({ session, token }) {
-      session.user.id = token.id;   // ✅ no token.sub
+      session.user.id = token.id;
       session.user.role = token.role;
+      session.user.username = token.username;
+      session.user.email = token.email;
       return session;
     },
   },

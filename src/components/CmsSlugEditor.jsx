@@ -5,12 +5,20 @@ import { TEMPLATE_REGISTRY } from "./templates/registry";
 import RichTextInput from "./templates/blocks/RichTextInput";
 import { useRouter } from "next/navigation";
 
+const slugify = (text) =>
+  text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 export default function CmsSlugEditor({ slug }) {
   const router = useRouter();
 
   const [title, setTitle] = useState("");
-  const [slugInput, setSlugInput] = useState(slug || "");
-
+  const [slugInput, setSlugInput] = useState(slug !== "new" ? slug : "" || "");
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
   const [blocks, setBlocks] = useState([]);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
@@ -119,14 +127,25 @@ export default function CmsSlugEditor({ slug }) {
         <input
           placeholder="Page Title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setTitle(val);
+
+            // ⭐ Auto-generate slug
+            if (!slugManuallyEdited) {
+              setSlugInput(slugify(val));
+            }
+          }}
           className="border p-2 rounded w-full"
         />
 
         <input
           placeholder="Slug"
           value={slugInput}
-          onChange={(e) => setSlugInput(e.target.value)}
+          onChange={(e) => {
+            setSlugInput(slugify(e.target.value));
+            setSlugManuallyEdited(true);
+          }}
           className="border p-2 rounded w-full"
         />
       </div>

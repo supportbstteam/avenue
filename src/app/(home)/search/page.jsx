@@ -13,18 +13,25 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import reverseName from "@/lib/reverseName";
 import afterDiscountPrice from "@/lib/afterDiscountPrice";
-import { addToCart } from "@/store/cartSlice";
+import { addToCart, fetchCart } from "@/store/cartSlice";
 import Link from "next/link";
 
 function SearchPage() {
   const dispatch = useDispatch();
   const { searchResults, searchText, loading } = useSelector(
-    (state) => state.book,
+    (state) => state.book
   );
 
   const [view, setView] = useState("list");
   const [sortBy, setSortBy] = useState("best-selling");
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const fetchingCart = async () => {
+      dispatch(fetchCart());
+    };
+    fetchingCart();
+  }, [dispatch]);
 
   const itemsPerPage = 12;
 
@@ -38,7 +45,7 @@ function SearchPage() {
       id: product._id,
       title: product?.descriptiveDetail?.titles?.[0]?.text || "Untitled",
       author: reverseName(
-        product.descriptiveDetail.contributors[0].nameInverted,
+        product.descriptiveDetail.contributors[0].nameInverted
       ),
       price: afterDiscountPrice(originalPrice, discountPercent),
       rrp: originalPrice,

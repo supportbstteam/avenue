@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchBooksForHome } from "@/store/bookSlice";
 import reverseName from "@/lib/reverseName";
 import { fetchUserDetails } from "@/store/userSlice";
+import { fetchCart } from "@/store/cartSlice";
 
 export default function HomePage() {
   const {
@@ -51,6 +52,7 @@ export default function HomePage() {
     dispatch(
       fetchBooksForHome({ category: "bestsellers", limit: 10, page: 1 })
     );
+    dispatch(fetchCart());
     dispatch(fetchBooksForHome({ category: "popular", limit: 10, page: 2 }));
     dispatch(
       fetchBooksForHome({ category: "special_editions", limit: 10, page: 3 })
