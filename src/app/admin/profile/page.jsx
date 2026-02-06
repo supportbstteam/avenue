@@ -1,62 +1,81 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useClientAdmin } from "@/lib/getClientUser";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAdminProfile, updateAdminProfile } from "@/store/adminSlice";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
 import { UserCircle, Lock, Mail, Save, XCircle, Pencil } from "lucide-react";
+
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 export default function AdminProfilePage() {
   const dispatch = useDispatch();
 
-  const clientAdmin = useClientAdmin();
-
-  const { name, email, id, loading } = useSelector((state) => state.admin);
+  const { name, email, username, id, loading } = useSelector((s) => s.admin);
 
   const [editMode, setEditMode] = useState(false);
-
-  const [formValues, setFormValues] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
 
   useEffect(() => {
     dispatch(fetchAdminProfile());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (email) {
-      setFormValues({
-        id: id,
-        name: name,
-        email: email,
-        password: "",
-      });
-    }
-  }, [email]);
+  /**
+   * ===============================
+   * VALIDATION
+   * ===============================
+   */
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name required"),
 
-  const handleChange = (e) => {
-    setFormValues({
-      ...formValues,
-      [e.target.name]: e.target.value,
-    });
-  };
+    username: Yup.string()
+      .min(3, "Minimum 3 characters")
+      .required("Username required"),
 
-  const handleSave = async () => {
-    await dispatch(updateAdminProfile(formValues));
-    setEditMode(false);
-  };
+    email: Yup.string().email("Invalid email").required("Email required"),
+
+    password: Yup.string().min(6, "Min 6 characters").nullable(),
+  });
+
+  /**
+   * ===============================
+   * FORMIK
+   * ===============================
+   */
+  const formik = useFormik({
+    enableReinitialize: true,
+
+    initialValues: {
+      id,
+      name: name || "",
+      username: username || "",
+      email: email || "",
+      password: "",
+    },
+
+    validationSchema,
+
+    onSubmit: async (values) => {
+      await dispatch(updateAdminProfile(values));
+      setEditMode(false);
+
+      // Clear password field after save
+      formik.setFieldValue("password", "");
+    },
+  });
 
   if (loading || !email) {
     return <p className="p-6 text-gray-600 text-lg">Loading profile...</p>;
   }
 
   return (
-    <div className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200 mt-8">
+    <form
+      onSubmit={formik.handleSubmit}
+      className="max-w-2xl mx-auto bg-white p-8 rounded-xl shadow-lg border border-gray-200 mt-8"
+    >
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
         <UserCircle size={50} className="text-blue-600" />
@@ -65,71 +84,98 @@ export default function AdminProfilePage() {
         </h2>
       </div>
 
-      {/* Form Fields */}
       <div className="space-y-6">
-        {/* Name Field */}
-        <div className="flex flex-col space-y-2">
-          <label className="text-gray-700 font-medium flex items-center gap-2">
+        {/* NAME */}
+        <div>
+          <label className="flex items-center gap-2 font-medium">
             <UserCircle size={18} /> Full Name
           </label>
+
           <Input
             name="name"
-            value={formValues.name}
-            onChange={handleChange}
+            value={formik.values.name}
+            onChange={formik.handleChange}
             disabled={!editMode}
-            className={`${
-              editMode ? "focus:ring-2 focus:ring-blue-400" : "bg-gray-100"
-            }`}
+            className={!editMode ? "bg-gray-100" : ""}
           />
+
+          {formik.touched.name && formik.errors.name && (
+            <p className="text-red-500 text-sm">{formik.errors.name}</p>
+          )}
         </div>
 
-        {/* Email Field */}
-        <div className="flex flex-col space-y-2">
-          <label className="text-gray-700 font-medium flex items-center gap-2">
-            <Mail size={18} /> Email Address
+        {/* USERNAME */}
+        <div>
+          <label className="flex items-center gap-2 font-medium">
+            <UserCircle size={18} /> Username
           </label>
+
+          <Input
+            name="username"
+            value={formik.values.username}
+            onChange={formik.handleChange}
+            disabled={!editMode}
+            className={!editMode ? "bg-gray-100" : ""}
+          />
+
+          {formik.touched.username && formik.errors.username && (
+            <p className="text-red-500 text-sm">{formik.errors.username}</p>
+          )}
+        </div>
+
+        {/* EMAIL */}
+        <div>
+          <label className="flex items-center gap-2 font-medium">
+            <Mail size={18} /> Email
+          </label>
+
           <Input
             name="email"
             type="email"
-            value={formValues.email}
-            onChange={handleChange}
+            value={formik.values.email}
+            onChange={formik.handleChange}
             disabled={!editMode}
-            className={`${
-              editMode ? "focus:ring-2 focus:ring-blue-400" : "bg-gray-100"
-            }`}
+            className={!editMode ? "bg-gray-100" : ""}
           />
+
+          {formik.touched.email && formik.errors.email && (
+            <p className="text-red-500 text-sm">{formik.errors.email}</p>
+          )}
         </div>
 
-        {/* Password Field */}
-        <div className="flex flex-col space-y-2">
-          <label className="text-gray-700 font-medium flex items-center gap-2">
+        {/* PASSWORD */}
+        <div>
+          <label className="flex items-center gap-2 font-medium">
             <Lock size={18} /> Password
           </label>
 
           <Input
             name="password"
             type="password"
-            placeholder="••••••••"
-            value={formValues.password}
-            onChange={handleChange}
+            placeholder="Leave blank to keep current password"
+            value={formik.values.password}
+            onChange={formik.handleChange}
             disabled={!editMode}
-            className={`${
-              editMode ? "focus:ring-2 focus:ring-blue-400" : "bg-gray-100"
-            }`}
+            className={!editMode ? "bg-gray-100" : ""}
           />
 
+          {formik.touched.password && formik.errors.password && (
+            <p className="text-red-500 text-sm">{formik.errors.password}</p>
+          )}
+
           <p className="text-xs text-gray-500">
-            Leave blank if you do not want to change the password.
+            Leave blank if you don’t want to change password.
           </p>
         </div>
       </div>
 
-      {/* Action Buttons */}
+      {/* ACTION BUTTONS */}
       <div className="flex gap-4 justify-end mt-10">
         {!editMode ? (
           <Button
-            className="flex items-center gap-2 bg-[#ae0001] hover:bg-[#811b1b] text-white shadow px-4 py-2"
+            type="button"
             onClick={() => setEditMode(true)}
+            className="bg-[#ae0001] hover:bg-[#811b1b] text-white"
           >
             <Pencil size={18} />
             Edit Profile
@@ -137,15 +183,11 @@ export default function AdminProfilePage() {
         ) : (
           <>
             <Button
+              type="button"
               variant="outline"
-              className="flex items-center gap-2 px-4 py-2 border-gray-400"
               onClick={() => {
                 setEditMode(false);
-                setFormValues({
-                  name: name,
-                  email: email,
-                  password: "",
-                });
+                formik.resetForm();
               }}
             >
               <XCircle size={18} />
@@ -153,9 +195,9 @@ export default function AdminProfilePage() {
             </Button>
 
             <Button
-              className="flex items-center gap-2 bg-teal-700 hover:bg-teal-800 text-white shadow px-4 py-2"
-              onClick={handleSave}
+              type="submit"
               disabled={loading}
+              className="bg-teal-700 hover:bg-teal-800 text-white"
             >
               <Save size={18} />
               Save Changes
@@ -163,6 +205,6 @@ export default function AdminProfilePage() {
           </>
         )}
       </div>
-    </div>
+    </form>
   );
 }

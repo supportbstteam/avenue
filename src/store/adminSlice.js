@@ -1,70 +1,123 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/lib/api";
 
-
+/**
+ * ===============================
+ * FETCH ADMIN PROFILE
+ * ===============================
+ */
 export const fetchAdminProfile = createAsyncThunk(
   "admin/fetchProfile",
-  async () => {
-    const response = await api.get("/admin/profile");
-    const data = response.data;
-    data.password = "";
-    return data;
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/admin/profile");
+
+      // backend returns { data: user }
+      return response.data.data;
+    } catch (err) {
+      return rejectWithValue("Failed to load profile");
+    }
   }
 );
 
-// Update admin profile
+/**
+ * ===============================
+ * UPDATE ADMIN PROFILE
+ * ===============================
+ */
 export const updateAdminProfile = createAsyncThunk(
   "admin/updateProfile",
-  async (formValues) => {
-    const response = await api.put("/admin/profile", formValues);
-    return response.data;
+  async (formValues, { rejectWithValue }) => {
+    try {
+      const response = await api.put("/admin/profile", formValues);
+      return response.data.data;
+    } catch (err) {
+      return rejectWithValue("Update failed");
+    }
   }
 );
 
+/**
+ * ===============================
+ * SLICE
+ * ===============================
+ */
 const adminSlice = createSlice({
   name: "admin",
+
   initialState: {
     id: "",
     name: "",
+    username: "",
     email: "",
     role: "",
     loading: false,
     error: null,
   },
 
-  reducers: {},
+  reducers: {
+    clearAdmin: (state) => {
+      state.id = "";
+      state.name = "";
+      state.username = "";
+      state.email = "";
+      state.role = "";
+    },
+  },
 
   extraReducers: (builder) => {
     builder
 
-      // Fetch
+      /**
+       * FETCH PROFILE
+       */
       .addCase(fetchAdminProfile.pending, (state) => {
         state.loading = true;
-      })
-      .addCase(fetchAdminProfile.fulfilled, (state, action) => {
-        state.loading = false;
-        state.id = action.payload._id;
-        state.email = action.payload.username;
-        state.role = action.payload.role;
-      })
-      .addCase(fetchAdminProfile.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
+        state.error = null;
       })
 
-      // Update
+      .addCase(fetchAdminProfile.fulfilled, (state, action) => {
+        state.loading = false;
+
+        const user = action.payload;
+
+        state.id = user._id;
+        state.name = user.name || "";
+        state.username = user.username || "";
+        state.email = user.email || "";
+        state.role = user.role || "";
+      })
+
+      .addCase(fetchAdminProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      /**
+       * UPDATE PROFILE
+       */
       .addCase(updateAdminProfile.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
+
       .addCase(updateAdminProfile.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload; // update local state
+
+        const user = action.payload;
+
+        // Update local state
+        state.name = user.name;
+        state.username = user.username;
+        state.email = user.email;
       })
+
       .addCase(updateAdminProfile.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload;
       });
   },
 });
 
+export const { clearAdmin } = adminSlice.actions;
 export default adminSlice.reducer;

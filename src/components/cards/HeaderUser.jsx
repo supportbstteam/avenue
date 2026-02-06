@@ -75,13 +75,14 @@ const HeaderUser = ({ hoveredDropdown }) => {
 
       {/* ================= LOGOUT ================= */}
       <div className="border-t p-2">
-        <button
+        {/* <button
           onClick={handleLogOut}
           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left hover:bg-red-50 text-red-600 transition"
         >
           <LucideLogOut size={18} />
           Logout
-        </button>
+        </button> */}
+        <LogoutButton/>
       </div>
     </div>
   );

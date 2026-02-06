@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default function AdminProfileMenu() {
   const dispatch = useDispatch();
-  const { email, role } = useSelector((s) => s.admin);
+  const { email, role, name } = useSelector((s) => s.admin);
 
   const [open, setOpen] = useState(false);
   const ref = useRef();
@@ -32,7 +32,7 @@ export default function AdminProfileMenu() {
   }, []);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="cursor-pointer relative">
       {/* TRIGGER */}
       <button
         onClick={() => setOpen(!open)}
@@ -58,7 +58,7 @@ export default function AdminProfileMenu() {
               {email || "Admin"}
             </div>
             <div className="text-xs text-gray-500">
-              {role}
+              {name}
             </div>
           </div>
 
