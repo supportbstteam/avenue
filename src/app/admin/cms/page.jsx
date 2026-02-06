@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchCMSPages, deleteCMSPage } from "@/store/cmsSlice";
 import { useRouter } from "next/navigation";
 import AdminTable from "@/components/admin/AdminTable";
+import AdminHeader from "@/components/admin/AdminHeader";
 
 export default function CMSAdmin() {
   const dispatch = useDispatch();
@@ -58,7 +59,8 @@ export default function CMSAdmin() {
     <div className="p-6 space-y-5">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">CMS Pages</h1>
+        {/* <h1 className="text-2xl font-bold">CMS Pages</h1> */}
+        <AdminHeader title="CMS Pages" />
 
         {/* <button
           onClick={() => router.push("/admin/cms/new")}

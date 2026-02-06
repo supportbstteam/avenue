@@ -6,6 +6,7 @@ import AdminTable from "@/components/admin/AdminTable";
 import { fetchCategories, updateCategoryStatus } from "@/store/categorySlice";
 import ToggleSwitch from "@/components/custom/ToggleSwitch";
 import { useRouter } from "next/navigation";
+import AdminHeader from "@/components/admin/AdminHeader";
 
 export const getCategoryColumns = ({ onToggleStatus }) => [
   { accessorKey: "code", header: "Code" },
@@ -111,7 +112,8 @@ const AdminCategoriesPage = () => {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Categories (Admin)</h1>
+      {/* <h1 className="text-2xl font-semibold mb-4">Categories</h1> */}
+      <AdminHeader title="Categories" />
 
       <form onSubmit={handleSearch} className="flex items-center gap-3 mb-4">
         <input

@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import { fetchCMSPages } from "@/store/cmsSlice";
+import { fetchSocialLinks } from "@/store/socialSlice";
 
 import {
   faXTwitter,
@@ -11,22 +13,45 @@ import {
   faInstagram,
   faTiktok,
   faYoutube,
+  faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+/**
+ * Map icon string from DB → actual icon object
+ */
+const ICON_MAP = {
+  faXTwitter,
+  faSquareFacebook,
+  faInstagram,
+  faTiktok,
+  faYoutube,
+  faLinkedin,
+};
 
 export default function Footer() {
   const dispatch = useDispatch();
 
   const { list: pages, loading } = useSelector((s) => s.cms);
+  const { links: socialLinks } = useSelector((s) => s.social);
 
-  // ================= LOAD CMS =================
+  /**
+   * ================= LOAD DATA
+   */
   useEffect(() => {
     if (!pages.length) {
       dispatch(fetchCMSPages());
     }
+
+    if (!socialLinks.length) {
+      dispatch(fetchSocialLinks());
+    }
   }, [dispatch]);
 
-  // ================= GROUP BY LEVEL =================
+  /**
+   * ================= CMS GROUP
+   */
   const group = (lvl) => pages.filter((p) => Number(p.level || 0) === lvl);
 
   const columns = [
@@ -35,17 +60,21 @@ export default function Footer() {
     { title: "ABOUT AVENUE", level: 3 },
   ];
 
-  const socialLinks = [
-    { label: "X", href: "https://x.com", icon: faXTwitter },
-    { label: "Facebook", href: "https://facebook.com", icon: faSquareFacebook },
-    { label: "Instagram", href: "https://instagram.com", icon: faInstagram },
-    { label: "TikTok", href: "https://tiktok.com", icon: faTiktok },
-    { label: "YouTube", href: "https://youtube.com", icon: faYoutube },
-  ];
+
+  
+
+  /**
+   * ================= SORT SOCIALS
+   */
+  const visibleSocials = [...socialLinks]
+    .filter((s) => s.enabled)
+    .sort((a, b) => a.order - b.order);
+
+    console.log("-=-= visibleSocials -=-=-=",visibleSocials);
+    console.log("-=-= socialLinks -=-=-=",socialLinks);
 
   return (
     <footer className="bg-[#363636] text-gray-200">
-      {/* MAIN FOOTER */}
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-16">
         {/* CMS COLUMNS */}
         {columns.map((col) => {
@@ -79,25 +108,35 @@ export default function Footer() {
           );
         })}
 
-        {/* SOCIAL */}
+        {/* SOCIAL (Redux Powered) */}
         <div>
           <h4 className="text-sm font-semibold tracking-widest mb-4">
             FOLLOW US
           </h4>
 
           <ul className="space-y-3 text-sm">
-            {socialLinks.map((social) => (
-              <li key={social.label}>
-                <Link
-                  href={social.href}
-                  target="_blank"
-                  className="flex items-center gap-3 hover:underline"
-                >
-                  <FontAwesomeIcon icon={social.icon} className="w-4 h-4" />
-                  <span>{social.label}</span>
-                </Link>
-              </li>
-            ))}
+            {visibleSocials.map((social, i) => {
+              const Icon = ICON_MAP[social.icon];
+              console.log("-=-=--= item in teh visibleSocials -=-=-", social);
+              return (
+                <li key={i}>
+                  <Link
+                    href={social.url}
+                    target="_blank"
+                    className="flex items-center gap-3 hover:underline"
+                  >
+                    {Icon && (
+                      <FontAwesomeIcon icon={Icon} className="w-4 h-4" />
+                    )}
+                    <span>{social.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+
+            {!visibleSocials.length && (
+              <li className="text-gray-500">No social links</li>
+            )}
           </ul>
         </div>
       </div>

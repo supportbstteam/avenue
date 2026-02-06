@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import AdminTable from "@/components/admin/AdminTable";
 import { fetchAdminOrders } from "@/store/adminOrderSlice";
+import AdminHeader from "@/components/admin/AdminHeader";
 
 // ======================================================
 // STATUS BADGE
@@ -117,7 +118,8 @@ const AdminOrders = () => {
     <div className="p-6 space-y-5">
       {/* HEADER */}
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold">Orders Management</h1>
+        {/* <h1 className="text-2xl font-semibold">Orders Management</h1> */}
+        <AdminHeader title="Order Management" />
       </div>
 
       {/* SEARCH / FILTER */}

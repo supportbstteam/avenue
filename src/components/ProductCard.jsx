@@ -62,7 +62,7 @@ export default function ProductCard({ product }) {
   // UI
   // =================================================
 
-  console.log(product);
+  // console.log(product);
 
   return (
     <Link href={`/${_id}`} className="group shrink-0">

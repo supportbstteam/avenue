@@ -9,6 +9,7 @@ import { IoLibraryOutline } from "react-icons/io5";
 import { BiGroup } from "react-icons/bi";
 import { TbCategory } from "react-icons/tb";
 import { TbShoppingCartCopy } from "react-icons/tb";
+import { IoSettingsOutline } from "react-icons/io5";
 import { MdLibraryBooks } from "react-icons/md";
 // You can replace these with FontAwesome if preferred
 
@@ -41,6 +42,7 @@ export default function Sidebar() {
       icon: <TbShoppingCartCopy size={20} />,
     },
     { name: "Profile", path: "/admin/profile", icon: <User size={20} /> },
+    { name: "Settings", path: "/admin/setting", icon: <IoSettingsOutline size={20} /> },
   ];
 
   return (
@@ -86,7 +88,7 @@ export default function Sidebar() {
       {/* Bottom Section (Optional space or buttons) */}
       <div className="mt-auto p-3">
         {!collapsed && (
-          <p className="text-xs text-gray-500">© 2025 Admin Panel</p>
+          <p className="text-xs text-gray-500">© 2026 Admin Panel</p>
         )}
       </div>
     </aside>
