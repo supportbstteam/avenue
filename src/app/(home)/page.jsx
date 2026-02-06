@@ -236,37 +236,37 @@ export default function HomePage() {
     {
       id: 1,
       label: "Bestsellers",
-      iconSrc: "/img/icons/bestseller.webp",
+      iconSrc: "/img/icons/bestseller1.webp",
       href: "/bestsellers",
     },
     {
       id: 2,
       label: "Fiction",
-      iconSrc: "/img/icons/fictionreb.webp",
+      iconSrc: "/img/icons/fictionreb1.webp",
       href: "/fiction",
     },
     {
       id: 3,
       label: "Non-Fiction",
-      iconSrc: "/img/icons/non-fiction.webp",
+      iconSrc: "/img/icons/non-fiction1.webp",
       href: "/non-fiction",
     },
     {
       id: 4,
       label: "Children's",
-      iconSrc: "/img/icons/childrens.webp",
+      iconSrc: "/img/icons/childrens1.webp",
       href: "/childrens",
     },
     {
       id: 5,
       label: "Stationery",
-      iconSrc: "/img/icons/stationary.webp",
+      iconSrc: "/img/icons/stationary1.webp",
       href: "/stationery",
     },
     {
       id: 6,
       label: "Calendars & Diaries",
-      iconSrc: "/img/icons/calenderdiary.webp",
+      iconSrc: "/img/icons/calenderdiary1.webp",
       href: "/calendars-diaries",
     },
   ];
