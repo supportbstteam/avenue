@@ -8,11 +8,11 @@ import SocialMedia from "@/models/SocialMedia";
  * =========================================
  */
 export async function GET() {
-  const admin = await getServerAdmin();
+  // const admin = await getServerAdmin();
 
-  if (!admin) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  // if (!admin) {
+  //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // }
 
   await connectDB();
 
