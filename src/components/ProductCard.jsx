@@ -70,6 +70,9 @@ export default function ProductCard({ product }) {
   // UI
   // =================================================
 
+  console.log(product);
+  
+
   return (
     <div className="group shrink-0">
 
@@ -154,5 +157,9 @@ export default function ProductCard({ product }) {
         )}
       </div>
     </div>
+
+
+
+
   );
 }

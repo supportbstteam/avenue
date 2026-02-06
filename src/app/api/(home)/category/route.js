@@ -42,6 +42,14 @@ export async function GET(req) {
 
     const { searchParams } = new URL(req.url);
     const categoryParam = searchParams.get("category");
+    const page = searchParams.get("page");
+    const perPage = 20;
+    const skip = (page - 1) * perPage;
+
+
+     console.log(page);
+
+    
 
     /**
      * ==================================================
@@ -60,16 +68,27 @@ export async function GET(req) {
         .map(normalizeCategory)
         .filter(Boolean); // 🔥 IMPORTANT
 
-      const books = await Book.find({
-        categories: { $exists: true, $ne: [] },
-      })
-        .limit(20)
-        .lean();
+      // const books = await Book.find({
+      //   categories: { $exists: true, $ne: [] },
+      // })
+      //   .limit(20)
+      //   .lean();
+
+      const books = await Book.aggregate([
+        { $sort: { createdAt: -1 } },
+        { $limit: 200 },      // top 200 latest only
+        { $skip: skip },
+        { $limit: perPage },
+      ]);
 
       return Response.json({
         type: "ROOT",
         categories,
         books,
+        page: Number(page),
+        perPage,
+        total: 200,
+        totalPages: Math.ceil(200 / perPage),
       });
     }
 
@@ -140,7 +159,16 @@ export async function GET(req) {
 
     const books = await Book.find({
       categories: { $in: descendantIds },
-    }).limit(20).lean();
+    })
+      .sort({ createdAt: -1 })     // latest first (optional but recommended)
+      .skip(skip)
+      .limit(perPage)
+      .lean();
+
+
+    // const books = await Book.find({
+    //   categories: { $in: descendantIds },
+    // }).limit(20).lean();
 
 
     return Response.json({
@@ -148,6 +176,10 @@ export async function GET(req) {
       selectedCategory,
       subCategories,
       books,
+      page: Number(page),
+      perPage,
+      total: 200,
+      totalPages: Math.ceil(200 / perPage),
     });
   } catch (err) {
     console.error("❌ Category API Error:", err);

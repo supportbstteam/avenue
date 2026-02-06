@@ -18,6 +18,8 @@ const SubCategory = () => {
     categoryLoading,
     error,
     selectedCategory,
+    page, 
+    totalPages
   } = useSelector((state) => state.userCategory);
 
   /**
@@ -38,7 +40,7 @@ const SubCategory = () => {
    */
   useEffect(() => {
     if (code && selectedCategory !== code) {
-      dispatch(fetchUserCategories({ category: code }));
+      dispatch(fetchUserCategories({ category: code, page: 1 }));
     }
   }, [code, selectedCategory, dispatch]);
 
@@ -92,6 +94,29 @@ const SubCategory = () => {
             />
           ))}
         </div>
+
+
+                <div className="flex justify-center mt-6 gap-2">
+                  <button
+                    disabled={page === 1}
+                    onClick={() => dispatch(fetchUserCategories({category: code, page: page - 1 }))}
+                    className="px-3 py-1 bg-[#FF6A00] text-[#fff] rounded disabled:opacity-40"
+                  >
+                    Prev
+                  </button>
+        
+                  <span className="px-3 py-1">
+                    Page {page} / {totalPages}
+                  </span>
+        
+                  <button
+                    disabled={page === totalPages}
+                    onClick={() => dispatch(fetchUserCategories({category: code, page: page + 1 }))}
+                    className="px-3 py-1 bg-[#FF6A00] text-[#fff] rounded disabled:opacity-40"
+                  >
+                    Next
+                  </button>
+                </div>
       </main>
     </div>
   );

@@ -30,13 +30,13 @@ export default function Header() {
   const [searchText, setSearchText] = useState("");
 
   const mainMenu = [
-    { label: "Bestsellers", href: "/bestsellers" },
-    { label: "New Books", href: "#" },
+    { label: "Bestsellers", href: "/category/H" },
+    { label: "New Books", href: "/category" },
     { label: "Highlights", href: "/highlights" }, // Only this will have mega menu
-    { label: "Fiction", href: "/fiction" },
-    { label: "Children's", href: "/children" },
-    { label: "Language", href: "#" },
-    { label: "Games", href: "/games" },
+    { label: "Fiction", href: "/category/A" },
+    { label: "Children's", href: "/category/Y" },
+    { label: "Language", href: "/category/C" },
+    { label: "Games", href: "/category/S" },
   ];
 
   const utilityMenu = [

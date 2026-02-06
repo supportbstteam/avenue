@@ -9,12 +9,10 @@ import CategorySidebar from "@/components/CategorySidebar";
 const Category = () => {
   const dispatch = useDispatch();
 
-  const { books, initialLoading, categoryLoading, error } = useSelector(
-    (state) => state.userCategory
-  );
+  const { books, initialLoading, categoryLoading, error,  page, totalPages } = useSelector((state) => state.userCategory);
 
   useEffect(() => {
-    dispatch(fetchUserCategories({}));
+    dispatch(fetchUserCategories({ page: 1 }));
   }, [dispatch]);
 
   if (initialLoading) {
@@ -60,6 +58,29 @@ const Category = () => {
             />
           ))}
         </div>
+
+        <div className="flex justify-center mt-6 gap-2">
+          <button
+            disabled={page === 1}
+            onClick={() => dispatch(fetchUserCategories({ page: page - 1 }))}
+            className="px-3 py-1 bg-[#FF6A00] text-[#fff] rounded disabled:opacity-40"
+          >
+            Prev
+          </button>
+
+          <span className="px-3 py-1">
+            Page {page} / {totalPages}
+          </span>
+
+          <button
+            disabled={page === totalPages}
+            onClick={() => dispatch(fetchUserCategories({ page: page + 1 }))}
+            className="px-3 py-1 bg-[#FF6A00] text-[#fff] rounded disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+
       </main>
     </div>
   );

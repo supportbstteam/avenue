@@ -19,9 +19,6 @@ const CategorySidebar = () => {
   const handleClick = (cat) => {
     router.push(`/category/${cat.code}`);
   };
-
-  console.log("Category :", categories.length );
-
   return (
     <aside className="w-72 bg-white border-r border-gray-200 p-4 overflow-y-auto">
       <h3 className="text-lg font-semibold mb-4">Categories</h3>
