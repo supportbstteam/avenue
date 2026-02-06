@@ -92,7 +92,7 @@ export default function UserRegisterPage() {
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-8">
           {/* HEADER */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-serif font-bold text-[#336b75] mb-2">
+            <h1 className="text-4xl font-serif font-bold text-[#FF6A00] mb-2">
               Create an Account
             </h1>
             <p className="text-gray-600 text-lg">
@@ -129,7 +129,7 @@ export default function UserRegisterPage() {
                     value={formData.firstName}
                     onChange={handleChange}
                     placeholder="John"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#336b75] focus:border-transparent transition"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:border-transparent transition"
                   />
                 </div>
               </div>
@@ -150,7 +150,7 @@ export default function UserRegisterPage() {
                     value={formData.lastName}
                     onChange={handleChange}
                     placeholder="Doe"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#336b75] focus:border-transparent transition"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:border-transparent transition"
                   />
                 </div>
               </div>
@@ -172,7 +172,7 @@ export default function UserRegisterPage() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#336b75] focus:border-transparent transition"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:border-transparent transition"
                 />
               </div>
             </div>
@@ -195,7 +195,7 @@ export default function UserRegisterPage() {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#336b75] focus:border-transparent transition"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:border-transparent transition"
                   />
                   <button
                     type="button"
@@ -253,7 +253,7 @@ export default function UserRegisterPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="••••••••"
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#336b75] focus:border-transparent transition"
+                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF6A00] focus:border-transparent transition"
                   />
                   <button
                     type="button"
@@ -289,20 +289,20 @@ export default function UserRegisterPage() {
                 id="terms"
                 checked={agreeTerms}
                 onChange={(e) => setAgreeTerms(e.target.checked)}
-                className="w-5 h-5 rounded border-gray-300 text-[#336b75] focus:ring-[#336b75] cursor-pointer mt-0.5"
+                className="w-5 h-5 rounded border-gray-300 text-[#FF6A00] focus:ring-[#FF6A00] cursor-pointer mt-0.5"
               />
               <label htmlFor="terms" className="text-sm text-gray-600">
                 I agree to the{" "}
                 <Link
                   href="/terms"
-                  className="text-[#336b75] font-medium hover:underline"
+                  className="text-[#FF6A00] font-medium hover:underline"
                 >
                   Terms & Conditions
                 </Link>{" "}
                 and{" "}
                 <Link
                   href="/privacy"
-                  className="text-[#336b75] font-medium hover:underline"
+                  className="text-[#FF6A00] font-medium hover:underline"
                 >
                   Privacy Policy
                 </Link>
@@ -313,7 +313,7 @@ export default function UserRegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-[#336b75] text-white py-3 rounded-lg font-semibold text-lg hover:bg-[#2a5560] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#FF6A00] cursor-pointer text-white py-3 rounded-lg font-semibold text-lg hover:bg-[#df6006] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Creating Account..." : "Create Account"}
             </button>
@@ -375,7 +375,7 @@ export default function UserRegisterPage() {
             Already have an account?{" "}
             <Link
               href="/auth/user/login"
-              className="text-[#336b75] font-semibold hover:underline"
+              className="text-[#FF6A00] font-semibold hover:underline"
             >
               Sign in here
             </Link>

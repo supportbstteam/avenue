@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
 const AnimatedBackground = () => (
@@ -16,6 +16,7 @@ const AnimatedBackground = () => (
 );
 
 const ThankYouClient = () => {
+  const router = useRouter();
   const params = useSearchParams();
   const orderId = params.get("order");
   return (
@@ -31,6 +32,7 @@ const ThankYouClient = () => {
               <path
                 fill="none"
                 stroke="#10b981"
+                // bg-[#FF6A00]
                 strokeWidth="4"
                 d="M14 27l7 7 17-17"
               />
@@ -60,7 +62,7 @@ const ThankYouClient = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={() => router.push("/")}
-            className="bg-teal-600 cursor-pointer text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition font-medium"
+            className="bg-[#FF6A00] cursor-pointer text-white px-6 py-3 rounded-lg hover:bg-[#db5d03] transition font-medium"
           >
             Continue Shopping
           </button>

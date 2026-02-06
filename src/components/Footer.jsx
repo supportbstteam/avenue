@@ -1,4 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCMSPages } from "@/store/cmsSlice";
+
 import {
   faXTwitter,
   faSquareFacebook,
@@ -9,55 +15,24 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Footer() {
-  const footerLinks = [
-    {
-      title: "SHOPPING WITH US",
-      links: [
-        { label: "Contact Us", href: "/contact" },
-        { label: "Bookshops", href: "/bookshops" },
-        { label: "Click & Collect", href: "/click-collect" },
-        { label: "Delivery Options", href: "/delivery" },
-        { label: "Online Pricing", href: "/pricing" },
-        { label: "Returning Items", href: "/returns" },
-        { label: "Student Discount", href: "/student-discount" },
-        { label: "Waterstones Gift Cards", href: "/gift-cards" },
-        { label: "Frequently Asked Questions", href: "/faqs" },
-      ],
-    },
-    {
-      title: "LEGAL",
-      links: [
-        { label: "Accessibility", href: "/accessibility" },
-        { label: "Cookie Policy", href: "/cookies" },
-        { label: "Manage Cookies", href: "/manage-cookies" },
-        { label: "Modern Slavery Statement", href: "/modern-slavery" },
-        {
-          label: "Privacy Notice - How We Use Your Information",
-          href: "/privacy",
-        },
-        { label: "Terms & Conditions", href: "/terms" },
-        { label: "Gender Pay Gap Report", href: "/gender-pay-gap" },
-        { label: "Complaints Process", href: "/complaints" },
-        { label: "Waterstones Review Policy", href: "/reviews-policy" },
-      ],
-    },
-    {
-      title: "ABOUT WATERSTONES",
-      links: [
-        { label: "About us", href: "/about" },
-        { label: "Affiliates", href: "/affiliates" },
-        { label: "Careers at Waterstones", href: "/careers" },
-        { label: "Hatchards", href: "/hatchards" },
-        { label: "Independent Publishers", href: "/publishers" },
-        { label: "Waterstones Account Sales", href: "/account-sales" },
-        { label: "Waterstones App", href: "/app" },
-        {
-          label: "Waterstones Children's Laureate",
-          href: "/childrens-laureate",
-        },
-        { label: "Waterstones Plus", href: "/plus" },
-      ],
-    },
+  const dispatch = useDispatch();
+
+  const { list: pages, loading } = useSelector((s) => s.cms);
+
+  // ================= LOAD CMS =================
+  useEffect(() => {
+    if (!pages.length) {
+      dispatch(fetchCMSPages());
+    }
+  }, [dispatch]);
+
+  // ================= GROUP BY LEVEL =================
+  const group = (lvl) => pages.filter((p) => Number(p.level || 0) === lvl);
+
+  const columns = [
+    { title: "SHOPPING WITH US", level: 1 },
+    { title: "LEGAL", level: 2 },
+    { title: "ABOUT AVENUE", level: 3 },
   ];
 
   const socialLinks = [
@@ -70,33 +45,46 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#363636] text-gray-200">
-
       {/* MAIN FOOTER */}
       <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-16">
+        {/* CMS COLUMNS */}
+        {columns.map((col) => {
+          const items = group(col.level);
 
-        {/* LINK COLUMNS */}
-        {footerLinks.map((section) => (
-          <div key={section.title}>
-            <h4 className="text-sm font-semibold tracking-widest mb-4">
-              {section.title}
-            </h4>
-            <ul className="space-y-2 text-sm">
-              {section.links.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href} className="hover:underline text-gray-300">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+          return (
+            <div key={col.level}>
+              <h4 className="text-sm font-semibold tracking-widest mb-4">
+                {col.title}
+              </h4>
+
+              <ul className="space-y-2 text-sm">
+                {loading && <li className="text-gray-500">Loading...</li>}
+
+                {!loading && items.length === 0 && (
+                  <li className="text-gray-500">No pages</li>
+                )}
+
+                {items.map((page) => (
+                  <li key={page.slug}>
+                    <Link
+                      href={`/cms/${page.slug}`}
+                      className="hover:underline text-gray-300"
+                    >
+                      {page.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
 
         {/* SOCIAL */}
         <div>
           <h4 className="text-sm font-semibold tracking-widest mb-4">
             FOLLOW US
           </h4>
+
           <ul className="space-y-3 text-sm">
             {socialLinks.map((social) => (
               <li key={social.label}>
@@ -112,16 +100,12 @@ export default function Footer() {
             ))}
           </ul>
         </div>
-
       </div>
 
       {/* COPYRIGHT */}
       <div className="border-t border-neutral-700 text-xs text-gray-400 px-6 py-4 text-center">
-        © Waterstones, 2026. Waterstones Booksellers Limited. Registered in
-        England and Wales. Company number 00610095. Registered office address:
-        203–206 Piccadilly, London, W1J 9HD.
+        © Waterstones, 2026.
       </div>
-
     </footer>
   );
 }

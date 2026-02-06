@@ -439,13 +439,13 @@ export default function HomePage() {
     },
     {
       id: 4,
-      imageUrl: "/banner/4.jpg",
+      imageUrl: "/banner/banner4.webp",
       alt: "Join Waterstones Plus for exclusive perks",
       href: "/",
     },
     {
       id: 5,
-      imageUrl: "/banner/5.jpg",
+      imageUrl: "/banner/banner5.webp",
       alt: "Join Waterstones Plus for exclusive perks",
       href: "/",
     },

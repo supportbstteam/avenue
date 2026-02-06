@@ -16,7 +16,7 @@ export default function ProductGrid({
           <h2 className="text-2xl italic">{title}</h2>
 
           {seeMoreUrl && (
-            <a href={seeMoreUrl} className="text-teal-700 font-semibold">
+            <a href={seeMoreUrl} className="text-[#FF6A00]  font-semibold">
               SEE MORE
             </a>
           )}

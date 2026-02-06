@@ -1,4 +1,3 @@
-
 import { connectDB } from "@/lib/db";
 import CmsPage from "@/models/CmsPage";
 import { NextResponse } from "next/server";
@@ -9,20 +8,30 @@ import { NextResponse } from "next/server";
  * =========================================
  */
 export async function GET(req, context) {
-  await connectDB();
+  try {
+    await connectDB();
 
-  const { slug } = await context.params;
+    const { slug } = await context.params; // ✅ FIX
 
-  const page = await CmsPage.findOne({ slug });
+    if (!slug) {
+      return NextResponse.json({ error: "Slug required" }, { status: 400 });
+    }
 
-  if (!page) {
+    const page = await CmsPage.findOne({
+      slug: slug.toLowerCase().trim(),
+    }).lean();
+
+    return NextResponse.json({
+      data: page || null,
+    });
+  } catch (err) {
+    console.error("CMS GET ONE Error:", err);
+
     return NextResponse.json(
-      { data: null },
-      { status: 200 }
+      { error: "Failed to fetch page" },
+      { status: 500 }
     );
   }
-
-  return NextResponse.json({ data: page });
 }
 
 /**
@@ -31,11 +40,32 @@ export async function GET(req, context) {
  * =========================================
  */
 export async function DELETE(req, context) {
-  await connectDB();
+  try {
+    await connectDB();
 
-  const { slug } = await context.params;
+    const { slug } = context.params;
 
-  await CmsPage.deleteOne({ slug });
+    if (!slug) {
+      return NextResponse.json({ error: "Slug required" }, { status: 400 });
+    }
 
-  return NextResponse.json({ success: true });
+    const result = await CmsPage.deleteOne({
+      slug: slug.toLowerCase().trim(),
+    });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: "Page not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+    });
+  } catch (err) {
+    console.error("CMS DELETE Error:", err);
+
+    return NextResponse.json(
+      { error: "Failed to delete page" },
+      { status: 500 }
+    );
+  }
 }

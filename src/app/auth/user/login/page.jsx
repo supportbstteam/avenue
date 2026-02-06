@@ -25,16 +25,16 @@ const LoginPage = () => {
         <div className="mx-auto max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
           {/* LOGIN CARD */}
           <div
-            className="rounded-lg border border-[#336b75]/30 
-  bg-gradient-to-b from-white via-[#336b75]/10 to-[#336b75]/20 
+            className="rounded-lg border border-[#FF6A00]/30 
+  bg-gradient-to-b from-white via-[#FF6A00]/10 to-[#FF6A00]/20 
   p-8 h-full"
           >
             <UserLogin />
           </div>
 
           <div
-            className="rounded-lg border border-[#336b75]/30 
-  bg-gradient-to-b from-white via-[#336b75]/10 to-[#336b75]/20 
+            className="rounded-lg border border-[#FF6A00]/30 
+  bg-gradient-to-b from-white via-[#FF6A00]/10 to-[#FF6A00]/20 
   p-8 h-full"
           >
             <NewCustomerCard />

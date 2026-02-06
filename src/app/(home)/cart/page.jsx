@@ -74,7 +74,7 @@ export default function CartPage() {
       {/* BREADCRUMB */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-4 text-sm">
-          <Link href="/" className="text-[#336b75] hover:underline">
+          <Link href="/" className="text-[#FF6A00] hover:underline">
             Home
           </Link>{" "}
           / <span className="font-medium">Shopping Basket</span>
@@ -93,7 +93,7 @@ export default function CartPage() {
             <h2 className="text-2xl font-bold mb-4">Your basket is empty</h2>
             <Link
               href="/"
-              className="bg-[#336b75] text-white px-6 py-3 rounded-lg inline-block"
+              className="bg-[#FF6A00] text-white px-6 py-3 rounded-lg inline-block"
             >
               Continue Shopping
             </Link>
@@ -206,7 +206,7 @@ export default function CartPage() {
 
               <Link
                 href="/"
-                className="flex items-center gap-2 p-6 text-[#336b75]"
+                className="flex items-center gap-2 p-6 text-[#FF6A00]"
               >
                 <FontAwesomeIcon icon={faArrowLeft} />
                 Continue Shopping
@@ -234,7 +234,7 @@ export default function CartPage() {
 
               <button
                 onClick={handleCheckout}
-                className="w-full cursor-pointer mt-6 bg-[#336b75] text-white py-3 rounded"
+                className="w-full cursor-pointer mt-6 bg-[#FF6A00] text-white py-3 rounded"
               >
                 Proceed to Checkout
               </button>

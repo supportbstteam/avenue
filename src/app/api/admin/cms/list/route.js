@@ -3,10 +3,20 @@ import CmsPage from "@/models/CmsPage";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  await connectDB();
+  try {
+    await connectDB();
 
-  const pages = await CmsPage.find({}, "title slug")
-    .sort({ createdAt: -1 });
+    const pages = await CmsPage.find({}, "title slug level createdAt")
+      .sort({ createdAt: -1 })
+      .lean();
 
-  return NextResponse.json(pages);
+    return NextResponse.json({ data: pages });
+  } catch (err) {
+    console.error("CMS LIST Error:", err);
+
+    return NextResponse.json(
+      { error: "Failed to fetch pages" },
+      { status: 500 }
+    );
+  }
 }

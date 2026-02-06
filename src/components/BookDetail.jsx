@@ -124,14 +124,14 @@ export default function BookDetail({ book }) {
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => router.push("/auth/user/login")}
-                className="w-full border text-[#336b75] px-6 py-3 font-semibold hover:bg-[#336b75] hover:text-white transition"
+                className="w-full border cursor-pointer text-black px-6 py-3 font-semibold hover:bg-black hover:text-white transition"
               >
                 Sign in to Add to Wishlist
               </button>
 
               <button
                 onClick={addToBasket}
-                className="w-full bg-[#336b75] text-white px-6 py-3 font-semibold hover:bg-white hover:text-[#336b75] border border-[#336b75] transition"
+                className="w-full bg-[#FF6A00] cursor-pointer text-white px-6 py-3 font-semibold hover:bg-white hover:text-[#FF6A00] border border-[#FF6A00] transition"
               >
                 ADD TO BASKET
               </button>
@@ -145,7 +145,7 @@ export default function BookDetail({ book }) {
         <div className="border-t pt-10">
           <div className="flex items-center gap-4 mb-6">
             <h2 className="font-serif text-3xl">Description</h2>
-            <div className="flex-1 h-px bg-sky-200" />
+            <div className="flex-1 h-px bg-[#FF6A00]" />
           </div>
 
           {/* INTRO */}
@@ -161,7 +161,7 @@ export default function BookDetail({ book }) {
           {/* TOGGLE */}
           <button
             onClick={() => setExpandDescription(!expandDescription)}
-            className="text-sky-600 hover:underline font-medium"
+            className="text-[#FF6A00] hover:underline font-medium"
           >
             {expandDescription ? "… read less" : "… read more"}
           </button>

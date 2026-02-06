@@ -7,7 +7,7 @@ export default function NotFound() {
         
         {/* LEFT CONTENT */}
         <div className="text-center md:text-left">
-          <p className="text-sm uppercase tracking-widest text-[#336b75] font-semibold mb-2">
+          <p className="text-sm uppercase tracking-widest text-[#FF6A00] font-semibold mb-2">
             Page Not Found
           </p>
 
@@ -15,7 +15,7 @@ export default function NotFound() {
             404
           </h1>
 
-          <h2 className="text-2xl md:text-3xl font-serif text-[#336b75] mb-4">
+          <h2 className="text-2xl md:text-3xl font-serif text-[#FF6A00] mb-4">
             This chapter seems to be missing
           </h2>
 
@@ -27,14 +27,14 @@ export default function NotFound() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#336b75] text-white font-semibold hover:bg-[#2a5560] transition"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-[#FF6A00] text-white font-semibold hover:bg-[#2a5560] transition"
             >
               Back to Home
             </Link>
 
             <Link
               href="/"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-[#336b75] text-[#336b75] font-semibold hover:bg-[#336b75]/10 transition"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-lg border border-[#FF6A00] text-[#FF6A00] font-semibold hover:bg-[#FF6A00]/10 transition"
             >
               Browse Books
             </Link>
@@ -52,7 +52,7 @@ export default function NotFound() {
             className="max-w-full"
           >
             {/* Book */}
-            <rect x="90" y="80" width="180" height="240" rx="12" fill="#336b75"/>
+            <rect x="90" y="80" width="180" height="240" rx="12" fill="#FF6A00"/>
             <rect x="105" y="95" width="150" height="210" rx="8" fill="#ffffff"/>
 
             {/* Pages */}

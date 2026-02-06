@@ -40,7 +40,7 @@ const HeaderUser = ({ hoveredDropdown }) => {
       <div className="px-4 py-4 border-b bg-gray-50 rounded-t-xl">
         <div className="flex items-center gap-3">
           {/* Avatar */}
-          <div className="w-10 h-10 rounded-full bg-teal-600 text-white flex items-center justify-center font-semibold">
+          <div className="w-10 h-10 rounded-full bg-[#FF6A00] text-white flex items-center justify-center font-semibold">
             {user?.firstName?.[0] || "U"}
           </div>
 

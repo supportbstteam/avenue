@@ -94,7 +94,7 @@ function SearchPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#336b75] mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF6A00] mx-auto mb-4"></div>
           <p className="text-gray-600 font-medium">Loading products...</p>
         </div>
       </div>
@@ -124,7 +124,7 @@ function SearchPage() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* SIDEBAR - FILTERS */}
           {/* <aside className="lg:col-span-1">
-            <div className="bg-gradient-to-b from-[#336b75] to-[#2a5560] rounded-lg shadow-lg p-6 sticky top-4 space-y-6">
+            <div className="bg-gradient-to-b from-[#FF6A00] to-[#2a5560] rounded-lg shadow-lg p-6 sticky top-4 space-y-6">
               <div>
                 <h3 className="font-bold text-white mb-4 pb-3 border-b border-white border-opacity-30">
                   Filter Results By
@@ -247,7 +247,7 @@ function SearchPage() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#336b75]"
+                  className="border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#FF6A00]"
                 >
                   <option value="best-selling">Best Selling</option>
                   <option value="price-low">Price: Low to High</option>
@@ -259,7 +259,7 @@ function SearchPage() {
                     onClick={() => setView("list")}
                     className={`px-4 py-2 text-sm font-medium transition ${
                       view === "list"
-                        ? "bg-[#336b75] text-white"
+                        ? "bg-[#FF6A00] text-white"
                         : "bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                     title="List view"
@@ -270,7 +270,7 @@ function SearchPage() {
                     onClick={() => setView("grid")}
                     className={`px-4 py-2 text-sm font-medium transition ${
                       view === "grid"
-                        ? "bg-[#336b75] text-white"
+                        ? "bg-[#FF6A00] text-white"
                         : "bg-white text-gray-700 hover:bg-gray-50"
                     }`}
                     title="Grid view"
@@ -314,7 +314,7 @@ function SearchPage() {
                           <div className="flex-1">
                             {/* TITLE */}
                             <Link href={`/${product.id}`}>
-                              <h2 className="text-lg font-semibold text-[#336b75] hover:text-[#336b75] cursor-pointer transition mb-2 line-clamp-1">
+                              <h2 className="text-lg font-semibold text-[#FF6A00] hover:text-[#FF6A00] cursor-pointer transition mb-2 line-clamp-1">
                                 {product.title}
                               </h2>
                             </Link>
@@ -342,14 +342,14 @@ function SearchPage() {
                             <p className="text-xs text-gray-400 line-through mb-1">
                               RRP £{product.rrp}
                             </p>
-                            <p className="text-2xl font-bold text-[#336b75]">
+                            <p className="text-2xl font-bold text-[#FF6A00]">
                               £{product.price}
                             </p>
                           </div>
 
                           <button
                             onClick={() => addToBasket(product)}
-                            className="bg-[#336b75] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#336b75] transition flex items-center justify-center gap-2 w-full sm:w-auto whitespace-nowrap"
+                            className="bg-[#FF6A00] text-white px-8 py-3 rounded-lg font-semibold hover:bg-[#FF6A00] transition flex items-center justify-center gap-2 w-full sm:w-auto whitespace-nowrap"
                           >
                             <FontAwesomeIcon
                               icon={faShoppingCart}
@@ -390,7 +390,7 @@ function SearchPage() {
 
                       <div className="p-4 flex flex-col flex-1">
                         <Link href={`/${product.id}`}>
-                          <h2 className="font-semibold text-[#336b75] mb-1 line-clamp-2 text-sm hover:text-[#336b75] cursor-pointer transition">
+                          <h2 className="font-semibold text-[#FF6A00] mb-1 line-clamp-2 text-sm hover:text-[#FF6A00] cursor-pointer transition">
                             {product.title}
                           </h2>
                         </Link>
@@ -406,13 +406,13 @@ function SearchPage() {
                           <p className="text-xs text-gray-400 line-through mb-1">
                             £{product.rrp}
                           </p>
-                          <p className="text-xl font-bold text-[#336b75] mb-3">
+                          <p className="text-xl font-bold text-[#FF6A00] mb-3">
                             £{product.price}
                           </p>
 
                           <button
                             onClick={() => addToBasket(product)}
-                            className="w-full bg-[#336b75] text-white py-2 rounded-lg font-semibold hover:bg-[#336b75] transition text-sm flex items-center justify-center gap-2"
+                            className="w-full bg-[#FF6A00] text-white py-2 rounded-lg font-semibold hover:bg-[#FF6A00] transition text-sm flex items-center justify-center gap-2"
                           >
                             <FontAwesomeIcon
                               icon={faShoppingCart}
@@ -462,7 +462,7 @@ function SearchPage() {
                             onClick={() => setCurrentPage(pageNum)}
                             className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
                               currentPage === pageNum
-                                ? "bg-[#336b75] text-white"
+                                ? "bg-[#FF6A00] text-white"
                                 : "border border-gray-300 text-gray-700 hover:bg-gray-50"
                             }`}
                           >

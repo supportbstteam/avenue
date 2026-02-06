@@ -14,31 +14,23 @@ export default function ProductCard({ product }) {
   const { _id, image, preorder } = product;
 
   // ---------------- TITLE ----------------
-  const title =
-    product?.descriptiveDetail?.titles?.[0]?.text ||
-    "Untitled";
+  const title = product?.descriptiveDetail?.titles?.[0]?.text || "Untitled";
 
   // ---------------- AUTHOR ----------------
-  const author =
-    product?.descriptiveDetail?.contributors?.find(
-      (c) => c.role === "A01"
-    )?.nameInverted;
+  const author = product?.descriptiveDetail?.contributors?.find(
+    (c) => c.role === "A01"
+  )?.nameInverted;
 
   // ---------------- FORMAT ----------------
-  const ebookFormat =
-    product?.ebookCategories?.[0] || null;
+  const ebookFormat = product?.ebookCategories?.[0] || null;
 
   const format =
-    ebookFormat ||
-    product?.type ||
-    product?.descriptiveDetail?.productForm;
+    ebookFormat || product?.type || product?.descriptiveDetail?.productForm;
 
   // ---------------- PRICE ----------------
   const priceObj = product?.productSupply?.prices?.[0];
 
-  const originalPrice = priceObj?.amount
-    ? Number(priceObj.amount)
-    : null;
+  const originalPrice = priceObj?.amount ? Number(priceObj.amount) : null;
 
   const discountPercent = priceObj?.discountPercent
     ? Number(priceObj.discountPercent)
@@ -71,25 +63,18 @@ export default function ProductCard({ product }) {
   // =================================================
 
   console.log(product);
-  
 
   return (
-    <div className="group shrink-0">
-
+    <Link href={`/${_id}`} className="group shrink-0">
       {/* IMAGE */}
       <div className="relative w-full h-[340px] overflow-hidden group">
-        <Link href={`/${_id}`}>
-          <Image
-            src={image}
-            alt={title}
-            fill
-            className="object-contain"
-          />
-        </Link>
+        <div>
+          <Image src={image} alt={title} fill className="object-contain" />
+        </div>
 
         <div
           className="
-            absolute bottom-0 left-0 w-full bg-white p-4 space-y-2
+            absolute bottom-0 left-0 w-full bg-gray-100 p-4 space-y-2
             opacity-100 translate-y-0
             md:opacity-0 md:translate-y-full
             md:group-hover:opacity-100 md:group-hover:translate-y-0
@@ -108,8 +93,8 @@ export default function ProductCard({ product }) {
               onClick={addToBasket}
               disabled={syncing}
               className="
-                w-full bg-teal-700 text-white py-3 text-sm font-semibold
-                hover:bg-teal-800 transition
+                w-full bg-black text-white py-3 cursor-pointer text-sm font-semibold
+                hover:bg-[#FF6A00] transition
                 disabled:bg-gray-300
               "
             >
@@ -121,22 +106,13 @@ export default function ProductCard({ product }) {
 
       {/* INFO */}
       <div className="mt-3 space-y-1 text-black">
-
-        <h3 className="text-sm font-semibold leading-tight">
-          {title}
-        </h3>
+        <h3 className="text-sm font-semibold leading-tight">{title}</h3>
 
         {author && (
-          <p className="text-sm text-[#336b75] font-medium">
-            {author}
-          </p>
+          <p className="text-sm text-[#FF6A00] font-medium">{author}</p>
         )}
 
-        {format && (
-          <p className="text-sm text-gray-600 capitalize">
-            {format}
-          </p>
-        )}
+        {format && <p className="text-sm text-gray-600 capitalize">{format}</p>}
 
         {/* PRICE */}
         {finalPrice !== null ? (
@@ -146,20 +122,12 @@ export default function ProductCard({ product }) {
                 £{originalPrice.toFixed(2)}
               </span>
             )}
-            <span className="font-semibold">
-              £{finalPrice}
-            </span>
+            <span className="font-semibold">£{finalPrice}</span>
           </div>
         ) : (
-          <p className="text-sm text-gray-400">
-            Price not available
-          </p>
+          <p className="text-sm text-gray-400">Price not available</p>
         )}
       </div>
-    </div>
-
-
-
-
+    </Link>
   );
 }

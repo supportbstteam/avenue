@@ -31,7 +31,6 @@ export async function GET() {
 
 export async function PUT(request) {
   const admin = await getServerAdmin();
-  const formValues = await request.json();
 
   if (!admin) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -40,35 +39,56 @@ export async function PUT(request) {
   try {
     await connectDB();
 
-    // Fetch the current admin record
-    const existingAdmin = await AdminModel.findOne({ _id: formValues.id });
+    const body = await request.json();
+
+    /**
+     * ===============================
+     * Fetch Admin by SESSION ID
+     * (Never trust client id)
+     * ===============================
+     */
+    const existingAdmin = await AdminModel.findById(admin.id);
 
     if (!existingAdmin) {
       return NextResponse.json({ error: "Admin not found" }, { status: 404 });
     }
 
-    // Prepare update fields
+    /**
+     * ===============================
+     * Prepare update fields
+     * ===============================
+     */
     const updateData = {
-      name: formValues.name,
-      username: formValues.email,
+      name: body.name,
+      username: body.username,
+      email: body.email,
     };
 
-    // Only update password if provided
-    if (formValues.password && formValues.password.trim() !== "") {
-      updateData.password = await bcrypt.hash(formValues.password, 10);
-    } else {
-      updateData.password = existingAdmin.password;
+    /**
+     * Update password ONLY if provided
+     */
+    if (body.password && body.password.trim()) {
+      updateData.password = await bcrypt.hash(body.password, 10);
     }
 
-    const updatedUser = await AdminModel.findOneAndUpdate(
-      { _id: formValues.id },
+    /**
+     * ===============================
+     * Update
+     * ===============================
+     */
+    const updatedUser = await AdminModel.findByIdAndUpdate(
+      admin.id,
       updateData,
-      { new: true }
-    );
+      {
+        new: true,
+        runValidators: true,
+      }
+    ).select("-password");
 
-    return NextResponse.json(updatedUser);
+    return NextResponse.json({ data: updatedUser });
   } catch (error) {
-    console.error(error);
+    console.error("Admin update error:", error);
+
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }
 }

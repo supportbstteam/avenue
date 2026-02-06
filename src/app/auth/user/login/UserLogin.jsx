@@ -80,7 +80,7 @@ export default function UserLogin() {
     <div className="w-full">
       {/* HEADER */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-serif font-bold text-[#336b75] mb-2">
+        <h1 className="text-3xl font-serif font-bold text-[#FF6A00] mb-2">
           Sign In
         </h1>
         <p className="text-gray-600">Welcome back to Waterstones</p>
@@ -115,7 +115,7 @@ export default function UserLogin() {
                   name="email"
                   type="email"
                   placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#336b75] focus:outline-none"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6A00] focus:outline-none"
                 />
               </div>
               <ErrorMessage
@@ -139,12 +139,12 @@ export default function UserLogin() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#336b75] focus:outline-none"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF6A00] focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-4 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 cursor-pointer top-4 text-gray-400 hover:text-gray-600"
                 >
                   <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
                 </button>
@@ -159,7 +159,7 @@ export default function UserLogin() {
             {/* FORGOT PASSWORD */}
             <Link
               href="/auth/user/forgot-password"
-              className="text-sm text-[#336b75] hover:underline"
+              className="text-sm text-[#FF6A00] hover:underline"
             >
               Forgot your password?
             </Link>
@@ -168,7 +168,7 @@ export default function UserLogin() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-[#336b75] cursor-pointer text-white py-3 rounded-lg font-semibold hover:bg-[#2a5560] transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#FF6A00] cursor-pointer text-white py-3 rounded-lg font-semibold hover:bg-[#d35b05] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? "Signing in..." : "Sign In"}
             </button>
@@ -181,7 +181,7 @@ export default function UserLogin() {
         Don't have an account?{" "}
         <Link
           href="/auth/user/register"
-          className="text-[#336b75] font-semibold hover:underline"
+          className="text-[#FF6A00] font-semibold hover:underline"
         >
           Register here
         </Link>

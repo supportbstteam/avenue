@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
+import Counter from "./Counter.js";
 
 /**
  * ============================================
  * ITEM SNAPSHOT
  * ============================================
- * Stores book info at purchase time
- * so later edits/deletes don't affect order
  */
 const OrderItemSchema = new mongoose.Schema(
   {
@@ -24,7 +23,7 @@ const OrderItemSchema = new mongoose.Schema(
       default: 1,
     },
 
-    ebookFormat: String, // EPUB / PDF / KINDLE (if ebook)
+    ebookFormat: String, // EPUB / PDF / KINDLE
   },
   { _id: false }
 );
@@ -85,9 +84,6 @@ const OrderSchema = new mongoose.Schema(
 
     shippingAddress: AddressSchema,
 
-    /**
-     * PAYMENT
-     */
     payment: {
       method: {
         type: String,
@@ -103,19 +99,19 @@ const OrderSchema = new mongoose.Schema(
       transactionId: String,
     },
 
-    /**
-     * ORDER STATUS
-     */
     status: {
       type: String,
-      enum: ["placed", "processing", "shipped", "delivered", "cancelled"],
+      enum: [
+        "placed",
+        "processing",
+        "shipped",
+        "delivered",
+        "cancelled",
+      ],
       default: "placed",
       index: true,
     },
 
-    /**
-     * TOTALS
-     */
     subtotal: Number,
     shippingCost: Number,
     total: Number,
@@ -124,15 +120,32 @@ const OrderSchema = new mongoose.Schema(
 );
 
 /**
- * AUTO ORDER NUMBER
+ * ============================================
+ * SEQUENTIAL ORDER NUMBER
+ * ============================================
  */
-OrderSchema.pre("save", async function () {
-  if (!this.orderNumber) {
-    this.orderNumber =
-      "ORD-" +
-      Date.now().toString().slice(-6) +
-      Math.floor(Math.random() * 1000);
+OrderSchema.pre("save", async function (next) {
+  if (this.orderNumber) return next();
+
+  try {
+    const counter = await Counter.findOneAndUpdate(
+      { key: "orderNumber" },
+      { $inc: { seq: 1 } },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
+
+    const padded = String(counter.seq).padStart(4, "0");
+
+    this.orderNumber = `ORD-${padded}`;
+
+    next();
+  } catch (err) {
+    next(err);
   }
 });
 
-export default mongoose.models.Order || mongoose.model("Order", OrderSchema);
+export default mongoose.models.Order ||
+  mongoose.model("Order", OrderSchema);

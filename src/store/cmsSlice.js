@@ -12,20 +12,29 @@ export const fetchCMSPages = createAsyncThunk(
     try {
       const res = await axios.get("/api/admin/cms");
       return res.data.data;
-    } catch {
-      return rejectWithValue("Failed to load CMS pages");
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to load CMS pages"
+      );
     }
   }
 );
 
+/**
+ * =============================
+ * FETCH SINGLE PAGE
+ * =============================
+ */
 export const fetchCMSDetails = createAsyncThunk(
   "cms/details",
   async (slug, { rejectWithValue }) => {
     try {
       const res = await axios.get(`/api/admin/cms/${slug}`);
       return res.data.data;
-    } catch {
-      return rejectWithValue("Failed to load page");
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.error || "Failed to load page"
+      );
     }
   }
 );
@@ -41,8 +50,8 @@ export const deleteCMSPage = createAsyncThunk(
     try {
       await axios.delete(`/api/admin/cms/${slug}`);
       return slug;
-    } catch {
-      return rejectWithValue("Delete failed");
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || "Delete failed");
     }
   }
 );
@@ -57,18 +66,27 @@ const cmsSlice = createSlice({
 
   initialState: {
     list: [],
+    selected: null,
     loading: false,
+    deleting: false,
     error: null,
   },
 
-  reducers: {},
+  reducers: {
+    clearSelectedCMS: (state) => {
+      state.selected = null;
+    },
+  },
 
   extraReducers: (builder) => {
     builder
 
-      // FETCH
+      /**
+       * ================= FETCH LIST
+       */
       .addCase(fetchCMSPages.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchCMSPages.fulfilled, (state, action) => {
         state.loading = false;
@@ -78,22 +96,44 @@ const cmsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchCMSDetails.pending, (state, action) => {
+
+      /**
+       * ================= FETCH DETAILS
+       */
+      .addCase(fetchCMSDetails.pending, (state) => {
         state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCMSDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selected = action.payload;
       })
       .addCase(fetchCMSDetails.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchCMSDetails.fulfilled, (state, action) => {
-        state.selected = action.payload;
-      })
 
-      // DELETE
+      /**
+       * ================= DELETE PAGE
+       */
+      .addCase(deleteCMSPage.pending, (state) => {
+        state.deleting = true;
+        state.error = null;
+      })
       .addCase(deleteCMSPage.fulfilled, (state, action) => {
+        state.deleting = false;
         state.list = state.list.filter((p) => p.slug !== action.payload);
+
+        if (state.selected?.slug === action.payload) {
+          state.selected = null;
+        }
+      })
+      .addCase(deleteCMSPage.rejected, (state, action) => {
+        state.deleting = false;
+        state.error = action.payload;
       });
   },
 });
 
+export const { clearSelectedCMS } = cmsSlice.actions;
 export default cmsSlice.reducer;

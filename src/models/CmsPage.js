@@ -27,7 +27,6 @@ const BlockSchema = new mongoose.Schema(
  */
 const CmsPageSchema = new mongoose.Schema(
   {
-    // ⭐ NEW
     title: {
       type: String,
       default: "",
@@ -40,6 +39,16 @@ const CmsPageSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      index: true,
+    },
+
+    /**
+     * ⭐ NEW FIELD
+     * Level (for hierarchy / nav / priority / etc.)
+     */
+    level: {
+      type: Number,
+      default: 0,
       index: true,
     },
 

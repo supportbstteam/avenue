@@ -225,7 +225,7 @@ export default function UserSignUp() {
             />
             <p className="text-sm text-gray-600">
               I agree to the{" "}
-              <Link href="/terms" className="text-[#336b75]">
+              <Link href="/terms" className="text-[#FF6A00]">
                 Terms & Conditions
               </Link>
             </p>
@@ -240,7 +240,7 @@ export default function UserSignUp() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#336b75] text-white py-3 rounded-lg font-semibold disabled:opacity-50"
+            className="w-full bg-[#FF6A00] text-white py-3 rounded-lg font-semibold disabled:opacity-50"
           >
             {isSubmitting
               ? "Creating Account..."

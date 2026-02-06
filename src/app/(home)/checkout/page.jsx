@@ -148,7 +148,7 @@ const Page = () => {
                     className={`block border rounded-lg p-3 cursor-pointer
                       ${
                         selectedAddress?._id === addr._id
-                          ? "border-teal-600 bg-teal-50"
+                          ? "border-[#FF6A00] bg-[#ff6a0022]"
                           : ""
                       }`}
                   >
@@ -157,7 +157,7 @@ const Page = () => {
                       name="address"
                       checked={selectedAddress?._id === addr._id}
                       onChange={() => setSelectedAddress(addr)}
-                      className="mr-2"
+                      className="mr-2 accent-[#FF6A00] bg-white"
                     />
 
                     <div className="text-sm">
@@ -177,7 +177,7 @@ const Page = () => {
                   onClick={() => {
                     router.push("/address");
                   }}
-                  className="text-teal-700 cursor-pointer font-medium text-sm"
+                  className="text-[#FF6A00] cursor-pointer font-medium text-sm"
                 >
                   + Add New Address
                 </button>
@@ -224,7 +224,7 @@ const Page = () => {
                 className={`w-full cursor-pointer py-3 rounded-lg text-white
                   ${
                     selectedAddress
-                      ? "bg-teal-600 hover:bg-teal-700"
+                      ? "bg-[#FF6A00] hover:bg-[#e86406]"
                       : "bg-gray-300"
                   }`}
               >

@@ -28,7 +28,7 @@ export default function ProductSlider({
           {title && <h2 className="text-2xl italic">{title}</h2>}
 
           {seeMoreUrl && (
-            <a href={seeMoreUrl} className="text-teal-700 font-semibold hover:underline">
+            <a href={seeMoreUrl} className="text-[#FF6A00] font-semibold hover:underline">
               SEE MORE
             </a>
           )}
