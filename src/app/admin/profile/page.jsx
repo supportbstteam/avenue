@@ -175,7 +175,7 @@ export default function AdminProfilePage() {
           <Button
             type="button"
             onClick={() => setEditMode(true)}
-            className="bg-[#ae0001] hover:bg-[#811b1b] text-white"
+            className="bg-[#ae0001] cursor-pointer hover:bg-[#811b1b] text-white"
           >
             <Pencil size={18} />
             Edit Profile
@@ -184,6 +184,7 @@ export default function AdminProfilePage() {
           <>
             <Button
               type="button"
+              className="cursor-pointer"
               variant="outline"
               onClick={() => {
                 setEditMode(false);
@@ -197,7 +198,7 @@ export default function AdminProfilePage() {
             <Button
               type="submit"
               disabled={loading}
-              className="bg-teal-700 hover:bg-teal-800 text-white"
+              className="bg-[#FF6A00] cursor-pointer hover:bg-[#e66306] text-white"
             >
               <Save size={18} />
               Save Changes

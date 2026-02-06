@@ -18,7 +18,7 @@ export default function Sidebar() {
 
   const isActive = (path) =>
     pathname === path
-      ? "bg-teal-700 text-white shadow-sm"
+      ? "bg-[#FF6A00] text-white shadow-sm"
       : "text-gray-700 hover:bg-gray-200";
 
   const menuItems = [
