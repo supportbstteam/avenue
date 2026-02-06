@@ -33,6 +33,7 @@ export default function Sidebar() {
       icon: <IoLibraryOutline size={20} />,
     },
     { name: "Users", path: "/admin/users", icon: <BiGroup size={20} /> },
+    { name: "CMS", path: "/admin/cms", icon: <BiGroup size={20} /> },
     {
       name: "Orders",
       path: "/admin/orders",
