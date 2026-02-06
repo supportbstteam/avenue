@@ -194,31 +194,127 @@ export async function PUT(req) {
  * DELETE ITEM
  * =====================================
  */
+// export async function DELETE(req) {
+//   await connectDB();
+
+//   try {
+//     const { bookId, ebookFormat = null } = await req.json();
+
+//     if (!bookId) {
+//       return NextResponse.json({ error: "bookId required" }, { status: 400 });
+//     }
+
+//     const user = await getServerUser();
+
+//     /**
+//      * ===============================
+//      * AUTH USER CART
+//      * ===============================
+//      */
+//     if (user) {
+//       const cart = await Cart.findOne({ user: user.id });
+
+//       if (!cart) {
+//         return NextResponse.json({ items: [] });
+//       }
+
+//       cart.items = cart.items.filter((item) => {
+//         const sameBook = item.book.toString() === bookId;
+
+//         const sameFormat = (item.ebookFormat || null) === ebookFormat;
+
+//         // Remove ONLY exact match
+//         return !(sameBook && sameFormat);
+//       });
+
+//       await cart.save();
+//       await cart.populate("items.book");
+
+//       return NextResponse.json({ items: cart.items });
+//     }
+
+//     /**
+//      * ===============================
+//      * GUEST CART
+//      * ===============================
+//      */
+//     const guestCart = (await getGuestCart()) || { items: [] };
+
+//     guestCart.items = guestCart.items.filter((item) => {
+//       const sameBook = item.bookId === bookId;
+//       const sameFormat = (item.ebookFormat || null) === ebookFormat;
+
+//       return !(sameBook && sameFormat);
+//     });
+
+//     await setGuestCart(guestCart);
+
+//     const populated = await populateGuest(guestCart);
+
+//     return NextResponse.json({ items: populated.items });
+//   } catch (err) {
+//     console.error("Cart DELETE Error:", err);
+
+//     return NextResponse.json(
+//       { error: "Failed to delete item" },
+//       { status: 500 }
+//     );
+//   }
+// }
+
 export async function DELETE(req) {
   await connectDB();
 
-  const { bookId, ebookFormat = null } = await req.json();
-  const user = await getServerUser();
+  try {
+    const { bookId } = await req.json();
 
-  if (user) {
-    const cart = await Cart.findOne({ user: user.id });
-    if (!cart) return NextResponse.json({ items: [] });
+    if (!bookId) {
+      return NextResponse.json({ error: "bookId required" }, { status: 400 });
+    }
 
-    cart.items = cart.items.filter(
-      (i) => i.book.toString() !== bookId || i.ebookFormat !== ebookFormat
+    const user = await getServerUser();
+
+    /**
+     * ===============================
+     * AUTH USER CART
+     * ===============================
+     */
+    if (user) {
+      const cart = await Cart.findOne({ user: user.id });
+
+      if (!cart) {
+        return NextResponse.json({ items: [] });
+      }
+
+      // ⭐ Remove ALL entries of this book
+      cart.items = cart.items.filter((item) => item.book.toString() !== bookId);
+
+      await cart.save();
+      await cart.populate("items.book");
+
+      return NextResponse.json({ items: cart.items });
+    }
+
+    /**
+     * ===============================
+     * GUEST CART
+     * ===============================
+     */
+    const guestCart = (await getGuestCart()) || { items: [] };
+
+    guestCart.items = guestCart.items.filter((item) => item.bookId !== bookId);
+
+    await setGuestCart(guestCart);
+
+    const populated = await populateGuest(guestCart);
+
+    return NextResponse.json({ items: populated.items });
+  } catch (err) {
+    console.error("Cart DELETE Error:", err);
+
+    return NextResponse.json(
+      { error: "Failed to delete item" },
+      { status: 500 }
     );
-
-    await cart.save();
-    await cart.populate("items.book");
-
-    return NextResponse.json(cart);
   }
-
-  const guestCart = await getGuestCart();
-  guestCart.items = guestCart.items.filter(
-    (i) => i.bookId !== bookId || i.ebookFormat !== ebookFormat
-  );
-
-  await setGuestCart(guestCart);
-  return NextResponse.json(await populateGuest(guestCart));
 }

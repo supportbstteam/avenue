@@ -80,7 +80,8 @@ export const removeFromCart = createAsyncThunk(
   async ({ bookId, ebookFormat = null }, { rejectWithValue }) => {
     try {
       const res = await api.delete("/cart", {
-        data: { bookId, ebookFormat },
+        // data: { bookId, ebookFormat },
+        data: { bookId },
       });
       return extractItems(res);
     } catch (err) {

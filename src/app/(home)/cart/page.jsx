@@ -175,9 +175,23 @@ export default function CartPage() {
                           </p>
 
                           <button
-                            onClick={() => {
-                              dispatch(removeFromCart(book._id));
-                              toast.success("Product removed from cart");
+                            onClick={async () => {
+                              // return;
+                              const response = await dispatch(
+                                removeFromCart({
+                                  bookId: book._id,
+                                  // ebookFormat: book?.ebookCategories[0],
+                                })
+                              );
+
+                              if(response?.type ==="cart/remove/fulfilled"){
+                                toast.success("Item removed from cart");
+                              }
+
+                              // console.log(
+                              //   "-=-=-= response in the itrem cart delete  -=-=-=",
+                              //   response
+                              // );
                             }}
                             className="text-red-600 mt-2 cursor-pointer "
                           >
