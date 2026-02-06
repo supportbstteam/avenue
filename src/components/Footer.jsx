@@ -104,7 +104,7 @@ export default function Footer() {
 
       {/* COPYRIGHT */}
       <div className="border-t border-neutral-700 text-xs text-gray-400 px-6 py-4 text-center">
-        © Waterstones, 2026.
+        © AVENUE, 2026.
       </div>
     </footer>
   );

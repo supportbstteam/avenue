@@ -60,7 +60,7 @@ export default function CMSAdmin() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">CMS Pages</h1>
 
-        <button
+        {/* <button
           onClick={() => router.push("/admin/cms/new")}
           className="
             bg-teal-700 hover:bg-teal-800
@@ -69,7 +69,7 @@ export default function CMSAdmin() {
           "
         >
           + Create Page
-        </button>
+        </button> */}
       </div>
 
       {/* Error */}
@@ -90,7 +90,7 @@ export default function CMSAdmin() {
           data={list}
           showView
           showEdit
-          showDelete
+          showDelete={false}
           onView={(r) => window.open(`/cms/${r.slug}`, "_blank")}
           onEdit={(r) => router.push(`/admin/cms/${r.slug}`)}
           onDelete={handleDelete}

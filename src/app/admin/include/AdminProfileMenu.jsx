@@ -80,7 +80,7 @@ export default function AdminProfileMenu() {
             </Link> */}
 
             <div className="border-t">
-              <LogoutButton className="w-full text-left px-4 py-3 hover:bg-gray-100 text-sm" />
+              <LogoutButton className="w-full text-left px-4 py-3  text-sm" />
             </div>
 
           </div>
