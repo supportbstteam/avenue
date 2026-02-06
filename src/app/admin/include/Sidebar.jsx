@@ -9,6 +9,7 @@ import { IoLibraryOutline } from "react-icons/io5";
 import { BiGroup } from "react-icons/bi";
 import { TbCategory } from "react-icons/tb";
 import { TbShoppingCartCopy } from "react-icons/tb";
+import { MdLibraryBooks } from "react-icons/md";
 // You can replace these with FontAwesome if preferred
 
 export default function Sidebar() {
@@ -33,7 +34,7 @@ export default function Sidebar() {
       icon: <IoLibraryOutline size={20} />,
     },
     { name: "Users", path: "/admin/users", icon: <BiGroup size={20} /> },
-    { name: "CMS", path: "/admin/cms", icon: <BiGroup size={20} /> },
+    { name: "CMS", path: "/admin/cms", icon: <MdLibraryBooks size={20} /> },
     {
       name: "Orders",
       path: "/admin/orders",
