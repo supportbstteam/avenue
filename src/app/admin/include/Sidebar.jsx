@@ -11,6 +11,7 @@ import { TbCategory } from "react-icons/tb";
 import { TbShoppingCartCopy } from "react-icons/tb";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdLibraryBooks } from "react-icons/md";
+import { TbLogs } from "react-icons/tb";
 // You can replace these with FontAwesome if preferred
 
 export default function Sidebar() {
@@ -36,6 +37,7 @@ export default function Sidebar() {
     },
     { name: "Users", path: "/admin/users", icon: <BiGroup size={20} /> },
     { name: "CMS", path: "/admin/cms", icon: <MdLibraryBooks size={20} /> },
+    { name: "Blogs", path: "/admin/blog", icon: <TbLogs size={20} /> },
     {
       name: "Orders",
       path: "/admin/orders",

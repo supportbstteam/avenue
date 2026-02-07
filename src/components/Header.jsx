@@ -17,6 +17,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fetchBooksForHome, setReduxSearchText } from "@/store/bookSlice";
 import { fetchCart } from "@/store/cartSlice";
 import HeaderUser from "./cards/HeaderUser";
+import { fetchCategories } from "@/store/categorySlice";
+import { map } from "zod";
+import { fetchUserCategories } from "@/store/userCategorySlice";
 
 export default function Header() {
   const dispatch = useDispatch();
@@ -28,6 +31,11 @@ export default function Header() {
   const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const { categories } = useSelector((state) => state?.userCategory);
+
+  useEffect(() => {
+    dispatch(fetchUserCategories({ page: 1 }));
+  }, [dispatch]);
 
   const mainMenu = [
     { label: "Bestsellers", href: "/category/H" },
@@ -57,6 +65,21 @@ export default function Header() {
     dispatch(setReduxSearchText(searchText));
     router.push("/search");
   };
+
+  const level1Categories = (categories || []).filter((cat) => cat.level === 1);
+
+  // Split array into N columns
+  const chunkIntoColumns = (arr, cols) => {
+    if (!arr.length) return [];
+
+    const perCol = Math.ceil(arr.length / cols);
+
+    return Array.from({ length: cols }, (_, i) =>
+      arr.slice(i * perCol, (i + 1) * perCol)
+    );
+  };
+
+  const categoryColumns = chunkIntoColumns(level1Categories, 3);
 
   return (
     <header className="w-full  flex flex-col bg-white">
@@ -307,113 +330,44 @@ export default function Header() {
                 {isDropdownMenu && (
                   <div
                     className="
-              absolute left-0 top-full
-              bg-white shadow-[0_8px_20px_rgba(0,0,0,0.08)]
-              border-t border-slate-200
-              py-8 px-10 z-50
-              transition-all duration-200
-              min-w-max
-              mt-4
-              opacity-0 invisible
-              group-hover:opacity-100 group-hover:visible group-hover:mt-2
-            "
+    absolute left-3/4 top-full
+    -translate-x-1/2
+    bg-white
+    shadow-[0_8px_20px_rgba(0,0,0,0.08)]
+    border-t border-slate-200
+    py-8 px-8
+    z-50
+    transition-all duration-200
+    w-[min(100vw-40px,1000px)]
+    mt-4
+    opacity-0 invisible
+    group-hover:opacity-100 group-hover:visible group-hover:mt-2
+  "
                   >
                     <div className="grid grid-cols-3 gap-10">
-                      <div>
-                        <h3 className="text-gray-900 font-semibold mb-4 text-sm tracking-wide">
-                          Popular Highlights
-                        </h3>
-                        <ul className="space-y-2">
-                          <li>
-                            <Link
-                              href="/highlights/bestsellers"
-                              className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
-                            >
-                              Bestsellers
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              href="/highlights/new-arrivals"
-                              className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
-                            >
-                              New Arrivals
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              href="/highlights/editor-picks"
-                              className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
-                            >
-                              Editor's Picks
-                            </Link>
-                          </li>
-                        </ul>
-                      </div>
+                      {categoryColumns.map((column, colIndex) => (
+                        <div key={colIndex}>
+                          {/* <h3 className="text-gray-900 font-semibold mb-4 text-sm tracking-wide">
+                            Categories
+                          </h3> */}
 
-                      <div>
-                        <h3 className="text-gray-900 font-semibold mb-4 text-sm tracking-wide">
-                          Genres
-                        </h3>
-                        <ul className="space-y-2">
-                          <li>
-                            <Link
-                              href="/highlights/fiction"
-                              className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
-                            >
-                              Fiction
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              href="/highlights/non-fiction"
-                              className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
-                            >
-                              Non-Fiction
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              href="/highlights/children"
-                              className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
-                            >
-                              Children's
-                            </Link>
-                          </li>
-                        </ul>
-                      </div>
-
-                      <div>
-                        <h3 className="text-gray-900 font-semibold mb-4 text-sm tracking-wide">
-                          Special Offers
-                        </h3>
-                        <ul className="space-y-2">
-                          <li>
-                            <Link
-                              href="/highlights/sale"
-                              className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
-                            >
-                              Sale
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              href="/highlights/exclusive"
-                              className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
-                            >
-                              Exclusive
-                            </Link>
-                          </li>
-                          <li>
-                            <Link
-                              href="/highlights/limited-edition"
-                              className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
-                            >
-                              Limited Edition
-                            </Link>
-                          </li>
-                        </ul>
-                      </div>
+                          <ul className="space-y-2">
+                            {column.map((cat) => {
+                              // console.log("-=-=- map -=--=-=", cat);
+                              return (
+                                <li key={cat._id}>
+                                  <Link
+                                    href={`/category/${cat.code}`}
+                                    className="text-gray-600 hover:text-[#FF6A00] text-[13px] block"
+                                  >
+                                    {cat.displayName}
+                                  </Link>
+                                </li>
+                              );
+                            })}
+                          </ul>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

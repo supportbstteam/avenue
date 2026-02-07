@@ -1,6 +1,20 @@
+import { fetchBlogCategories, fetchBlogs } from "@/store/blogSlice";
 import Link from "next/link";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import BlogCard from "./cards/BlogCards";
 
 export default function BlogSection() {
+  const dispatch = useDispatch();
+  const { list, categories, loading, categoryLoading } = useSelector(
+    (s) => s.blog
+  );
+
+  useEffect(() => {
+    dispatch(fetchBlogs());
+    dispatch(fetchBlogCategories());
+  }, [dispatch]);
+
   const blogSections = [
     {
       id: 1,
@@ -39,30 +53,8 @@ export default function BlogSection() {
   return (
     <section className="py-16">
       <div className="container mx-auto px-4 grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {blogSections.map((section) => (
-          <Link key={section.id} href={section.link}>
-            <div className="flex flex-col items-start">
-              <div className="grid mb-4">
-                <div className="relative w-full h-full mb-4">
-                  <img
-                    src={section.booksimg}
-                    alt={section.title}
-                    className="object-cover rounded shadow"
-                  />
-                </div>
-              </div>
-
-              <h3 className="text-lg font-serif mb-2 text-black">
-                {section.title}
-              </h3>
-
-              <p className="text-gray-700 mb-2">{section.description}</p>
-
-              <button className="text-black font-bold mt-auto">➔</button>
-
-              <hr className="mt-4 border-t border-gray-300 w-full" />
-            </div>
-          </Link>
+        {list.map((blog) => (
+          <BlogCard key={blog._id} blog={blog} />
         ))}
       </div>
     </section>

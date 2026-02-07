@@ -13,6 +13,8 @@ import { fetchBooksForHome } from "@/store/bookSlice";
 import reverseName from "@/lib/reverseName";
 import { fetchUserDetails } from "@/store/userSlice";
 import { fetchCart } from "@/store/cartSlice";
+import { fetchCategories } from "@/store/categorySlice";
+import { fetchBlogCategories, fetchBlogs } from "@/store/blogSlice";
 
 export default function HomePage() {
   const {
@@ -33,6 +35,9 @@ export default function HomePage() {
   } = useSelector((state) => state.book);
 
   const { user } = useSelector((state) => state.user);
+  const { list:blogList, categories:blogCategories, loading:blogLoading, categoryLoading } = useSelector(
+    (s) => s.blog
+  );
 
   const dispatch = useDispatch();
 
@@ -80,7 +85,14 @@ export default function HomePage() {
       fetchBooksForHome({ category: "gift_books", limit: 10, page: 11 })
     );
     dispatch(fetchUserDetails());
+    dispatch(fetchCategories({ page: 1, limit: 50 }));
+    dispatch(fetchBlogs());
+    dispatch(fetchBlogCategories());
   }, []);
+
+  //   useEffect(() => {
+  //   dispatch(fetchCategories({ page: 1, limit: 50 }));
+  // }, [dispatch]);
 
   // console.log("User Data on Home Page:", user);
 

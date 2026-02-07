@@ -70,8 +70,8 @@ export default function Footer() {
     .filter((s) => s.enabled)
     .sort((a, b) => a.order - b.order);
 
-    console.log("-=-= visibleSocials -=-=-=",visibleSocials);
-    console.log("-=-= socialLinks -=-=-=",socialLinks);
+    // console.log("-=-= visibleSocials -=-=-=",visibleSocials);
+    // console.log("-=-= socialLinks -=-=-=",socialLinks);
 
   return (
     <footer className="bg-[#363636] text-gray-200">
@@ -117,7 +117,7 @@ export default function Footer() {
           <ul className="space-y-3 text-sm">
             {visibleSocials.map((social, i) => {
               const Icon = ICON_MAP[social.icon];
-              console.log("-=-=--= item in teh visibleSocials -=-=-", social);
+              // console.log("-=-=--= item in teh visibleSocials -=-=-", social);
               return (
                 <li key={i}>
                   <Link
