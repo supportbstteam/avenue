@@ -30,15 +30,13 @@ export async function GET() {
  * CREATE / UPDATE PAGE
  * =========================
  */
+
 export async function POST(req) {
   try {
     await connectDB();
 
     const body = await req.json();
-
-    const { title = "", slug, level = 0, blocks = [] } = body;
-
-    console.log("Level:", level, ", Title: ", title);
+    const { _id, title = "", slug, level = 0, blocks = [] } = body;
 
     if (!slug) {
       return NextResponse.json({ error: "Slug is required" }, { status: 400 });
@@ -48,34 +46,45 @@ export async function POST(req) {
       return NextResponse.json({ error: "Title is required" }, { status: 400 });
     }
 
-    /**
-     * Normalize slug
-     */
     const cleanSlug = slug.toLowerCase().trim();
 
-    /**
-     * Upsert page
-     */
-    const page = await CmsPage.findOneAndUpdate(
-      { slug: cleanSlug },
-      {
+    let page;
+
+    // ---------- UPDATE ----------
+    if (_id) {
+      console.log("-=-= id captured -=-=-=-", _id);
+      page = await CmsPage.findByIdAndUpdate(
+        _id,
+        {
+          title,
+          slug: cleanSlug,
+          level,
+          blocks,
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      if (!page) {
+        return NextResponse.json({ error: "Page not found" }, { status: 404 });
+      }
+    }
+
+    // ---------- CREATE ----------
+    else {
+      page = await CmsPage.create({
         title,
         slug: cleanSlug,
         level,
         blocks,
-      },
-      {
-        upsert: true,
-        new: true,
-        setDefaultsOnInsert: true,
-        runValidators: true,
-      }
-    );
+      });
+    }
 
     return NextResponse.json({ data: page });
   } catch (err) {
     console.error("CMS POST Error:", err);
-
     return NextResponse.json({ error: "Failed to save page" }, { status: 500 });
   }
 }

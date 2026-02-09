@@ -30,19 +30,15 @@ export default function CmsSlugEditor({ slug }) {
   const cmsData = useSelector((s) => s.cms.selected);
   const reduxLoading = useSelector((s) => s.cms.loading);
 
-
-  console.log("-=-=-=- cmsData -=-=-=--= ",cmsData);
+  // console.log("-=-=-=- cmsData -=-=-=--= ", cmsData);
 
   /**
    * ================= LOCAL STATE =================
    */
   const [title, setTitle] = useState("");
-  const [slugInput, setSlugInput] = useState(
-    slug !== "new" ? slug : ""
-  );
+  const [slugInput, setSlugInput] = useState(slug !== "new" ? slug : "");
   const [level, setLevel] = useState(0);
-  const [slugManuallyEdited, setSlugManuallyEdited] =
-    useState(false);
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
 
   const [blocks, setBlocks] = useState([]);
   const [saving, setSaving] = useState(false);
@@ -84,6 +80,7 @@ export default function CmsSlugEditor({ slug }) {
 
     const payload = {
       slug: slugInput,
+      _id: cmsData ? cmsData._id : "",
       title,
       level,
       blocks: blocks.map(({ type, data }) => ({
@@ -121,9 +118,7 @@ export default function CmsSlugEditor({ slug }) {
   const updateField = (id, field, value) => {
     setBlocks((prev) =>
       prev.map((b) =>
-        b.id === id
-          ? { ...b, data: { ...b.data, [field]: value } }
-          : b
+        b.id === id ? { ...b, data: { ...b.data, [field]: value } } : b
       )
     );
   };
@@ -144,19 +139,12 @@ export default function CmsSlugEditor({ slug }) {
    */
   return (
     <div className="max-w-6xl mx-auto space-y-10 pb-24">
-
       {/* SAVE BAR */}
       <div className="sticky top-10 z-20 bg-white border rounded-xl mt-5 p-4 flex justify-between items-center shadow-sm">
-        <div className="font-semibold text-lg">
-          Editing: {slugInput}
-        </div>
+        <div className="font-semibold text-lg">Editing: {slugInput}</div>
 
         <div className="flex items-center gap-4">
-          {status && (
-            <div className="text-green-600 text-sm">
-              {status}
-            </div>
-          )}
+          {status && <div className="text-green-600 text-sm">{status}</div>}
 
           <button
             onClick={savePage}
@@ -169,9 +157,7 @@ export default function CmsSlugEditor({ slug }) {
 
       {/* PAGE SETTINGS */}
       <div className="bg-white border rounded-xl p-5 shadow-sm space-y-4">
-        <h2 className="font-bold text-xl">
-          Page Settings
-        </h2>
+        <h2 className="font-bold text-xl">Page Settings</h2>
 
         {/* TITLE */}
         <input
@@ -205,53 +191,44 @@ export default function CmsSlugEditor({ slug }) {
           min={0}
           placeholder="Level"
           value={level}
-          onChange={(e) =>
-            setLevel(Number(e.target.value))
-          }
+          onChange={(e) => setLevel(Number(e.target.value))}
           className="border p-2 rounded w-full"
         />
       </div>
 
       {/* TEMPLATE PICKER */}
       <div className="bg-white border rounded-xl p-5 shadow-sm">
-        <h2 className="font-bold mb-4 text-xl">
-          Add Template Block
-        </h2>
+        <h2 className="font-bold mb-4 text-xl">Add Template Block</h2>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {Object.values(TEMPLATE_REGISTRY).map(
-            (tpl) => {
-              const Preview = tpl.component;
+          {Object.values(TEMPLATE_REGISTRY).map((tpl) => {
+            const Preview = tpl.component;
 
-              return (
-                <div
-                  key={tpl.config.key}
-                  onClick={() =>
-                    addBlock(tpl.config.key)
-                  }
-                  className="border rounded-xl overflow-hidden cursor-pointer hover:shadow-xl transition"
-                >
-                  <div className="bg-gray-50 px-4 py-2 font-semibold text-sm">
-                    {tpl.config.name}
-                  </div>
+            return (
+              <div
+                key={tpl.config.key}
+                onClick={() => addBlock(tpl.config.key)}
+                className="border rounded-xl overflow-hidden cursor-pointer hover:shadow-xl transition"
+              >
+                <div className="bg-gray-50 px-4 py-2 font-semibold text-sm">
+                  {tpl.config.name}
+                </div>
 
-                  <div className="p-3 h-[170px] overflow-hidden">
-                    <div className="scale-[0.6] origin-top-left pointer-events-none">
-                      <Preview title="Sample" />
-                    </div>
+                <div className="p-3 h-[170px] overflow-hidden">
+                  <div className="scale-[0.6] origin-top-left pointer-events-none">
+                    <Preview title="Sample" />
                   </div>
                 </div>
-              );
-            }
-          )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* BLOCK EDITORS */}
       <div className="space-y-6">
         {blocks.map((block, index) => {
-          const entry =
-            TEMPLATE_REGISTRY[block.type];
+          const entry = TEMPLATE_REGISTRY[block.type];
 
           return (
             <div
@@ -260,72 +237,41 @@ export default function CmsSlugEditor({ slug }) {
             >
               <div className="flex justify-between mb-4">
                 <div className="font-semibold">
-                  {index + 1}.{" "}
-                  {entry.config.name}
+                  {index + 1}. {entry.config.name}
                 </div>
 
                 <button
-                  onClick={() =>
-                    removeBlock(block.id)
-                  }
+                  onClick={() => removeBlock(block.id)}
                   className="text-red-500"
                 >
                   Remove
                 </button>
               </div>
 
-              {entry.config.schema.map(
-                (field) => {
-                  const value =
-                    block.data[
-                      field.field
-                    ] || "";
+              {entry.config.schema.map((field) => {
+                const value = block.data[field.field] || "";
 
-                  if (
-                    field.type ===
-                    "richtext"
-                  )
-                    return (
-                      <RichTextInput
-                        key={
-                          field.field
-                        }
-                        value={
-                          value
-                        }
-                        onChange={(v) =>
-                          updateField(
-                            block.id,
-                            field.field,
-                            v
-                          )
-                        }
-                      />
-                    );
-
+                if (field.type === "richtext")
                   return (
-                    <input
-                      key={
-                        field.field
-                      }
-                      placeholder={
-                        field.label
-                      }
-                      value={
-                        value
-                      }
-                      onChange={(e) =>
-                        updateField(
-                          block.id,
-                          field.field,
-                          e.target.value
-                        )
-                      }
-                      className="border p-2 rounded w-full mb-3"
+                    <RichTextInput
+                      key={field.field}
+                      value={value}
+                      onChange={(v) => updateField(block.id, field.field, v)}
                     />
                   );
-                }
-              )}
+
+                return (
+                  <input
+                    key={field.field}
+                    placeholder={field.label}
+                    value={value}
+                    onChange={(e) =>
+                      updateField(block.id, field.field, e.target.value)
+                    }
+                    className="border p-2 rounded w-full mb-3"
+                  />
+                );
+              })}
             </div>
           );
         })}
@@ -333,23 +279,13 @@ export default function CmsSlugEditor({ slug }) {
 
       {/* PREVIEW */}
       <div className="bg-white border rounded-xl p-6 shadow-sm">
-        <h2 className="font-bold text-xl mb-5">
-          Page Preview
-        </h2>
+        <h2 className="font-bold text-xl mb-5">Page Preview</h2>
 
         <div className="border rounded-lg p-6 bg-gray-50">
           {blocks.map((block) => {
-            const Comp =
-              TEMPLATE_REGISTRY[
-                block.type
-              ].component;
+            const Comp = TEMPLATE_REGISTRY[block.type].component;
 
-            return (
-              <Comp
-                key={block.id}
-                {...block.data}
-              />
-            );
+            return <Comp key={block.id} {...block.data} />;
           })}
         </div>
       </div>

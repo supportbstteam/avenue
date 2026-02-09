@@ -94,7 +94,7 @@ export default function CMSAdmin() {
           showEdit
           showDelete={false}
           onView={(r) => window.open(`/cms/${r.slug}`, "_blank")}
-          onEdit={(r) => router.push(`/admin/cms/${r.slug}`)}
+          onEdit={(r) => router.push(`/admin/cms/${r.slug}?id=${r?._id}`)}
           onDelete={handleDelete}
         />
       )}
