@@ -12,7 +12,7 @@ export async function GET() {
     await connectDB();
 
     const pages = await CmsPage.find({}, "title slug level createdAt")
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 })
       .lean();
 
     return NextResponse.json({ data: pages });
@@ -38,8 +38,7 @@ export async function POST(req) {
 
     const { title = "", slug, level = 0, blocks = [] } = body;
 
-
-    console.log("Level:",level,", Title: ", title);
+    console.log("Level:", level, ", Title: ", title);
 
     if (!slug) {
       return NextResponse.json({ error: "Slug is required" }, { status: 400 });

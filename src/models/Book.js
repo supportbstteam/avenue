@@ -168,6 +168,10 @@ const BookSchema = new mongoose.Schema(
       index: true,
     },
 
+    quantity: {
+      type: number,
+      default: 0,
+    },
     meta: {
       source: String,
       importedAt: {
