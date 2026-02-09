@@ -167,11 +167,6 @@ const BookSchema = new mongoose.Schema(
       default: [],
       index: true,
     },
-
-    quantity: {
-      type: number,
-      default: 0,
-    },
     meta: {
       source: String,
       importedAt: {
