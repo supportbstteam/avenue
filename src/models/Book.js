@@ -174,6 +174,33 @@ const BookSchema = new mongoose.Schema(
         default: Date.now,
       },
     },
+
+    availabilityCode: {
+      type: String,
+      index: true,
+    },
+
+    availabilityStatus: {
+      type: String,
+      enum: [
+        "in_stock",
+        "available",
+        "to_order",
+        "pod",
+        "out_of_stock",
+        "preorder",
+        "withdrawn",
+        "cancelled",
+        "unknown",
+      ],
+      index: true,
+    },
+
+    isSellable: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
   },
   {
     timestamps: true,
@@ -189,6 +216,27 @@ BookSchema.pre("save", function (next) {
       ? "ebook"
       : "book";
   }
+
+  // ---------------- AVAILABILITY MAPPING ----------------
+  const code = this.productSupply?.availability;
+
+  this.availabilityCode = code;
+
+  const MAP = {
+    21: { status: "in_stock", sellable: true },
+    20: { status: "available", sellable: true },
+    22: { status: "to_order", sellable: true },
+    23: { status: "pod", sellable: true },
+    31: { status: "out_of_stock", sellable: false },
+    41: { status: "preorder", sellable: true },
+    42: { status: "withdrawn", sellable: false },
+    43: { status: "cancelled", sellable: false },
+  };
+
+  const mapped = MAP[code] || { status: "unknown", sellable: false };
+
+  this.availabilityStatus = mapped.status;
+  this.isSellable = mapped.sellable;
 
   next();
 });

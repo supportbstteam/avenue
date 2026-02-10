@@ -11,7 +11,11 @@ export default function ProductCard({ product }) {
   const dispatch = useDispatch();
   const { syncing } = useSelector((s) => s.cart);
 
-  const { _id, image, preorder } = product;
+  const { _id, image, preorder, availabilityStatus, isSellable } = product;
+
+
+
+  console.log("-=-=-=-=--= preorder -=-=-=-=-",preorder);
 
   // ---------------- TITLE ----------------
   const title = product?.descriptiveDetail?.titles?.[0]?.text || "Untitled";
@@ -58,6 +62,8 @@ export default function ProductCard({ product }) {
     }
   };
 
+  console.log("-=-=-=- product card -=-=-=-=-", product);
+
   // =================================================
   // UI
   // =================================================
@@ -72,6 +78,8 @@ export default function ProductCard({ product }) {
           <Image src={image} alt={title} fill className="object-contain" />
         </div>
 
+        {availabilityStatus === "available"}
+
         <div
           className="
             absolute bottom-0 left-0 w-full bg-gray-100 p-4 space-y-2
@@ -81,26 +89,56 @@ export default function ProductCard({ product }) {
             transition-all duration-300
           "
         >
-          {preorder ? (
+          {isSellable && availabilityStatus === "preorder" && (
             <button
               disabled
-              className="w-full bg-black text-white py-3 text-sm font-semibold"
+              className="w-full cursor-pointer bg-black text-white py-3 text-sm font-semibold"
             >
               PREORDER
             </button>
-          ) : (
+          )}
+
+          {!isSellable && availabilityStatus === "out_of_stock" && (
             <button
-              onClick={addToBasket}
-              disabled={syncing}
-              className="
+              disabled
+              className="w-full bg-yellow-500 text-black cursor-pointer py-3 text-sm font-semibold"
+            >
+              Out of Stock
+            </button>
+          )}
+
+          {isSellable &&
+            (availabilityStatus === "in_stock" ||
+              availabilityStatus === "available" ||
+              availabilityStatus === "to_order" ||
+              availabilityStatus === "unknown" ||
+              availabilityStatus === "pod") && (
+              <button
+                onClick={addToBasket}
+                disabled={syncing}
+                className="
                 w-full bg-black text-white py-3 cursor-pointer text-sm font-semibold
                 hover:bg-[#FF6A00] transition
                 disabled:bg-gray-300
               "
-            >
-              {syncing ? "ADDING..." : "ADD TO BASKET"}
-            </button>
-          )}
+              >
+                {syncing ? "ADDING..." : "ADD TO BASKET"}
+              </button>
+            )}
+
+          {/* {isSellable &&
+            (availabilityStatus === "in_stock" ||
+              availabilityStatus === "available" ||
+              availabilityStatus === "to_order" ||
+              availabilityStatus === "unknown" ||
+              availabilityStatus === "pod") && (
+              <button
+                disabled
+                className="w-full bg-yellow-500 text-black cursor-pointer py-3 text-sm font-semibold"
+              >
+                Out of Stock
+              </button>
+            )} */}
         </div>
       </div>
 

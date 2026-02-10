@@ -46,6 +46,8 @@ export default function BookDetail({ book }) {
   const price = afterDiscountPrice(originalPrice, discountPercent);
   const [expandDescription, setExpandDescription] = useState(false);
 
+  console.log("-=-=- book details book -=-=-=-", book);
+
   const addToBasket = () => {
     // dispatch(addToCart(book));
     dispatch(addToCart({ bookId: book._id, quantity: 1 }));
@@ -71,7 +73,7 @@ export default function BookDetail({ book }) {
             />
           </div>
         </div>
-        
+
         {/* RIGHT: DETAILS */}
         <div className="lg:col-span-1 space-y-6">
           {/* TITLE */}
@@ -121,21 +123,49 @@ export default function BookDetail({ book }) {
               )}
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button
-                onClick={() => router.push("/auth/user/login")}
-                className="w-full border cursor-pointer text-black px-6 py-3 font-semibold hover:bg-black hover:text-white transition"
-              >
-                Sign in to Add to Wishlist
-              </button>
+            {book?.isSellable && (book?.availabilityStatus === "in_stock" ||
+              book?.availabilityStatus === "available" ||
+              book?.availabilityStatus === "to_order" ||
+              book?.availabilityStatus === "unknown" ||
+              book?.availabilityStatus === "pod") && (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => router.push("/auth/user/login")}
+                  className="w-full border cursor-pointer text-black px-6 py-3 font-semibold hover:bg-black hover:text-white transition"
+                >
+                  Sign in to Add to Wishlist
+                </button>
 
+                <button
+                  onClick={addToBasket}
+                  className="w-full bg-[#FF6A00] cursor-pointer text-white px-6 py-3 font-semibold hover:bg-white hover:text-[#FF6A00] border border-[#FF6A00] transition"
+                >
+                  ADD TO BASKET
+                </button>
+              </div>
+            )}
+
+            {!book?.isSellable && book?.availabilityStatus === "available" && (
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  disabled
+                  // onClick={() => router.push("/auth/user/login")}
+                  className="w-full border rounded-md bg-gray-100  text-black px-6 py-3 font-semibold hover:bg-gray-200 hover:text-black transition"
+                >
+                  Out of Stock
+                </button>
+              </div>
+            )}
+
+            {book?.isSellable && book?.availabilityStatus === "preorder" && (
               <button
-                onClick={addToBasket}
-                className="w-full bg-[#FF6A00] cursor-pointer text-white px-6 py-3 font-semibold hover:bg-white hover:text-[#FF6A00] border border-[#FF6A00] transition"
+                disabled
+                // onClick={() => router.push("/auth/user/login")}
+                className="w-full border rounded-md bg-gray-100  text-black px-6 py-3 font-semibold hover:bg-gray-200 hover:text-black transition"
               >
-                ADD TO BASKET
+                Pre Order
               </button>
-            </div>
+            )}
           </div>
         </div>
       </div>
