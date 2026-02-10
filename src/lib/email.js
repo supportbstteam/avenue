@@ -1,59 +1,168 @@
-// // mailer.js
-// import nodemailer from "nodemailer";
+import nodemailer from "nodemailer";
+import Admin from "@/models/Admin";
+import { baseTemplate } from "./email/baseTemplate";
 
-// // ---------- Transport ----------
-// const transporter = nodemailer.createTransport({
-//   host: process.env.SMTP_HOST,
-//   port: Number(process.env.SMTP_PORT),
-//   secure: true, // for 465
-//   auth: {
-//     user: process.env.SMTP_USER,
-//     pass: process.env.SMTP_PASS,
-//   },
-// });
+// ======================================================
+// TRANSPORT
+// ======================================================
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT),
+  secure: true,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
 
-// // Optional verify (run once on startup)
-// export const verifyMail = async () => {
-//   try {
-//     await transporter.verify();
-//     console.log("✅ Mail server ready");
-//   } catch (err) {
-//     console.error("❌ Mail server error:", err);
-//   }
-// };
+// ======================================================
+// VERIFY
+// ======================================================
+export const verifyMail = async () => {
+  try {
+    await transporter.verify();
+    console.log("✅ Mail server ready");
+  } catch (err) {
+    console.error("❌ Mail server error:", err);
+  }
+};
 
-// // ---------- Admin Mail ----------
-// export const sendAdminMail = async ({ subject, html, text }) => {
-//   try {
-//     const info = await transporter.sendMail({
-//       from: `"App Notification" <${process.env.SMTP_USER}>`,
-//       to: process.env.ADMIN_EMAIL, // set in env
-//       subject,
-//       text,
-//       html,
-//     });
+// ======================================================
+// ADMIN EMAIL FETCHER
+// ======================================================
+const getAdminEmails = async () => {
+  const admins = await Admin.find({}).select("email -_id");
+  return admins.map((a) => a.email).filter(Boolean);
+};
 
-//     return info;
-//   } catch (err) {
-//     console.error("Admin mail failed:", err);
-//     throw err;
-//   }
-// };
+// ======================================================
+// BASE SENDERS
+// ======================================================
+const sendAdminMail = async ({ subject, html, text }) => {
+  const to = await getAdminEmails();
 
-// // ---------- User Mail ----------
-// export const sendUserMail = async ({ to, subject, html, text }) => {
-//   try {
-//     const info = await transporter.sendMail({
-//       from: `"Support" <${process.env.SMTP_USER}>`,
-//       to,
-//       subject,
-//       text,
-//       html,
-//     });
+  if (!to.length) throw new Error("No admin emails found");
 
-//     return info;
-//   } catch (err) {
-//     console.error("User mail failed:", err);
-//     throw err;
-//   }
-// };
+  return transporter.sendMail({
+    from: `"App Notification" <${process.env.SMTP_USER}>`,
+    to,
+    subject,
+    text,
+    html,
+  });
+};
+
+const sendUserMail = async ({ to, subject, html, text }) => {
+  return transporter.sendMail({
+    from: `"Support" <${process.env.SMTP_USER}>`,
+    to,
+    subject,
+    text,
+    html,
+  });
+};
+
+// ======================================================
+// SIGNUP EMAILS
+// ======================================================
+export const signupMails = async ({ name, email }) => {
+  // ---------------- ADMIN ----------------
+  const adminHtml = baseTemplate({
+    title: "New User Signup",
+    content: `
+      <p>A new user has registered:</p>
+      <p><b>Name:</b> ${name}</p>
+      <p><b>Email:</b> ${email}</p>
+    `,
+    footer: "Avenue Admin Notification",
+  });
+
+  await sendAdminMail({
+    subject: "🆕 New User Signup",
+    text: `New signup: ${name} (${email})`,
+    html: adminHtml,
+  });
+
+  // ---------------- USER ----------------
+  const userHtml = baseTemplate({
+    title: `Welcome to Avenue 📚`,
+    content: `
+      <p>Hi ${name},</p>
+
+      <p>
+        We're excited to have you join Avenue — your gateway to knowledge
+        through carefully curated books.
+      </p>
+
+      <p>
+        Start exploring today and discover something amazing to read.
+      </p>
+
+      <p><strong>Happy learning!</strong><br/>Team Avenue</p>
+    `,
+    footer: "© Avenue Books",
+  });
+
+  await sendUserMail({
+    to: email,
+    subject: "Welcome to Avenue 📚",
+    text: `Welcome ${name}!`,
+    html: userHtml,
+  });
+};
+
+// ======================================================
+// ORDER EMAILS
+// ======================================================
+export const orderMails = async (order) => {
+  const itemsHtml = order.items
+    .map((i) => `<li>${i.title} (x${i.qty})</li>`)
+    .join("");
+
+  const itemsText = order.items.map((i) => `${i.title} (x${i.qty})`).join("\n");
+
+  // ---------------- ADMIN ----------------
+  const adminHtml = baseTemplate({
+    title: `New Order #${order.id}`,
+    content: `
+      <p><b>Customer:</b> ${order.userName}</p>
+      <p><b>Email:</b> ${order.userEmail}</p>
+
+      <p><b>Items:</b></p>
+      <ul>${itemsHtml}</ul>
+
+      <p><b>Total:</b> ₹${order.total}</p>
+    `,
+    footer: "Avenue Order System",
+  });
+
+  await sendAdminMail({
+    subject: `📦 Order ${order.id}`,
+    text: `Order ${order.id}\n${itemsText}`,
+    html: adminHtml,
+  });
+
+  // ---------------- USER ----------------
+  const userHtml = baseTemplate({
+    title: "Order Confirmed ✅",
+    content: `
+      <p>Hi ${order.userName},</p>
+
+      <p>Your order has been placed successfully.</p>
+
+      <ul>${itemsHtml}</ul>
+
+      <p><b>Total:</b> ₹${order.total}</p>
+
+      <p>Thank you for shopping with Avenue!</p>
+    `,
+    footer: "© Avenue Books",
+  });
+
+  await sendUserMail({
+    to: order.userEmail,
+    subject: `Order Confirmed (#${order.id})`,
+    text: `Order confirmed\n${itemsText}`,
+    html: userHtml,
+  });
+};

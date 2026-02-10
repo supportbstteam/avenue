@@ -6,6 +6,7 @@ import Cart from "@/models/Cart";
 import { clearGuestCart } from "@/lib/guestCart";
 import { NextResponse } from "next/server";
 import { getServerUser } from "@/lib/getServerUser";
+import { orderMails } from "@/lib/email";
 
 export async function POST(req) {
   try {
@@ -16,6 +17,7 @@ export async function POST(req) {
 
     // ================= USER SNAPSHOT =================
     const user = await User.findById(userId).lean();
+
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
 
@@ -35,17 +37,14 @@ export async function POST(req) {
       if (!book) continue;
 
       const priceObj = book.productSupply?.prices?.[0] || {};
-
       const amount = Number(priceObj.amount) || 0;
       const discount = Number(priceObj.discountPercent) || 0;
 
-      // ✅ APPLY DISCOUNT
       const finalPrice =
         discount > 0 ? amount - (amount * discount) / 100 : amount;
 
       const price = Number(finalPrice.toFixed(2));
       const currency = priceObj.currency || "GBP";
-
       const title = book.descriptiveDetail?.titles?.[0]?.text || "Untitled";
 
       const type = book.type || "book";
@@ -56,7 +55,7 @@ export async function POST(req) {
         book: book._id,
         title,
         type,
-        price, // 🔥 discounted snapshot price
+        price,
         currency,
         quantity: c.quantity,
         ebookFormat: c.ebookFormat || null,
@@ -67,9 +66,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "No valid items" }, { status: 400 });
 
     // ================= TOTALS =================
-
     subtotal = Number(subtotal.toFixed(2));
-
     const shippingCost = subtotal < 25 ? 2.99 : 0;
     const total = Number((subtotal + shippingCost).toFixed(2));
 
@@ -89,6 +86,18 @@ export async function POST(req) {
       total,
     });
 
+    // ================= SEND MAILS (ASYNC SAFE) =================
+    orderMails({
+      id: order.orderNumber.toString(),
+      userName: `${user.firstName} ${user.lastName}`,
+      userEmail: user.email,
+      total: order.total,
+      items: order.items.map((i) => ({
+        title: i.title,
+        qty: i.quantity,
+      })),
+    }).catch((err) => console.error("Order mail failed:", err));
+
     // ================= CLEAR CART =================
     if (sessionUser) {
       await Cart.findOneAndUpdate(
@@ -99,12 +108,14 @@ export async function POST(req) {
       await clearGuestCart();
     }
 
+    // ================= RESPONSE =================
     return NextResponse.json({
       success: true,
       order,
     });
   } catch (err) {
-    console.error(err);
+    console.error("Order creation error:", err);
+
     return NextResponse.json({ success: false }, { status: 500 });
   }
 }

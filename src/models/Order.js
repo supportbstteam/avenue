@@ -12,9 +12,8 @@ const OrderItemSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Book",
     },
-
     title: String,
-    type: String, // ebook | book
+    type: String,
     price: Number,
     currency: String,
 
@@ -23,7 +22,7 @@ const OrderItemSchema = new mongoose.Schema(
       default: 1,
     },
 
-    ebookFormat: String, // EPUB / PDF / KINDLE
+    ebookFormat: String,
   },
   { _id: false }
 );
@@ -36,7 +35,6 @@ const OrderItemSchema = new mongoose.Schema(
 const UserSnapshotSchema = new mongoose.Schema(
   {
     userId: mongoose.Schema.Types.ObjectId,
-
     firstName: String,
     lastName: String,
     email: String,
@@ -53,10 +51,8 @@ const AddressSchema = new mongoose.Schema(
   {
     name: String,
     phone: String,
-
     line1: String,
     line2: String,
-
     city: String,
     state: String,
     postalCode: String,
@@ -79,9 +75,7 @@ const OrderSchema = new mongoose.Schema(
     },
 
     user: UserSnapshotSchema,
-
     items: [OrderItemSchema],
-
     shippingAddress: AddressSchema,
 
     payment: {
@@ -89,25 +83,17 @@ const OrderSchema = new mongoose.Schema(
         type: String,
         enum: ["COD", "ONLINE"],
       },
-
       status: {
         type: String,
         enum: ["pending", "paid", "failed", "refunded"],
         default: "pending",
       },
-
       transactionId: String,
     },
 
     status: {
       type: String,
-      enum: [
-        "placed",
-        "processing",
-        "shipped",
-        "delivered",
-        "cancelled",
-      ],
+      enum: ["placed", "processing", "shipped", "delivered", "cancelled"],
       default: "placed",
       index: true,
     },
@@ -124,28 +110,25 @@ const OrderSchema = new mongoose.Schema(
  * SEQUENTIAL ORDER NUMBER
  * ============================================
  */
-OrderSchema.pre("save", async function (next) {
-  if (this.orderNumber) return next();
+OrderSchema.pre("save", async function () {
+  if (this.orderNumber) return;
 
-  try {
-    const counter = await Counter.findOneAndUpdate(
-      { key: "orderNumber" },
-      { $inc: { seq: 1 } },
-      {
-        new: true,
-        upsert: true,
-      }
-    );
+  const counter = await Counter.findOneAndUpdate(
+    { key: "orderNumber" },
+    { $inc: { seq: 1 } },
+    {
+      new: true,
+      upsert: true,
+    }
+  );
 
-    const padded = String(counter.seq).padStart(4, "0");
+  const seq = counter.seq;
 
-    this.orderNumber = `ORD-${padded}`;
+  // Always pad to 4 digits minimum
+  // but allow natural expansion beyond that
+  const padded = String(seq).padStart(4, "0");
 
-    next();
-  } catch (err) {
-    next(err);
-  }
+  this.orderNumber = `ORD-${padded}`;
 });
 
-export default mongoose.models.Order ||
-  mongoose.model("Order", OrderSchema);
+export default mongoose.models.Order || mongoose.model("Order", OrderSchema);

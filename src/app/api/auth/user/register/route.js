@@ -1,4 +1,5 @@
 import { connectDB } from "@/lib/db";
+import { signupMails } from "@/lib/email";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 
@@ -16,7 +17,7 @@ export async function POST(req) {
       );
     }
 
-    // Check if email already exists
+    // Check existing email
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -26,11 +27,11 @@ export async function POST(req) {
       );
     }
 
-    // Hash the password
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    await User.create({
+    const user = await User.create({
       firstName,
       lastName,
       email,
@@ -38,10 +39,23 @@ export async function POST(req) {
       role: "user",
     });
 
+    // =========================================
+    // SEND EMAILS (Non-blocking)
+    // =========================================
+    signupMails({
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+    }).catch(err =>
+      console.error("Signup mail failed:", err)
+    );
+
+    // =========================================
+
     return Response.json({
       success: true,
       message: "User registered successfully",
     });
+
   } catch (error) {
     console.error("Registration Error:", error);
 

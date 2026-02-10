@@ -26,12 +26,12 @@ export const baseTemplate = ({
           <!-- Header -->
           <tr>
             <td style="
-              background:#fffa00;
+              background:#ff6a00;
               padding:20px;
               text-align:center;
               font-size:22px;
               font-weight:bold;
-              color:#000;">
+              color:#fff;">
               ${title}
             </td>
           </tr>
@@ -44,21 +44,6 @@ export const baseTemplate = ({
           </tr>
 
           <!-- Button example -->
-          <tr>
-            <td align="center" style="padding-bottom:30px;">
-              <a href="#"
-                 style="
-                   background:#fffa00;
-                   color:#000;
-                   padding:12px 24px;
-                   text-decoration:none;
-                   border-radius:4px;
-                   font-weight:bold;
-                   display:inline-block;">
-                 Action
-              </a>
-            </td>
-          </tr>
 
           <!-- Footer -->
           <tr>
@@ -81,3 +66,5 @@ export const baseTemplate = ({
 </body>
 </html>
 `;
+
+
