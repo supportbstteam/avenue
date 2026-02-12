@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import AdminHeader from "@/components/admin/AdminHeader";
-import AdminTable from "@/components/admin/AdminTable";
 import ToggleSwitch from "@/components/custom/ToggleSwitch";
 
 import {
@@ -13,6 +12,7 @@ import {
   updateAdminBookStatus,
 } from "@/store/productSlice";
 import { useRouter } from "next/navigation";
+import AdminTable from "@/components/admin/AdminTable";
 
 const LIMIT = 50;
 
@@ -210,7 +210,7 @@ const AdminProducts = () => {
           showEdit={false}
           showView={true}
           onView={(row) => {
-            router.push(`/admin/products/${row?._id}`);
+            router.push(`/myadmin/products/${row?._id}`);
           }}
           onEdit={(row) => console.log("EDIT", row)}
           onDelete={handleDelete}

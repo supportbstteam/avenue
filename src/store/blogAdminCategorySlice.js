@@ -10,7 +10,7 @@ export const fetchAdminBlogCategories = createAsyncThunk(
   "blogCategory/fetch",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get("/api/admin/blog-categories");
+      const res = await axios.get("/api/myadmin/blog-categories");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(
@@ -29,7 +29,7 @@ export const createAdminBlogCategory = createAsyncThunk(
   "blogCategory/create",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/api/admin/blog-categories", payload);
+      const res = await axios.post("/api/myadmin/blog-categories", payload);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.error || "Create failed");
@@ -46,7 +46,7 @@ export const updateAdminBlogCategory = createAsyncThunk(
   "blogCategory/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`/api/admin/blog-categories/${id}`, data);
+      const res = await axios.put(`/api/myadmin/blog-categories/${id}`, data);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.error || "Update failed");
@@ -63,7 +63,7 @@ export const deleteAdminBlogCategory = createAsyncThunk(
   "blogCategory/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/admin/blog-categories/${id}`);
+      await axios.delete(`/api/myadmin/blog-categories/${id}`);
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data?.error || "Delete failed");

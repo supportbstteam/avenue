@@ -86,7 +86,7 @@ export default function BlogCategoryEditor() {
       );
     }
 
-    router.push("/admin/blog");
+    router.push("/myadmin/blog");
   };
 
   /**

@@ -1,13 +1,13 @@
 import { redirect } from "next/navigation";
 import { getServerAdmin } from "@/lib/getServerUser";
-import Sidebar from "@/app/admin/include/Sidebar";
-import Header from "@/app/admin/include/Header";
+import Sidebar from "@/app/myadmin/include/Sidebar";
+import Header from "@/app/myadmin/include/Header";
 
 export default async function AdminLayout({ children }) {
   const admin = await getServerAdmin();
 
   if (!admin) {
-    redirect("/auth/admin/login");
+    redirect("/auth/myadmin/login");
   }
 
   return (

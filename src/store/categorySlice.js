@@ -13,7 +13,7 @@ export const fetchCategories = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.get("/api/admin/category", {
+      const res = await axios.get("/api/myadmin/category", {
         params: {
           page,
           limit,
@@ -38,7 +38,7 @@ export const fetchCategoryById = createAsyncThunk(
   "category/fetchById",
   async ({ id, scheme }, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/api/admin/category/${id}`, {
+      const res = await axios.get(`/api/myadmin/category/${id}`, {
         params: scheme ? { scheme } : {},
       });
       return res.data; // { category }
@@ -57,7 +57,7 @@ export const updateCategory = createAsyncThunk(
   "category/update",
   async ({ id, scheme, headingText, status }, { rejectWithValue }) => {
     try {
-      const res = await axios.put(`/api/admin/category/${id}`, {
+      const res = await axios.put(`/api/myadmin/category/${id}`, {
         scheme,
         headingText,
         status,
@@ -78,7 +78,7 @@ export const updateCategoryStatus = createAsyncThunk(
   "category/updateStatus",
   async ({ id, scheme, status }, { rejectWithValue }) => {
     try {
-      await axios.patch(`/api/admin/category/${id}/status`, {
+      await axios.patch(`/api/myadmin/category/${id}/status`, {
         scheme,
         status,
       });
@@ -98,7 +98,7 @@ export const deleteCategory = createAsyncThunk(
   "category/delete",
   async ({ id, scheme }, { rejectWithValue }) => {
     try {
-      const res = await axios.delete(`/api/admin/category/${id}`, {
+      const res = await axios.delete(`/api/myadmin/category/${id}`, {
         data: { scheme },
       });
       return { id, scheme, ...res.data }; // { deleted: "scheme" | "category" }

@@ -72,7 +72,7 @@ const ProductDetails = () => {
 
               {/* <button
                 onClick={() =>
-                  router.push(`/admin/products/edit/${id}`)
+                  router.push(`/myadmin/products/edit/${id}`)
                 }
                 className="px-5 py-2 bg-teal-700 text-white rounded-lg hover:bg-teal-800"
               >

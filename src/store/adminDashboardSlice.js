@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "@/lib/api";
 
 export const fetchDashboard = createAsyncThunk("admin/dashboard", async () => {
-  const res = await api.get("/admin/dashboard");
+  const res = await api.get("/myadmin/dashboard");
   return res.data;
 });
 

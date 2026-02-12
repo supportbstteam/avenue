@@ -9,7 +9,7 @@ export const fetchAdminUsers = createAsyncThunk(
   "adminUsers/fetch",
   async ({ page = 1, limit = 50, search = "" } = {}, { rejectWithValue }) => {
     try {
-      const res = await axios.get("/api/admin/users", {
+      const res = await axios.get("/api/myadmin/users", {
         params: { page, limit, search },
       });
       return res.data;
@@ -27,7 +27,7 @@ export const createAdminUser = createAsyncThunk(
   "adminUsers/create",
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axios.post("/api/admin/users/create", payload);
+      const res = await axios.post("/api/myadmin/users/create", payload);
       return res.data.user;
     } catch (err) {
       return rejectWithValue("Failed to create user");
@@ -43,7 +43,7 @@ export const fetchSingleAdminUser = createAsyncThunk(
   "adminUsers/fetchOne",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/api/admin/users/${id}`);
+      const res = await axios.get(`/api/myadmin/users/${id}`);
       return res.data.user;
     } catch (err) {
       return rejectWithValue("Failed to fetch user");
@@ -59,7 +59,7 @@ export const updateUserStatus = createAsyncThunk(
   "adminUsers/status",
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      await axios.patch("/api/admin/users/status", {
+      await axios.patch("/api/myadmin/users/status", {
         id,
         status,
       });
@@ -79,7 +79,7 @@ export const deleteAdminUser = createAsyncThunk(
   "adminUsers/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/admin/users/${id}`);
+      await axios.delete(`/api/myadmin/users/${id}`);
       return id;
     } catch (err) {
       return rejectWithValue("Failed to delete user");
@@ -94,7 +94,7 @@ export const updateAdminUser = createAsyncThunk(
   "adminUsers/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const res = await axios.patch(`/api/admin/users/${id}`, data);
+      const res = await axios.patch(`/api/myadmin/users/${id}`, data);
 
       return res.data.user;
     } catch (err) {

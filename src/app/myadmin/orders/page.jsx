@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import AdminTable from "@/components/admin/AdminTable";
+import AdminHeader from "@/components/admin/AdminHeader";;
 import { fetchAdminOrders } from "@/store/adminOrderSlice";
-import AdminHeader from "@/components/admin/AdminHeader";
+import AdminTable from "@/components/admin/AdminTable";
 
 // ======================================================
 // STATUS BADGE
@@ -160,7 +160,7 @@ const AdminOrders = () => {
         showView
         showEdit={false}
         showDelete={false}
-        onView={(row) => router.push(`/admin/orders/${row._id}`)}
+        onView={(row) => router.push(`/myadmin/orders/${row._id}`)}
       />
 
       {/* PAGINATION */}

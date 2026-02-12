@@ -10,7 +10,7 @@ export const fetchCMSPages = createAsyncThunk(
   "cms/fetchPages",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get("/api/admin/cms");
+      const res = await axios.get("/api/myadmin/cms");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(
@@ -29,7 +29,7 @@ export const fetchCMSDetails = createAsyncThunk(
   "cms/details",
   async (slug, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/api/admin/cms/${slug}`);
+      const res = await axios.get(`/api/myadmin/cms/${slug}`);
       return res.data.data;
     } catch (err) {
       return rejectWithValue(
@@ -48,7 +48,7 @@ export const deleteCMSPage = createAsyncThunk(
   "cms/delete",
   async (slug, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/admin/cms/${slug}`);
+      await axios.delete(`/api/myadmin/cms/${slug}`);
       return slug;
     } catch (err) {
       return rejectWithValue(err.response?.data?.error || "Delete failed");

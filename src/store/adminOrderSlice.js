@@ -13,7 +13,7 @@ export const fetchAdminOrders = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const res = await axios.get("/api/admin/orders", {
+      const res = await axios.get("/api/myadmin/orders", {
         params: { page, limit, search, status },
       });
 
@@ -50,7 +50,7 @@ export const updateAdminOrderStatus = createAsyncThunk(
   "adminOrders/updateStatus",
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const res = await axios.patch("/api/admin/orders/status", {
+      const res = await axios.patch("/api/myadmin/orders/status", {
         id,
         status,
       });

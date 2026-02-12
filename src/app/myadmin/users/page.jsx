@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import AdminHeader from "@/components/admin/AdminHeader";
-import AdminTable from "@/components/admin/AdminTable";
 import ToggleSwitch from "@/components/custom/ToggleSwitch";
 
 import {
@@ -14,6 +13,7 @@ import {
 } from "@/store/adminUserSlice";
 
 import { useRouter } from "next/navigation";
+import AdminTable from "@/components/admin/AdminTable";
 
 const LIMIT = 50;
 
@@ -157,7 +157,7 @@ const AdminUser = () => {
 
           {/* Add User Button */}
           <button
-            onClick={() => router.push("/admin/users/create")}
+            onClick={() => router.push("/myadmin/users/create")}
             className="px-5 py-2 bg-[#FF6A00] text-white rounded hover:bg-[#de6005] transition cursor-pointer"
           >
             + Add New User
@@ -168,7 +168,7 @@ const AdminUser = () => {
         <AdminTable
           columns={columns}
           data={list}
-          onEdit={(row) => router.push(`/admin/users/${row._id}`)}
+          onEdit={(row) => router.push(`/myadmin/users/${row._id}`)}
           onDelete={handleDelete}
         />
 

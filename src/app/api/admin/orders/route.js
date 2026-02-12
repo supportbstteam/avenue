@@ -5,7 +5,7 @@ import Order from "@/models/Order";
 /**
  * =========================================================
  * GET — ADMIN FETCH ORDERS
- * /api/admin/orders?page=1&limit=50&search=&status=
+ * /api/myadmin/orders?page=1&limit=50&search=&status=
  * =========================================================
  */
 export async function GET(req) {

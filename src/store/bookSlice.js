@@ -5,7 +5,7 @@ import api from "@/lib/api";
 export const fetchBookForAdmin = createAsyncThunk(
     "book/fetchBook",
     async (isbn) => {
-        const response = await api.get(`/admin/books/${isbn}`);
+        const response = await api.get(`/myadmin/books/${isbn}`);
         return response.data;
     }
 );

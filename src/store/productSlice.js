@@ -10,7 +10,7 @@ export const fetchAdminProductBooks = createAsyncThunk(
   "adminBooks/fetch",
   async ({ page = 1, limit = 50, search = "" } = {}, { rejectWithValue }) => {
     try {
-      const res = await axios.get("/api/admin/products", {
+      const res = await axios.get("/api/myadmin/products", {
         params: { page, limit, search },
       });
       return res.data;
@@ -24,7 +24,7 @@ export const updateAdminBookStatus = createAsyncThunk(
   "adminBooks/updateStatus",
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const res = await axios.patch("/api/admin/products/status", {
+      const res = await axios.patch("/api/myadmin/products/status", {
         id,
         status,
       });
@@ -50,7 +50,7 @@ export const fetchAdminBookDetails = createAsyncThunk(
   "adminBooks/details",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`/api/admin/products/${id}`);
+      const res = await axios.get(`/api/myadmin/products/${id}`);
 
       // console.log("-=-=-- fetchAdminBookDetails response data -=-=-=--=-", res?.data?.data);
       return res?.data?.data; // <- matches controller response
@@ -69,7 +69,7 @@ export const updateAdminBookProduct = createAsyncThunk(
   "adminBooks/update",
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const res = await axios.put("/api/admin/products", {
+      const res = await axios.put("/api/myadmin/products", {
         id,
         data,
       });
@@ -89,7 +89,7 @@ export const deleteAdminBookProduct = createAsyncThunk(
   "adminBooks/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete("/api/admin/products", {
+      await axios.delete("/api/myadmin/products", {
         data: { id },
       });
       return id;

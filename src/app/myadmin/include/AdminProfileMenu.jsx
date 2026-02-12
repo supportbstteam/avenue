@@ -66,14 +66,14 @@ export default function AdminProfileMenu() {
           <div className="flex flex-col">
 
             <Link
-              href="/admin/profile"
+              href="/myadmin/profile"
               className="px-4 py-3 hover:bg-gray-100 text-sm"
             >
               Profile
             </Link>
 
             {/* <Link
-              href="/admin/settings"
+              href="/myadmin/settings"
               className="px-4 py-3 hover:bg-gray-100 text-sm"
             >
               Settings

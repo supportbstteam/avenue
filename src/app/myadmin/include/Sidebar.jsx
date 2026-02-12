@@ -27,24 +27,24 @@ export default function Sidebar() {
     { name: "Dashboard", path: "/admin", icon: <Home size={20} /> },
     {
       name: "Category",
-      path: "/admin/category",
+      path: "/myadmin/category",
       icon: <TbCategory size={20} />,
     },
     {
       name: "Products",
-      path: "/admin/products",
+      path: "/myadmin/products",
       icon: <IoLibraryOutline size={20} />,
     },
-    { name: "Users", path: "/admin/users", icon: <BiGroup size={20} /> },
-    { name: "CMS", path: "/admin/cms", icon: <MdLibraryBooks size={20} /> },
-    { name: "Blogs", path: "/admin/blog", icon: <TbLogs size={20} /> },
+    { name: "Users", path: "/myadmin/users", icon: <BiGroup size={20} /> },
+    { name: "CMS", path: "/myadmin/cms", icon: <MdLibraryBooks size={20} /> },
+    { name: "Blogs", path: "/myadmin/blog", icon: <TbLogs size={20} /> },
     {
       name: "Orders",
-      path: "/admin/orders",
+      path: "/myadmin/orders",
       icon: <TbShoppingCartCopy size={20} />,
     },
-    { name: "Profile", path: "/admin/profile", icon: <User size={20} /> },
-    { name: "Settings", path: "/admin/setting", icon: <IoSettingsOutline size={20} /> },
+    { name: "Profile", path: "/myadmin/profile", icon: <User size={20} /> },
+    { name: "Settings", path: "/myadmin/setting", icon: <IoSettingsOutline size={20} /> },
   ];
 
   return (

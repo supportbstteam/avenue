@@ -4,8 +4,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCMSPages, deleteCMSPage } from "@/store/cmsSlice";
 import { useRouter } from "next/navigation";
-import AdminTable from "@/components/admin/AdminTable";
 import AdminHeader from "@/components/admin/AdminHeader";
+import AdminTable from "@/components/admin/AdminTable";;
 
 export default function CMSAdmin() {
   const dispatch = useDispatch();
@@ -63,7 +63,7 @@ export default function CMSAdmin() {
         <AdminHeader title="CMS Pages" />
 
         {/* <button
-          onClick={() => router.push("/admin/cms/new")}
+          onClick={() => router.push("/myadmin/cms/new")}
           className="
             bg-teal-700 hover:bg-teal-800
             text-white px-4 py-2 rounded
@@ -94,7 +94,7 @@ export default function CMSAdmin() {
           showEdit
           showDelete={false}
           onView={(r) => window.open(`/cms/${r.slug}`, "_blank")}
-          onEdit={(r) => router.push(`/admin/cms/${r.slug}?id=${r?._id}`)}
+          onEdit={(r) => router.push(`/myadmin/cms/${r.slug}?id=${r?._id}`)}
           onDelete={handleDelete}
         />
       )}

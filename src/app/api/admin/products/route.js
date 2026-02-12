@@ -5,7 +5,7 @@ import Book from "@/models/Book";
 
 /**
  * ======================================
- * GET /api/admin/book
+ * GET /api/myadmin/book
  * Query params:
  * - page (default 1)
  * - limit (default 50, max 50)
@@ -61,7 +61,7 @@ export async function GET(req) {
 
 /**
  * ======================================
- * PUT /api/admin/book
+ * PUT /api/myadmin/book
  * Body:
  * {
  *   id: string,
@@ -111,7 +111,7 @@ export async function PUT(req) {
 
 /**
  * ======================================
- * DELETE /api/admin/book
+ * DELETE /api/myadmin/book
  * Body:
  * {
  *   id: string

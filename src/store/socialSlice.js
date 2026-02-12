@@ -10,7 +10,7 @@ export const fetchSocialLinks = createAsyncThunk(
   "social/fetch",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await axios.get("/api/admin/social");
+      const res = await axios.get("/api/myadmin/social");
       return res.data.data;
     } catch (err) {
       return rejectWithValue(
@@ -29,7 +29,7 @@ export const updateSocialLinks = createAsyncThunk(
   "social/update",
   async (links, { rejectWithValue }) => {
     try {
-      const res = await axios.put("/api/admin/social", { links });
+      const res = await axios.put("/api/myadmin/social", { links });
       return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.error || "Update failed");

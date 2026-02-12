@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import AdminTable from "@/components/admin/AdminTable";
+import AdminHeader from "@/components/admin/AdminHeader";;
 import { fetchCategories, updateCategoryStatus } from "@/store/categorySlice";
 import ToggleSwitch from "@/components/custom/ToggleSwitch";
 import { useRouter } from "next/navigation";
-import AdminHeader from "@/components/admin/AdminHeader";
+import AdminTable from "@/components/admin/AdminTable";
+
 
 export const getCategoryColumns = ({ onToggleStatus }) => [
   { accessorKey: "code", header: "Code" },
@@ -145,7 +146,7 @@ const AdminCategoriesPage = () => {
         data={list}
         onEdit={(row) => {
           router.push(
-            `/admin/category/${row._id}?scheme=${encodeURIComponent(
+            `/myadmin/category/${row._id}?scheme=${encodeURIComponent(
               row.scheme
             )}`
           );

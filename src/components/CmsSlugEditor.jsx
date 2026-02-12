@@ -89,7 +89,7 @@ export default function CmsSlugEditor({ slug }) {
       })),
     };
 
-    await fetch("/api/admin/cms", {
+    await fetch("/api/myadmin/cms", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),

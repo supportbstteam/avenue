@@ -10,7 +10,7 @@ export const fetchAdminProfile = createAsyncThunk(
   "admin/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/admin/profile");
+      const response = await api.get("/myadmin/profile");
 
       // backend returns { data: user }
       return response.data.data;
@@ -29,7 +29,7 @@ export const updateAdminProfile = createAsyncThunk(
   "admin/updateProfile",
   async (formValues, { rejectWithValue }) => {
     try {
-      const response = await api.put("/admin/profile", formValues);
+      const response = await api.put("/myadmin/profile", formValues);
       return response.data.data;
     } catch (err) {
       return rejectWithValue("Update failed");
