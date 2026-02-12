@@ -8,7 +8,6 @@ import afterDiscountPrice from "@/lib/afterDiscountPrice";
 import { addToCart } from "@/store/cartSlice";
 import { useDispatch } from "react-redux";
 import toast from "react-hot-toast";
-// import Breadcrumb from './Breadcrumb';
 
 const formatDate = (dateStr) => {
   if (!dateStr || dateStr.length !== 8) return null;
@@ -30,37 +29,44 @@ export default function BookDetail({ book }) {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  const title = book?.descriptiveDetail.titles[0].text;
+  if (!book) return null;
+
+  const title = book?.descriptiveDetail?.titles?.[0]?.text || "Untitled";
   const format = "Paperback";
-  const publisher = book?.publishingDetail.publisher.name;
-  const publishingDate = formatDate(book?.publishingDetail.publishingDate);
-  const isbn = book?.productIdentifiers[0].value;
-  const description = book?.collateralDetail.textContents[1].text;
-  const categories = book?.descriptiveDetail.subjects
-    .filter((item) => item.scheme !== "93")
+  const publisher = book?.publishingDetail?.publisher?.name || "Unknown";
+  const publishingDate = formatDate(book?.publishingDetail?.publishingDate);
+  const isbn = book?.productIdentifiers?.[0]?.value || "--";
+
+  const description =
+    book?.collateralDetail?.textContents?.[1]?.text ||
+    book?.collateralDetail?.textContents?.[0]?.text ||
+    "No description available.";
+
+  const categories = book?.descriptiveDetail?.subjects
+    ?.filter((item) => item.scheme !== "93")
     .map((item) => item.headingText)
     .join(", ");
-  const originalPrice = book?.productSupply.prices[0].amount.toFixed(2);
-  const discountPercent =
-    book?.productSupply.prices[0].discountPercent.toFixed(2);
+
+  const originalPrice = Number(
+    book?.productSupply?.prices?.[0]?.amount || 0
+  ).toFixed(2);
+
+  const discountPercent = Number(
+    book?.productSupply?.prices?.[0]?.discountPercent || 0
+  ).toFixed(2);
+
   const price = afterDiscountPrice(originalPrice, discountPercent);
+
   const [expandDescription, setExpandDescription] = useState(false);
 
-  console.log("-=-=- book details book -=-=-=-", book);
-
   const addToBasket = () => {
-    // dispatch(addToCart(book));
     dispatch(addToCart({ bookId: book._id, quantity: 1 }));
     toast.success("Product added to cart");
   };
 
-  if (!book) return null;
-
   return (
     <div className="max-w-7xl mx-auto text-black px-4 py-10 space-y-2">
-      {/* MAIN LAYOUT */}
       <div className="grid cols-1 gap-6 lg:grid-cols-2">
-        {/* LEFT: IMAGE */}
         <div className="p-4 flex justify-center">
           <div className="relative w-[320px] h-[480px] bg-gray-100">
             <Image
@@ -74,9 +80,7 @@ export default function BookDetail({ book }) {
           </div>
         </div>
 
-        {/* RIGHT: DETAILS */}
         <div className="lg:col-span-1 space-y-6">
-          {/* TITLE */}
           <div>
             <h1 className="text-3xl font-serif font-semibold mb-3">{title}</h1>
             <h2 className="text-xl font-semibold mb-2">by {book.author}</h2>
@@ -87,90 +91,70 @@ export default function BookDetail({ book }) {
               </p>
             )}
 
-            {/* BOOK META */}
             <div className="space-y-2 text-sm">
-              <p>
-                <b>Format:</b> {format}
-              </p>
-              <p>
-                <b>Publisher:</b> {publisher}
-              </p>
-              <p>
-                <b>Publishing Date:</b> {publishingDate}
-              </p>
-              <p>
-                <b>Categories:</b> {categories}
-              </p>
-              <p>
-                <b>ISBN:</b> {isbn}
-              </p>
+              <p><b>Format:</b> {format}</p>
+              <p><b>Publisher:</b> {publisher}</p>
+              <p><b>Publishing Date:</b> {publishingDate}</p>
+              <p><b>Categories:</b> {categories}</p>
+              <p><b>ISBN:</b> {isbn}</p>
             </div>
           </div>
 
-          {/* PRICE BOX */}
           <div className="border p-4 space-y-3">
             <div className="flex items-center justify-center gap-4">
-              <span className="line-through text-gray-400">
-                £{originalPrice}
-              </span>
-
+              <span className="line-through text-gray-400">£{originalPrice}</span>
               <span className="text-2xl font-bold">£{price}</span>
-
-              {discountPercent && (
+              {discountPercent > 0 && (
                 <span className="bg-red-600 text-white text-xs px-2 py-1 rounded">
                   - {discountPercent}%
                 </span>
               )}
             </div>
 
-            {book?.isSellable && (book?.availabilityStatus === "in_stock" ||
-              book?.availabilityStatus === "available" ||
-              book?.availabilityStatus === "to_order" ||
-              book?.availabilityStatus === "unknown" ||
-              book?.availabilityStatus === "pod") && (
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  onClick={() => router.push("/auth/user/login")}
-                  className="w-full border cursor-pointer text-black px-6 py-3 font-semibold hover:bg-black hover:text-white transition"
-                >
-                  Sign in to Add to Wishlist
-                </button>
+            {book?.isSellable &&
+              ["in_stock", "available", "to_order", "unknown", "pod"].includes(
+                book?.availabilityStatus
+              ) && (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={() => router.push("/auth/user/login")}
+                    className="w-full border cursor-pointer text-black px-6 py-3 font-semibold hover:bg-black hover:text-white transition"
+                  >
+                    Sign in to Add to Wishlist
+                  </button>
 
-                <button
-                  onClick={addToBasket}
-                  className="w-full bg-[#FF6A00] cursor-pointer text-white px-6 py-3 font-semibold hover:bg-white hover:text-[#FF6A00] border border-[#FF6A00] transition"
-                >
-                  ADD TO BASKET
-                </button>
-              </div>
-            )}
+                  <button
+                    onClick={addToBasket}
+                    className="w-full bg-[#FF6A00] cursor-pointer text-white px-6 py-3 font-semibold hover:bg-white hover:text-[#FF6A00] border border-[#FF6A00] transition"
+                  >
+                    ADD TO BASKET
+                  </button>
+                </div>
+              )}
 
-            {!book?.isSellable && book?.availabilityStatus === "available" && (
-              <div className="flex flex-col sm:flex-row gap-3">
+            {!book?.isSellable &&
+              book?.availabilityStatus === "available" && (
                 <button
                   disabled
-                  // onClick={() => router.push("/auth/user/login")}
-                  className="w-full border rounded-md bg-gray-100  text-black px-6 py-3 font-semibold hover:bg-gray-200 hover:text-black transition"
+                  className="w-full border rounded-md bg-gray-100 text-black px-6 py-3 font-semibold"
                 >
                   Out of Stock
                 </button>
-              </div>
-            )}
+              )}
 
-            {book?.isSellable && book?.availabilityStatus === "preorder" && (
-              <button
-                disabled
-                // onClick={() => router.push("/auth/user/login")}
-                className="w-full border rounded-md bg-gray-100  text-black px-6 py-3 font-semibold hover:bg-gray-200 hover:text-black transition"
-              >
-                Pre Order
-              </button>
-            )}
+            {book?.isSellable &&
+              book?.availabilityStatus === "preorder" && (
+                <button
+                  disabled
+                  className="w-full border rounded-md bg-gray-100 text-black px-6 py-3 font-semibold"
+                >
+                  Pre Order
+                </button>
+              )}
           </div>
         </div>
       </div>
 
-      {/* DESCRIPTION */}
       <div className="mt-10 md:mt-16">
         <div className="border-t pt-10">
           <div className="flex items-center gap-4 mb-6">
@@ -178,17 +162,14 @@ export default function BookDetail({ book }) {
             <div className="flex-1 h-px bg-[#FF6A00]" />
           </div>
 
-          {/* INTRO */}
           <p className="font-bold text-lg mb-6">{title}</p>
 
-          {/* DESCRIPTION TEXT */}
           <div className="text-gray-800 leading-relaxed mb-8">
             {expandDescription
               ? parse(description)
               : parse(description.slice(0, 250) + "...")}
           </div>
 
-          {/* TOGGLE */}
           <button
             onClick={() => setExpandDescription(!expandDescription)}
             className="text-[#FF6A00] hover:underline font-medium"
