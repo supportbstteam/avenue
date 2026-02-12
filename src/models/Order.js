@@ -81,7 +81,7 @@ const OrderSchema = new mongoose.Schema(
     payment: {
       method: {
         type: String,
-        enum: ["COD", "ONLINE"],
+        enum: ["COD", "ONLINE", "PAYPAL"],
       },
       status: {
         type: String,
@@ -89,6 +89,7 @@ const OrderSchema = new mongoose.Schema(
         default: "pending",
       },
       transactionId: String,
+      paypalInfo: Object, // Store full PayPal response for reference
     },
 
     status: {

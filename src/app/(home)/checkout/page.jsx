@@ -11,6 +11,8 @@ import { placeCODOrder } from "@/store/orderSlice";
 import { fetchAddresses } from "@/store/addressSlice";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import PayPalButton from "@/components/PayPalButton";
+import PaymentMethodSelector from "@/components/PaymentMethodSelector";
 
 const Page = () => {
   const dispatch = useDispatch();
@@ -28,6 +30,7 @@ const Page = () => {
 
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [method, setMethod] = useState("stripe"); // default to stripe
 
   // fetch addresses when user loaded
   useEffect(() => {
@@ -118,6 +121,10 @@ const Page = () => {
 
       toast.error(err?.message || "Something went wrong placing order");
     }
+  };
+
+  const handlePaymentSelect = (method) => {
+    setMethod(method);
   };
 
   if (loading) return <div className="p-12">Loading...</div>;
@@ -230,6 +237,35 @@ const Page = () => {
               >
                 {placing ? "Placing Order..." : "Pay with COD"}
               </button>
+
+            {/* <div className="mt-4">
+              <PayPalButton amount={total.toFixed(2)} userId={user?._id} cart={items} selectedAddress={selectedAddress} />
+            </div> */}
+
+            <div className="max-w-xl mx-auto mt-10">
+              <PaymentMethodSelector onSelect={handlePaymentSelect} />
+
+              {/* PayPal Button Show Only When Selected */}
+              {method === "paypal" && (
+                <div className="mt-6">
+                  <PayPalButton
+                    amount={total.toFixed(2)}
+                    userId={user?._id}
+                    cart={items}
+                    selectedAddress={selectedAddress}
+                  />
+                </div>
+              )}
+
+              {/* Stripe Button Show Only When Selected */}
+              {method === "stripe" && (
+                <div className="mt-6">
+                  <button className="w-full bg-purple-600 text-white py-3 rounded-lg">
+                    Pay With Stripe
+                  </button>
+                </div>
+              )}
+            </div>
             </div>
           </div>
         </div>
