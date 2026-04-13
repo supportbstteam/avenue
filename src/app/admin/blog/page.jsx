@@ -70,7 +70,7 @@ export default function BlogAdminPage() {
         </h1>
 
         <button
-          onClick={() => router.push("/myadmin/blog/categories/new")}
+          onClick={() => router.push("/admin/blog/categories/new")}
           className="flex cursor-pointer items-center gap-2 bg-[#FF6A00] hover:bg-[#e55e00] text-white px-4 py-2 rounded"
         >
           <Plus size={16} />
@@ -86,7 +86,7 @@ export default function BlogAdminPage() {
           description="Create your first category to begin writing blogs."
           actionLabel="Create Category"
           onAction={() =>
-            router.push("/myadmin/blog/categories/new")
+            router.push("/admin/blog/categories/new")
           }
         />
       )}
@@ -140,7 +140,7 @@ export default function BlogAdminPage() {
                     onClick={(e) => {
                       e.stopPropagation();
                       router.push(
-                        `/myadmin/blog/categories/${cat._id}`
+                        `/admin/blog/categories/${cat._id}`
                       );
                     }}
                   />
@@ -168,7 +168,7 @@ export default function BlogAdminPage() {
                       actionLabel="Create Blog"
                       onAction={() =>
                         router.push(
-                          `/myadmin/blog/new?category=${cat._id}`
+                          `/admin/blog/new?category=${cat._id}`
                         )
                       }
                     />
@@ -204,7 +204,7 @@ export default function BlogAdminPage() {
                               className="cursor-pointer text-blue-600"
                               onClick={() =>
                                 router.push(
-                                  `/myadmin/blog/${blog._id}`
+                                  `/admin/blog/${blog._id}`
                                 )
                               }
                             />
@@ -229,7 +229,7 @@ export default function BlogAdminPage() {
                     <button
                       onClick={() =>
                         router.push(
-                          `/myadmin/blog/new?category=${cat._id}`
+                          `/admin/blog/new?category=${cat._id}`
                         )
                       }
                       className="

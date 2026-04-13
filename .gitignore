@@ -39,9 +39,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.node-version
-server.js
-src/app/api/api-folder/
-src/app/folder-delete/
-tmp/
-package-lock.json

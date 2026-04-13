@@ -210,7 +210,7 @@ const AdminProducts = () => {
           showEdit={false}
           showView={true}
           onView={(row) => {
-            router.push(`/myadmin/products/${row?._id}`);
+            router.push(`/admin/products/${row?._id}`);
           }}
           onEdit={(row) => console.log("EDIT", row)}
           onDelete={handleDelete}

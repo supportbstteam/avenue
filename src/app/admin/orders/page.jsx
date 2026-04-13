@@ -160,7 +160,7 @@ const AdminOrders = () => {
         showView
         showEdit={false}
         showDelete={false}
-        onView={(row) => router.push(`/myadmin/orders/${row._id}`)}
+        onView={(row) => router.push(`/admin/orders/${row._id}`)}
       />
 
       {/* PAGINATION */}

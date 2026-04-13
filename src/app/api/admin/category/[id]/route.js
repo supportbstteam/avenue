@@ -4,7 +4,7 @@ import { Category } from "@/models/Category";
 import Book from "@/models/Book";
 import mongoose from "mongoose";
 /**
- * PUT /api/myadmin/category/:id
+ * PUT /api/admin/category/:id
  * Body:
  * {
  *   status?: boolean,
@@ -58,7 +58,7 @@ export async function PUT(req, { params }) {
 }
 
 /**
- * DELETE /api/myadmin/category/:id
+ * DELETE /api/admin/category/:id
  * Cascading:
  * - Remove category from all books
  * - Delete category document
@@ -122,7 +122,7 @@ export async function DELETE(req, context) {
 }
 
 /**
- * GET /api/myadmin/category/:id?scheme=XX
+ * GET /api/admin/category/:id?scheme=XX
  * Returns:
  * - category info
  * - ONLY the requested scheme

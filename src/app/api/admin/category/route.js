@@ -199,7 +199,7 @@ export async function POST() {
 
 
 /**
- * GET /api/myadmin/category
+ * GET /api/admin/category
  * Query params:
  * - page (default 1)
  * - limit (default 50, max 50)

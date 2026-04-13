@@ -107,7 +107,7 @@ export default function BlogEditorPage() {
       await dispatch(updateAdminBlog({ id: blogId, data: payload }));
     }
 
-    router.push("/myadmin/blog");
+    router.push("/admin/blog");
   };
 
   /**
