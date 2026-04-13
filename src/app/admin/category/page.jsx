@@ -146,7 +146,7 @@ const AdminCategoriesPage = () => {
         data={list}
         onEdit={(row) => {
           router.push(
-            `/myadmin/category/${row._id}?scheme=${encodeURIComponent(
+            `/admin/category/${row._id}?scheme=${encodeURIComponent(
               row.scheme
             )}`
           );

@@ -41,7 +41,7 @@ const CreateUser = () => {
             onSubmit={(payload) => {
               dispatch(createAdminUser(payload));
               dispatch(fetchAdminUsers());
-              router.push("/myadmin/users");
+              router.push("/admin/users");
             }}
           />
 

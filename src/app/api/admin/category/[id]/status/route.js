@@ -4,7 +4,7 @@ import { connectDB } from "@/lib/db";
 import { Category } from "@/models/Category";
 
 /**
- * PATCH /api/myadmin/category/[id]/status
+ * PATCH /api/admin/category/[id]/status
  * Body:
  * {
  *   scheme: string,

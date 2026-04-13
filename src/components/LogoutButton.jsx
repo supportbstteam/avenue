@@ -10,7 +10,7 @@ export default function LogoutButton({ className }) {
   let callbackUrl = "/";
 
   if (session?.user?.role === "admin") {
-    callbackUrl = "/auth/myadmin/login";
+    callbackUrl = "/auth/admin/login";
   } else if (session?.user) {
     callbackUrl = "/auth/user/login";
   }

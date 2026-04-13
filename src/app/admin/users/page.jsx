@@ -157,7 +157,7 @@ const AdminUser = () => {
 
           {/* Add User Button */}
           <button
-            onClick={() => router.push("/myadmin/users/create")}
+            onClick={() => router.push("/admin/users/create")}
             className="px-5 py-2 bg-[#FF6A00] text-white rounded hover:bg-[#de6005] transition cursor-pointer"
           >
             + Add New User
@@ -168,7 +168,7 @@ const AdminUser = () => {
         <AdminTable
           columns={columns}
           data={list}
-          onEdit={(row) => router.push(`/myadmin/users/${row._id}`)}
+          onEdit={(row) => router.push(`/admin/users/${row._id}`)}
           onDelete={handleDelete}
         />
 

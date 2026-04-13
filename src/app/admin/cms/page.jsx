@@ -63,7 +63,7 @@ export default function CMSAdmin() {
         <AdminHeader title="CMS Pages" />
 
         {/* <button
-          onClick={() => router.push("/myadmin/cms/new")}
+          onClick={() => router.push("/admin/cms/new")}
           className="
             bg-teal-700 hover:bg-teal-800
             text-white px-4 py-2 rounded
@@ -94,7 +94,7 @@ export default function CMSAdmin() {
           showEdit
           showDelete={false}
           onView={(r) => window.open(`/cms/${r.slug}`, "_blank")}
-          onEdit={(r) => router.push(`/myadmin/cms/${r.slug}?id=${r?._id}`)}
+          onEdit={(r) => router.push(`/admin/cms/${r.slug}?id=${r?._id}`)}
           onDelete={handleDelete}
         />
       )}
