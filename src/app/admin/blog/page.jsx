@@ -90,7 +90,7 @@ export default function BlogAdminPage() {
           }
         />
       )}
-      {/* commit */}
+      {/* commiting */}
 
       {/* CATEGORY LIST */}
       <div className="space-y-3">
